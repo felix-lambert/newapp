@@ -50,7 +50,6 @@ module.exports = function(app) {
   var sessionRoutes           = require('./sessions/sessionRoutes')();
   var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes')();
   var transactionRoutes       = require('./transactionRoutes')();
-  var filesRoutes             = require('./filesRoutes')();
   var notificationRoutes      = require('./sockets/notificationRoutes')();
   var statusRoutes            = require('./statusRoutes')();
 
@@ -60,7 +59,6 @@ module.exports = function(app) {
   .concat(sessionRoutes)
   .concat(announcesCommentsRoutes)
   .concat(transactionRoutes)
-  .concat(filesRoutes)
   .concat(indexRoutes)
   .concat(notificationRoutes)
   .concat(statusRoutes);
