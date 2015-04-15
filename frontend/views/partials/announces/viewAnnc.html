@@ -1,0 +1,56 @@
+<div header></div>
+<div class="ctx_">
+  <div class="container_">
+    <section class="viewService" ng-init="initViewAnnouce()">
+      <h2>{{announce.title}} - {{announce.price}} crédit(s)
+      <ul class="fm-rating">
+        <li class="fm-selected" ng-repeat="n in range(1,announceRating)">★</li>
+      </ul>
+      </h2>
+      <div class="images-list">
+        <div class="image-box image-box-bg" ng-repeat="image in announce.images" style="background-image: url('{{image.small}}');">
+        </div>
+      </div>
+      <div ng-show="currentUser">
+        <a ng-show="currentUser._id === announce.creator._id || announce.creator.username === currentUser.username || announce.creator.username === currentUser.usernameFacebook || announce.creator.username === currentUser.usernameGoogle" href="/announces/{{announce._id}}/edit">
+          <button class="btn btn-default">edit</button>
+        </a>
+        <div ng-show="currentUser._id != announce.creator._id && announce.creator.username != currentUser.username && announce.creator.username != currentUser.usernameFacebook && announce.creator.username != currentUser.usernameGoogle && announce.status == 1" class="blockBg">
+          <strong>Intéressé ?</strong>
+          <div class="mgv10"><input ng-model="clientprice" type="number" class="form-input" style="width:80px; display:inline-block"/> crédit(s)</div>
+          <div class="commentStyle mgb10" style="width:400px;">(Ce prix est à titre indicatif uniquement</br>
+            Si vous n'indiquez aucun prix, cela signifira que vous acceptez le prix définit par l'auteur de l'annonce,</br>
+          Dans le cas contraire, vous êtes libre de négocier)</div>
+          <button class="btn btn-default" ng-click="startTransaction()">Lancer la transaction</button>
+          <span style="color:red;" ng-show="transactionError">{{transactionError}}</span>
+        </div>
+      </div>
+      <p>{{announce.content}}</p>
+      <div>
+        <span class="badge badge-success-success">Posted {{announce.created | date:'medium'}}</span>
+        <div class="col-md-offset-9">
+          <span class="badge badge-success">Posted by {{announce.creator.username || announce.creator.usernameFacebook || announce.creator.usernameGoogle || announce.creator.usernameLinkedIn}}</span>
+        </div>
+      </div>
+    </section>
+    <section class="comment">
+      <form class="postComment" ng-submit="postComment()">
+        <textarea id="comment" ng-model="AnnounceComment" name="AnnounceComment" class="form-control" placeholder="Ecrivez un commentaire" required></textarea>
+        <button id="comment" class="btn_1 inlb" type="submit">Poster</button>
+      </form>
+      <ul class="cmts">
+        <li class="cmt" ng-repeat="comment in comments">
+          <a class="removeComment" ng-if="currentUser._id == comment.author._id || currentUser._id == Annouce.creator._id" ng-click="removeComment(comment)">Supprimer</a>
+          <h3 class="author">
+          {{comment.author.username || comment.author.facebook.username ||comment.author.google.username ||comment.author.linkedIn.username}}
+          <ul ng-if="comment.rating" class="fm-rating">
+            <li class="fm-selected" ng-repeat="n in range(1, announceRating)">★</li>
+          </ul>
+          </h3>
+          <p class="content">{{ comment.content }}</p>
+          <p class="date">{{ comment.date | date:'medium' }}</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>

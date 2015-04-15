@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "google": {
+      "clientId" : "348720444494-fg8e8tnt8vd90i7g1b1lrbm6a8302dvs.apps.googleusercontent.com",
+      "clientSecret" : "fd8h2oq4LcrYxe6JCeZ7zUPa",
+      "callback" : "http://localhost:8000/auth/google/callback"
+    },
+    "facebook": {
+      "clientId": "1550313811866763",
+      "clientSecret": "49760a043bc096549ac284593f9af717",
+      "callback" : "http://localhost:8000/auth/facebook/callback"
+    },
+    "linkedIn": {
+      "clientId": "78hs788fq6depx",
+      "clientSecret": "WLyVvxRemp1lxDfU",
+      "callback" : "http://localhost:8000/auth/linkedin/callback"
+    }
+  }
+}

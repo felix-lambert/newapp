@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "google": {
+      "clientId": "619515093691-ug5ib66s5de8aev1q1hhqgkuum1e2ue8.apps.googleusercontent.com",
+      "clientSecret": "cSVZKNs9_fQ_YfQrKn49g4Lj",
+      "callback": "http://intouchdev.herokuapp.com/auth/google/callback"
+    },
+    "facebook": {
+      "clientId": "268583499932782",
+      "clientSecret": "ae10ffa6dee80e94b2eeab369cfb0dbe",
+      "callback": "http://intouchdev.herokuapp.com/auth/facebook/callback"
+    },
+    "linkedIn": {
+      "clientId": "78hevoamiestsc",
+      "clientSecret": "fLvw9PvTN52P8rzH",
+      "callback": "http://intouchdev.herokuapp.com/auth/linkedin/callback"
+    }
+  }
+}

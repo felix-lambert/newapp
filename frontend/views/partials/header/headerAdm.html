@@ -1,0 +1,8 @@
+<nav ng-controller="AdminNavbarAngCtrl" ng-init="init()" role="navigation" class="adminHeader">
+	 <li class="tab" ng-repeat="item in navMenu">
+        <a href="{{item.path}}"><button class="submit_btn_1">{{item.title}}</button></a>
+    </li><li class="tab login">
+    	<span><b>Logged as : </b>{{currentUser.username}}</span>
+    	<button class="submit_btn_1" ng-click="logout()">Déconnexion</button>
+    </li>
+</nav>

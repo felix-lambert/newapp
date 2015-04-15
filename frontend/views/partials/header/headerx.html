@@ -1,0 +1,44 @@
+<div>
+  <div ng-controller="MainHeaderAngCtrl" class="mainHeader">
+    <div class="leftArea area">
+      <div class="logo_"></div>
+    </div>
+    <div class="centerArea" auto-complete url="/search" class="navbar-brand" model="data.tags">
+    </div>
+    <div ng-show="!currentUser" class="rightArea unlogged area">
+      <span class="mgr30">S'INSCRIRE</span>
+      <span ng-click="loginOpen = !loginOpen">SE CONNECTER</span>
+      <div class="loginDropdown" ng-class="{'open' : loginOpen}">
+        <form class="form" name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
+          <div>
+            <input type="email" class="" placeholder="Email" name="email" ng-model="user.emailLog" required mongoose-error/>
+          </div>
+          <div>
+            <input class="" placeholder="Mot de passe" type="password" name="password" ng-model="user.passwordLog" ng-minlength="4" required mongoose-error/>
+          </div>
+          <span class="bl" ng-show="errorAuth">{{errorAuth}}</span>
+          <button class="btn_" type="submit">Se Connecter</button>
+          <!--<a href="/forgot">Mot de passe oublié ?</a>-->
+          <div class="networkConnection">
+            <a class="btn_" href="" , data-ng-click="loginOauth('facebook')">Facebook</a>
+            <a class="btn_" href="" , data-ng-click="loginOauth('linkedin')">LinkedIn</a>
+            <a class="btn_" href="" , data-ng-click="loginOauth('google')">Google+</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div ng-show="currentUser" class="rightArea logged">
+      <span>
+      <a class="mg_auto" ng-click="logout()">Déconnexion</a>
+
+      </span>
+    </div>
+  </div>
+  <nav ng-controller="NavbarAngCtrl" ng-init="init()" role="navigation" class="bodyHeader">
+    <li class="tab" ng-repeat="item in navMenu" ng-show="item.show == 1 || item.show == 2" ng-click="changeIx($index)" ng-class="{activated: ix==$index}">
+      <a ng-show="item.path" href="{{item.path}}" class="icon {{item.classIcon}}">{{item.title}}<span class="badge" ng-show="item.title === 'Message'">{{currentUser.i}}</span></a>
+    </li>
+  </nav>
+
+
+</div>

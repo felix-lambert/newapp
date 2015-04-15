@@ -1,0 +1,17 @@
+<div id="modalId">
+  <div class="modal-header">
+    <h3 class="modal-title">Service reçu !</h3>
+  </div>
+  <form class="postComment" ng-submit="submit()">
+    <div class="modal-body">
+      <p>Votre transaction concernant l'annonce <strong>{{announce.title}}</strong> est à présent terminée.</br>
+        {{announce.price}} crédit(s) vont être transférés à {{transac.owner.username}}.</br></br>
+      Merci de noter l'annonce</p>
+      <textarea id="comment" ng-model="$parent.comment" class="form-control" placeholder="Ecrivez un commentaire" required></textarea>
+    </div>
+    <div class="modal-footer">
+      <fm-rating ng-show="!announceRating" ng-model="$parent.rating"></fm-rating>
+      <button id="comment" class="btn_1 inlb" type="submit">Poster</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,138 @@
+<div header></div>
+<div class="ctx_">
+  <div class="container_">
+    <h1>Messages</h1>
+    <h2 class="glyphicon glyphicon-user bg-success">{{currentUser.username}}</h2>
+    <ul class="nav navbar-nav">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ peopleCount }} online <b class="caret" ng-if="peopleCount > 0"></b></a>
+        <ul class="dropdown-menu">
+          <li ng-repeat="user in users"><p class="white">{{ user.name }} <span ng-if="user.countrycode"><img class="flag flag-{{user.countrycode}}"></span> <i class="fa fa-{{user.device}}"></i></p></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="col-xs-4">
+      <div class="my-controller">
+        <div class="row">
+          <div class="col-xs-4">
+            <h4>Page: {{ currentPage }}</h4>
+          </div>
+          <div class="col-xs-4">
+            <label for="search">Friends per page:</label>
+            <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+          </div>
+        </div>
+        <br>
+        <table class="table svcList">
+          <tbody>
+            <tr dir-paginate="username in usernames | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
+              <td class="service">
+                <form class="form-inline" role="form"><div class="form-group"><p class="white">{{username}}</p></div><button class="btn btn-success btn-xs" type="submit" ng-click='startChat(username)'>Join</button>
+              
+              
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div ng-controller="PaginationController" class="other-controller">
+      <div class="text-center">
+        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
+      </div>
+    </div>
+  </div>
+  <section class="col-xs-4" ng-hide="!joined">
+    <h2 class="glyphicon glyphicon-user bg-danger">{{userRec}}</h2>
+    <div id="chatpanel">
+      <div id="chat">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <label class="sr-only" for="message">Message: </label>
+            <input type="text" placeholder="Enter message" class="form-control" ng-model="message" name="message" id="message" ng-keypress="typing($event, currentUser.username)" on-focus="focus(true)" on-blur="focus(false)">
+          </div>
+          <button type="submit" class="btn btn-default btn-sm" ng-click='send(currentUser.username)'>Send message</button>
+        </form>
+        <small  ng-if="error" class="text-danger">{{ error.send }}</small>
+      </div>
+      <table class="table svcList">
+        <tbody>
+          <tr ng-repeat="message in messages track by $index">
+            <td class="service">
+            
+              {{ message.name }}: {{ message.message }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="col-lg-6">
+          <div id="messages">
+            <ul >
+              <li class="list-unstyled"></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-6X">
+          <div id="sidebar">
+            <ul ng-if="isTyping">
+              <li  ng-repeat="person in typingPeople track by $index" class="text-muted list-unstyled"><small>{{ person }} is typing</small></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </section>
+<!-- <div class="ctx_">
+    <div class="container_">
+        <div style="text-align:center" id="main">
+            <div class="row">
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ peopleCount }} online <b class="caret" ng-if="peopleCount > 0"></b></a>
+                    <ul class="dropdown-menu">
+                        <li <li ng-repeat="room in rooms">
+                            <p class="white">{{ room.name }}
+                                <button class="btn btn-success btn-xs" type="submit" ng-click="open('lg', room)" ng-hide='room.name === currentUser.username'>
+                                    Lui parler</button>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="container">
+
+                </div>
+                <div class="container">
+                    <p>Hello {{currentUser.username}}</p>
+                    <section>
+                        <form data-ng-submit="addChat()" class="form-inline" role="form">
+                            <input type="text" data-ng-model="chatText" placeholder="Enter message" />
+                            <br />
+                            <input type="submit" value="Envoyer" />
+                            <a href="" data-ng-click="archive()">Archiver</a>
+                        </form>
+                    </section>
+
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div>
+                                <ul>
+                                    <li class="list-unstyled" ng-repeat="chat in chat track by $index">{{chat.username}} : {{chat.message}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="sidebar">
+                                <ul ng-if="isTyping">
+                                    <li ng-repeat="person in typingPeople track by $index" class="text-muted list-unstyled"><small>{{ person }} is typing</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->

@@ -1,0 +1,20 @@
+<div header></div>
+<div class="ctx_">
+  <div class="container_" ng-init="init()">
+    <div dropfile options="{{dropfile.options}}" class="dropfile album"></div>
+      <div class="tbz" id="tbz"></div>
+      <div class="alert-error_" ng-show="reqError">{{reqError}}</div>
+      <div class="alert-success_" ng-show="reqSuccess">{{reqSuccess}}</div>
+    <div class="images-list-album">
+        <div id="image-box" class="image-box image-box-bg" ng-repeat="image in images" style="background-image: url('{{image.small}}');">
+          <span dropdown-on-click display-hover-parent class="dropdown_">
+            <span class="i"></span>
+          </span>
+          <div class="dropdown-menu_">
+            <div ng-click="defineProfile(image)" class="group">Definir en tant que photo de profil</div>
+            <div ng-click="remove(image)" class="group">Supprimer</div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

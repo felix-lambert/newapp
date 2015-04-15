@@ -1,0 +1,82 @@
+<div header></div>
+<div class="ctx_">
+  <div class="container_" ng-show="!currentUser">
+    <a ng-click="open('lg')" href="#">A propos</a>
+    <div class="register area">
+      <h1>S'inscrire</h1>
+      <form class="form" name="form" novalidate ng-submit="register(form)">
+        <div class="form-group">
+          <input class="form-input" type="text" name="usernameReg" minlength="4" maxlength="30" ng-model="user.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
+          <p class="form-help" ng-show="form.usernameReg.$error.unique && form.usernameReg">
+            That username is already taken.
+          </p>
+          <div ng-if="form.$submitted || form.usernameReg.$dirty" ng-messages="form.usernameReg.$error" class="errors">
+            <div class="text-danger" ng-message="required">Vous n'avez pas entré votre pseudo</div>
+            <div class="text-danger" ng-message="minlength">Votre pseudo doit comporter plus de 4 caractères</div>
+            <div class="text-danger" ng-message="maxlength">Votre pseudo est trop long</div>
+            <div class="text-danger" ng-message="pattern">Votre pseudo ne doit pas avoir des caractères alphanumériques</div>
+            <div class="text-danger" ng-message="usernameAvailable">Ce pseudo a déjà été pris</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="email" class="form-input" name="emailReg" ng-model="user.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
+          <p class="text-danger">
+            {{ error.registeredMail }}
+          </p>
+          <div ng-if="form.$submitted || form.emailReg.$touched" ng-messages="form.emailReg.$error" class="errors">
+            <div class="text-danger" ng-message="required">Vous n'avez pas entré votre email</div>
+            <div class="text-danger" ng-message="email">Votre adresse mail n'est pas valide</div>
+            <div class="text-danger" ng-message="emailAvailable">Cet email a déjà été enregistré</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <input class="form-input" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="user.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
+          <div ng-if="form.$submitted || form.passwordReg.$touched" ng-messages="form.passwordReg.$error" class="errors">
+            <div class="text-danger" ng-message="required">Vous n'avez pas entré votre mot de passe</div>
+            <div class="text-danger" ng-message="minlength">Votre mot de passe est trop court</div>
+            <div class="text-danger" ng-message="maxlength">Votre mot de passe est trop long</div>
+            <div class="text-danger" ng-message="pattern">Votre mot de passe doit avoir des caractères alphanumériques</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <input class="form-input" type="password" class="input" name="passwordRegRepeat" required ng-model="form.data.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="user.password" autocomplete="off" />
+          <div ng-if="form.$submitted || form.passwordRegRepeat.$touched || form.passwordReg.$touched" ng-messages="form.passwordRegRepeat.$error" class="errors">
+            <div class="text-danger" ng-message="required">Vous devez entrer un mot de passe de confirmation</div>
+            <div class="text-danger" ng-message="compareTo">Les mots de passe sont différents</div>
+          </div>
+        </div>
+        <button class="btn_1 wf" type="submit" ng-disabled="form.$invalid">Valider</button>
+      </form>
+    </div>
+  </div>
+  <div ng-show="currentUser">
+    <div class="container_">
+      <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
+      <div class="dropdown"  >
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        <span class="badge">
+          {{currentUser.i}}
+        </span>
+        Notifications
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+          <li ng-repeat="notification in currentUser.notifications" role="presentation">
+          Requête d'amitié : {{notification.userRec}} <button type="button" class="btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
+<!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
+          </li>
+        </ul>
+      </div>
+      <hr class="">
+<div class="container target">
+    <div class="row">
+        <div class="col-sm-11">
+          <div class="alert_ alert-info_" >
+            Bonjour, {{currentUser.username}}
+
+      
+          </div>
+          <br/>
+        </div>
+  </div>
+  
