@@ -22,53 +22,53 @@
       <tbody>
         <tr ng-repeat="transac in transactionOwner">
           <td><a href="/announces/{{transac.announce._id}}">{{transac.announce.title}}</a></td>
-        <td>{{transac.client.username}}</th>
-        <td>{{transac.date | date:'medium'}}</td>
-        <td><span ng-show="transac.clientprice" class="commentStyle">{{transac.clientprice}} crédit(s)</span></td>
-        <td>{{transac.statusInformation}}</td>
-        <td>{{transac.announce.price}} crédit(s)</td>
-        <td>
-          <span ng-if="transac.status == -1" style="color:red;">Annulé</span>
-          <span ng-if="transac.status == 0 || (transac.status == 1 && transac.showAcceptLink == true)"><a ng-click="acceptTransac(transac)">Accepter</a> / <a ng-click="rejectTransac(transac)">Refuser</a></span>
-          <span ng-if="transac.status == 1 && transac.showAcceptLink == false" style="color:orange">Accepté</span>
-          <span ng-if="transac.status == 2" style="color:#19C919">Accepté</span>
-          <span ng-if="transac.status == 3" style="color:#19C919">Terminé</span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <table ng-if="tab == 2" class="table">
-    <thead>
-      <tr>
-        <th>Annonce</th>
-        <th>Auteur</th>
-        <th>Date de la requête</th>
-        <th>Prix proposé</th>
-        <th>Status</th>
-        <th>Prix final *</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="transac in transactionClient">
-        <td><a href="/announces/{{transac.announce._id}}">{{transac.announce.title}}</a></td>
-        <td>{{transac.owner.username}}</td>
-        <td>{{transac.date | date:'medium'}}</td>
-        <td><span ng-show="transac.clientprice" class="commentStyle">{{transac.clientprice}} crédit(s)</span></td>
-        <td>{{transac.statusInformation}}</td>
-        <td>{{transac.announce.price}} crédit(s)</td>
-        <td>
-          <span ng-if="transac.status == -1" style="color:red;">Annulé</span>
-          <span ng-if="transac.status == 0 || (transac.status == 1 && transac.showAcceptLink == true)"><a ng-click="acceptTransac(transac)">Accepter</a> / <a ng-click="rejectTransac(transac)">Refuser</a></span>
-          <span ng-if="transac.status == 1 && transac.showAcceptLink == false" style="color:orange">Accepté</span>
-          <span ng-if="transac.status == 2" style="color:#19C919">
-            <div>Accepté</div>
-            <div><a ng-click="signalTransacAsReceived(transac)">Reçu</a> / <a ng-click="signalTransacAsNotReceived(transac)">Non reçu</a></div>
-          </span>
-          <span ng-if="transac.status == 3" style="color:#19C919">Reçu</span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+          <td>{{transac.client.username}}</td>
+          <td>{{transac.date | date:'medium'}}</td>
+          <td><span ng-show="transac.clientprice" class="commentStyle">{{transac.clientprice}} crédit(s)</span></td>
+          <td>{{transac.statusInformation}}</td>
+          <td>{{transac.announce.price}} crédit(s)</td>
+          <td>
+            <span ng-if="transac.status == -1" style="color:red;">Annulé</span>
+            <span ng-if="transac.status == 0 || (transac.status == 1 && transac.showAcceptLink == true)"><a ng-click="acceptTransac(transac)">Accepter</a> / <a ng-click="rejectTransac(transac)">Refuser</a></span>
+            <span ng-if="transac.status == 1 && transac.showAcceptLink == false" style="color:orange">Accepté</span>
+            <span ng-if="transac.status == 2" style="color:#19C919">Accepté</span>
+            <span ng-if="transac.status == 3" style="color:#19C919">Terminé</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table ng-if="tab == 2" class="table">
+      <thead>
+        <tr>
+          <th>Annonce</th>
+          <th>Auteur</th>
+          <th>Date de la requête</th>
+          <th>Prix proposé</th>
+          <th>Status</th>
+          <th>Prix final *</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="transac in transactionClient">
+          <td><a href="/announces/{{transac.announce._id}}">{{transac.announce.title}}</a></td>
+          <td>{{transac.owner.username}}</td>
+          <td>{{transac.date | date:'medium'}}</td>
+          <td><span ng-show="transac.clientprice" class="commentStyle">{{transac.clientprice}} crédit(s)</span></td>
+          <td>{{transac.statusInformation}}</td>
+          <td>{{transac.announce.price}} crédit(s)</td>
+          <td>
+            <span ng-if="transac.status == -1" style="color:red;">Annulé</span>
+            <span ng-if="transac.status == 0 || (transac.status == 1 && transac.showAcceptLink == true)"><a ng-click="acceptTransac(transac)">Accepter</a> / <a ng-click="rejectTransac(transac)">Refuser</a></span>
+            <span ng-if="transac.status == 1 && transac.showAcceptLink == false" style="color:orange">Accepté</span>
+            <span ng-if="transac.status == 2" style="color:#19C919">
+              <div>Accepté</div>
+              <div><a ng-click="signalTransacAsReceived(transac)">Reçu</a> / <a ng-click="signalTransacAsNotReceived(transac)">Non reçu</a></div>
+            </span>
+            <span ng-if="transac.status == 3" style="color:#19C919">Reçu</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -24,9 +24,6 @@ module.exports = {
           userCreator: {
               _id: message.userCreator._id,
               username: message.creator.username,
-              usernameFacebook: message.creator.facebook.username,
-              usernameGoogle: message.creator.google.username,
-              usernameLinkedIn: message.creator.linkedIn.username,
           },
           roomCreator: {
               _id: message.roomCreator._id,
@@ -59,14 +56,6 @@ module.exports = {
         res.status(201).json(message);
       }
     });
-  },
-
-  /////////////////////////////////////////////////////////////////
-  // SHOW A MESSAGE ///////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  show: function(req, res) {
-    console.log('___________________show messages___________________');
-    res.status(200).json(req.message);
   },
 
   /////////////////////////////////////////////////////////////////

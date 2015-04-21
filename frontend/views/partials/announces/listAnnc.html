@@ -1,122 +1,71 @@
 <div header></div>
-<div class="ctx_">
-  <div class="container_">
-    <!-- Initialize a new AngularJS app and associate it with a module named "instantSearch"-->
-    <section ng-init="initListAnnounce()">
-      <div class="ctg area">
-        <div class="fm-panel">
-          <h3>Filtrer les services</h3>
-          <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
-          <form>
-            <h5>Réputation</h5>
-            <fm-rating ng-model="$parent.filter.rating"></fm-rating>
-            <h5>Catégorie</h5>
-            <div class="ctgList" fm-checkbox-list ng-model="filter.category">
-              <label ng-repeat="category in categories" class="checkbox">
-                <input type="checkbox" value="{{category.title}}"> {{category.title}}
-              </label>
-            </div>
-          </form>
+
+<div class="blog-page main grid-wrap">
+  
+  <section ng-init="initListAnnounce()" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
+    <header id="navtop">
+      <nav class="fleft">
+        <ul>
+          <li>Page: {{ currentPage }}</li>
+        </ul>
+        <ul>
+          <li><input id="search" type="search" ng-model="searchString" name="search" placeholder="Rechercher une annonce" ></li>
+        </ul>
+        
+        <ul><li>
+          <input type="number" min="1" max="100" ng-model="pageSize"></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="my-controller">
+      <article dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage" class="post">
+        <div ng-show="announce.creator.profileImage.small" class="image-box image-box-bg" style="background-image: url('{{announce.creator.profileImage.small}}');">
         </div>
-      </div>
-      <div class="ctg horizontalArea">
-        <div class="fm-panel">
-          <div class="line">
-            <h3>Filtrer les services</h3>
-            <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
-          </div>
-          <div class="line bottomArea">
-            <form>
-              <div class="column left">
-                <h5>Notation</h5>
-                <fm-rating ng-model="$parent.filter.rating"></fm-rating>
-              </div>
-              <div class="column right">
-                <h5>Catégorie</h5>
-                <div class="ctgList" fm-checkbox-list ng-model="filter.category">
-                  <span ng-repeat="category in categories">
-                    <input type="checkbox" class="checkbox" value="{{category.title}}"/>
-                    <label class="checkbox">
-                      {{category.title}}
-                    </label>
-                  </span>
-                </div>
-              </div>
-            </form>
-          </div>
+        <h2><a href="blogpost.html" class="post-title">{{announce.title}}</a></h2>
+        <div class="meta">
+          <p>Posté le <span class="time">{{announce.created | date:'medium'}}</span> par <a href="#" class="fn">{{announce.creator.username}}</a> avec <a href="#" class="comments-link">42 commentaires</a>. Statut : <span ng-if="announce.status == 1" style="color:#19C919">Disponible</span>
+          <span ng-if="announce.status != 1" style="color:red;">Non disponible</span></p>
+          <p class="warning">{{announce.price}} crédit(s)</p>
+          
         </div>
-      </div>
-      <div class="svc area">
-        <div class="btnArea">
-          <div ng-show="currentUser">
-            <a href="/announces/create">
-              <button class="btn_">Ajouter un service</button>
-            </a>
-          </div>
+        <div class="entry">
+          <p>{{announce.content | cutFilter }}</p>
         </div>
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-8">
-              <div class="my-controller">
-                <div class="row">
-                  <div class="col-xs-4">
-                    <h3>Page: {{ currentPage }}</h3>
-                  </div>
-                  <div class="col-xs-4">
-                    <label for="search">Services per page:</label>
-                    <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
-                  </div>
-                </div>
-                <br>
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table class="table svcList">
-                      <thead>
-                        <tr>
-                          <th class="service">Services</th>
-                          <th class="posted small_hide">Posté par</th>
-                          <th class="rating xsmall_hide">Prix</th>
-                          <th class="status">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
-                          <td class="service">
-                            <h4>
-                            <a href="announces/{{announce._id}}">
-                              <b>{{announce.title}}</b>
-                            </a>
-                            </h4>
-                            <p class="thrDesc">{{announce.content | cutFilter }}</p>
-                          </td>
-                          <td class="posted small_hide">
-                            <p>
-                              {{announce.creator.facebook.username || announce.creator.username || announce.creator.google.username || announce.creator.linkedIn.username}}
-                            </p>
-                            <div ng-show="announce.creator.profileImage.small" class="image-box image-box-bg" style="background-image: url('{{announce.creator.profileImage.small}}');">
-                            </div>
-                            <br/>
-                            <span>Posted {{announce.created | date:'medium'}}</span>
-                          </td>
-                          <td class="rating xsmall_hide">
-                            {{announce.price}} crédit(s)
-                          </td>
-                          <td class="status">
-                            <span ng-if="announce.status == 1" style="color:#19C919">Disponible</span>
-                            <span ng-if="announce.status != 1" style="color:red;">Non disponible</span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              <div ng-controller="PaginationController" class="other-controller">
-                <div class="text-center">
-                  <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
-                </div>
-              </div>
-            </section>
-            <h1 ng-show="noannounces">No services yet.</h1>
-          </div>
-        </div>
+      </article>
+    </div>
+  </section>
+  <aside class="grid col-one-quarter mq2-col-one-third mq3-col-full blog-sidebar">
+    <a href="/announces/create" class="arrow fright">Ajouter une annonce</a>
+    <br/>
+    <hr>
+    <div class="widget">
+      <h2>Annonces les plus populaires</h2>
+      <ul>
+        <li><a href="#" title="">Nullam porttitor elementum ligula</a></li>
+        <li><a href="#" title="">Vestibulum interdum</a></li>
+        <li><a href="#" title="">Quisque venenatis ante sit amet dolor</a></li>
+        <li><a href="#" title="">Aliquam adipiscing libero vitae leo</a></li>
+        <li><a href="#" title="">Sed accumsan quam ac tellus</a></li>
+      </ul>
+    </div>
+    
+    <div class="widget">
+      <h2>Categories</h2>
+      <ul>
+        <li><a href="http://">Design (99+)</a></li>
+        <li><a href="http://">Web (53)</a></li>
+        <li><a href="http://">Other (12)</a></li>
+        <li><a href="http://">Weird (4)</a></li>
+      </ul>
+    </div>
+    <div class="widget">
+      <h2>Notation</h2>
+      <ul>
+        <li></li>
+      </ul>
+    </div>
+  </aside>
+  
+  
+  
+</div>

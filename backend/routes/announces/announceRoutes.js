@@ -47,6 +47,4 @@ var routes = [{
 },
 ];
 
-module.exports = function() {
-  return routes;
-};
+module.exports = routes;

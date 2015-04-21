@@ -35,16 +35,15 @@ exports = module.exports = function(mongoose) {
         type: Number,
         default: 1,
     },
-    /*
-    1 : disponible (pas de transaction, transaction en attente)
-    2 : En cours (Transaction accepté : en cours)
-    3 : Terminé (Transaction effectué)
-    */
     created: Date,
     updated: [Date],
     creator: {
         type: Schema.ObjectId,
         ref: 'User'
+    },
+    creatorUsername: {
+        type: Schema.ObjectId,
+        ref: 'Username'
     },
     price: {
         type: Number,
@@ -86,21 +85,6 @@ exports = module.exports = function(mongoose) {
       }
       next();
     });
-  });
-
-  announceSchema.pre('save', function(next, req, cb) {
-    console.log('********* pre save images *********');
-    if (!req.body.images) {
-      return next();
-    }
-    var self = this;
-    self.images = [];
-    var images = req.body.images;
-    images.forEach(function(item, index) {
-      console.log('image : ');console.log(item._id);
-      self.images.push(item._id);
-    });
-    next();
   });
 
   announceSchema.pre('save', function(next, req, cb) {
@@ -152,7 +136,7 @@ exports = module.exports = function(mongoose) {
         console.log(id);
         this.findOne({
             _id: id
-        }).populate('creator creatorComment images').exec(cb);
+        }).populate('creator creatorUsername').exec(cb);
       },
 
       findByTitle: function(title, callback) {

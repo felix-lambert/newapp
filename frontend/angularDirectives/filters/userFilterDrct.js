@@ -1,8 +1,6 @@
 angular.module('InTouch')
-  .directive('autoComplete', ['toaster', '$http', '$rootScope',
-    '$localStorage', 'friends',
-    'socket', function(toaster, $http, $rootScope, $localStorage,
-      friends, socket) {
+  .directive('autoComplete', ['toaster', '$http', '$rootScope', 'friends',
+    'socket', function(toaster, $http, $rootScope, friends, socket) {
       return {
         restrict: 'AE',
         scope: {
@@ -24,6 +22,7 @@ angular.module('InTouch')
             }
             $http.get(attrs.url + '?term=' + scope.searchText)
             .success(function(data) {
+              console.log(data);
               if ($rootScope.currentUser) {
                 $rootScope.currentUser = $rootScope.currentUser;
                 scope.currentUser = $rootScope.currentUser;
@@ -89,7 +88,7 @@ angular.module('InTouch')
           };
         }
       };
-  }]);
+    }]);
 
 function arrayIndexOf(myArray, searchTerm) {
   for (var i = 0, len = myArray.length; i < len; i++) {

@@ -10,6 +10,10 @@ var auth       = require('../authentification/auth');
  */
 var routes = [{
     path: '/api/status/:statusId',
+    httpMethod: 'GET',
+    middleware: [StatusCtrl.getStatus]
+}, {
+    path: '/api/status/:statusId',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, StatusCtrl.addStatus]
 }, {
@@ -18,6 +22,4 @@ var routes = [{
     middleware: [auth.ensureAuthenticated, StatusCtrl.removeStatus]
 }];
 
-module.exports = function() {
-  return routes;
-};
+module.exports = routes;

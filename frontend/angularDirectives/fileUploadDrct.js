@@ -9,6 +9,7 @@ angular.module('InTouch')
           },
           isImage: function(file) {
             console.log('ISIMAGE');
+            console.log(file);
             var type = '|' + file.type.slice(file.type.lastIndexOf('/') +
               1) + '|';
             return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;

@@ -1,8 +1,8 @@
 angular.module('InTouch')
-    .factory('Auth', ['$localStorage', '$location', '$rootScope',
-      'Session', 'User', '$http', 'notifications', 'socket',
-        function($localStorage, $location, $rootScope,
-          Session, User, $http, notifications, socket) {
+    .factory('Auth', ['$localStorage', '$rootScope',
+      'Session', 'User', '$http', 'notifications',
+        function($localStorage, $rootScope,
+          Session, User, $http, notifications) {
 
           return {
             login: function(provider, user, callback) {

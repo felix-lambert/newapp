@@ -1,76 +1,105 @@
 angular.module('InTouch')
-.controller('PictureAngCtrl', ['$scope', '$rootScope', '$timeout', '$http', '$localStorage', 'ImageFct',
-	function ($scope, $rootScope, $timeout, $http, $localStorage, ImageFct) {
-		$scope.images = [];
-		$scope.reqError = null;
-		$scope.reqSuccess = null;
-		console.log('--------------UPLOAD PICTURES----------------------');
+    .controller('PictureAngCtrl', ['$modal', '$scope', '$rootScope',
+      'FileUploader', '$http',
+      function($modal, $scope, $rootScope, FileUploader, $http) {
 
-		var userToken = $rootScope.currentUser.token;
-		$http.defaults.headers.common['auth-token'] = userToken;
+        console.log('--------------UPLOAD PICTURES----------------------');
+        $scope.noImages = false;
+        if ($rootScope.currentUser) {
+          $scope.images = $rootScope.currentUser.images;
+          if ($rootScope.currentUser.images && $rootScope.currentUser.images.length === 0) {
+            $scope.noImages = true;
+          } else {
+            $scope.images = $rootScope.currentUser.images;
+          }
+          var userToken = $rootScope.currentUser.token;
+          $http.defaults.headers.common['auth-token'] = userToken;
+        }
 
-		var options = {
-			thumbSize:80,
-			thumbMax:30,
-			url: '/api/upload/img',
-			onUpload: 'filesUploaded',
-			onUploadFail: 'failUpload',
-			onFilesDrop: 'onFilesDrop',
-			onFileRemove: 'onFileRemove',
-			background:"Glissez et déposez ou cliquez",
-			headers : {
-				'auth-token' : userToken,
-			}
-		}
-		$scope.dropfile = {
-			options:options,
-		};
+        var uploader = $scope.uploader = new FileUploader({
+          url: '/upload'
+        });
 
-		$scope.$on('filesUploaded', function (e, data){
-			var files = data.response;
-			for (var i = 0; i < files.length; i++)
-				$scope.images.push(files[i]);
-		});
+        uploader.filters.push({
+          name: 'imageFilter',
+          fn: function(item /*{File|FileLikeObject}*/ , options) {
+            console.log('inside of push files');
+            if (!$rootScope.currentUser) {
+              var modalInstance = $modal.open({
+                templateUrl: 'views/modals/authModal.html',
+                controller: 'AuthModalAngCtrl',
+                size: 'sm'
+              });
+              modalInstance.result.then(function(selectedItem) {
+                $scope.selected = selectedItem;
+              }, function() {
+                console.log('Modal dismissed at: ' + new Date());
+              });
+            } else {
+              var type = '|' + item.type.slice(item.type.lastIndexOf('/') +
+              1) + '|';
+              return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+          }
+        });
 
-		$scope.defineProfile = function(image)
-		{
-			$http({
-				url:"/api/user/profile-image",
-				method:"POST",
-				data:{id:image._id},
-			}).success(function (data){
-				console.log(data.image);
-				$rootScope.currentUser.profileImage = data.image;
-				$localStorage.currentUser = $rootScope.currentUser;
-				console.log($rootScope.currentUser);
-				$scope.reqSuccess = data.message;
-				$timeout(function() {
-					$scope.reqSuccess = null;
-				}, 3000);
-			}).error(function (data){
-				$scope.reqError = data.message;
-				$timeout(function() {
-					$scope.reqError = null;
-				}, 3000);
-			})
-		}
+        /////////////////////////////////////////////////////////////////
+        // CALLBACKS ////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////
+        uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/ , filter, options) {
+          console.info('onWhenAddingFileFailed', item, filter, options);
+        };
 
-		$scope.remove = function(image) {
-			var id = image._id;
-			console.log(image);
-			ImageFct.remove({id:id}, function (data){
-				$scope.images.forEach(function (item, key){
-					if (item._id == id)
-						$scope.images.splice(key, 1);
-				});
-			});
-		};
+        uploader.onAfterAddingFile = function(fileItem) {
+          console.info('onAfterAddingFile', fileItem);
+        };
 
-		$scope.init = function()
-		{
-			ImageFct.query(function (data){
-				$scope.images = data;
-			});
-		};
-		
-	}]);
+        uploader.onAfterAddingAll = function(addedFileItems) {
+          console.info('onAfterAddingAll', addedFileItems);
+        };
+
+        uploader.onBeforeUploadItem = function(item) {
+           console.info('onBeforeUploadItem', item);
+
+        };
+
+        uploader.onProgressItem = function(fileItem, progress) {
+          console.info('onProgressItem', fileItem, progress);
+        };
+
+        uploader.onProgressAll = function(progress) {
+          console.info('onProgressAll', progress);
+        };
+
+        uploader.onSuccessItem = function(fileItem, response, status, headers) {
+          $rootScope.currentUser.images = response.images;
+
+          console.log($rootScope.currentUser);
+          $scope.noImages = false;
+          $scope.images   = $rootScope.currentUser.images;
+          console.log('_____ON SUCCESS_____');
+          console.log(response.images);
+          console.log(response);
+          console.log($rootScope.currentUser);
+          console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+
+        uploader.onErrorItem = function(fileItem, response, status, headers) {
+          console.info('onErrorItem', fileItem, response, status, headers);
+        };
+
+        uploader.onCancelItem = function(fileItem, response, status, headers) {
+          console.info('onCancelItem', fileItem, response, status, headers);
+        };
+
+        uploader.onCompleteItem = function(fileItem, response, status, headers) {
+          console.info('onCompleteItem', fileItem, response, status, headers);
+        };
+
+        uploader.onCompleteAll = function() {
+          console.info('onCompleteAll');
+        };
+
+        console.info('uploader', uploader);
+      }
+]);

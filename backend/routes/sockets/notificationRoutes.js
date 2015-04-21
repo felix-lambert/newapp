@@ -10,6 +10,11 @@ var auth              = require('../../authentification/auth');
  */
 var routes = [
 {
+     path: '/api/notifications/',
+     httpMethod: 'GET',
+     middleware: [auth.ensureAuthenticated, NotificationCtrl.getNotification]
+},
+{
     path: '/api/notifications/',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, NotificationCtrl.saveNotification]
@@ -18,10 +23,8 @@ var routes = [
     path: '/api/notifications/',
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, NotificationCtrl.deleteNotification]
-},
+}
 
 ];
 
-module.exports = function() {
-  return routes;
-};
+module.exports = routes;

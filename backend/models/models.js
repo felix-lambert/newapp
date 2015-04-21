@@ -4,6 +4,7 @@ exports = module.exports = function(mongoose) {
   require('./schemas/userSchemas/NotificationModel')(mongoose);
   require('./schemas/userSchemas/TokenModel')(mongoose);
   require('./schemas/userSchemas/StatusModel')(mongoose);
+  require('./schemas/userSchemas/UsernameModel')(mongoose);
   require('./schemas/userSchemas/UserModel')(mongoose);
   require('./schemas/userSchemas/FriendModel')(mongoose);
   require('./schemas/chatSchemas/MessageModel')(mongoose);

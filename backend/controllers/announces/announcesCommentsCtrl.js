@@ -88,8 +88,7 @@ module.exports = {
           announce: req.params.announceId
         })
         .sort('-date')
-        .populate('author', 'username facebook.username ' +
-          'google.username linkedIn.username')
+        .populate('author')
         .exec(function(err, comments) {
           if (err) {
             res.status(501).json(err);

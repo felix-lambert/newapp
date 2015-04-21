@@ -31,21 +31,6 @@ exports = module.exports = function(mongoose) {
       type: Schema.ObjectId,
       ref: 'Image'
     },
-    facebook: {
-      id: String,
-      email: String,
-      username: String,
-    },
-    google: {
-      id: String,
-      email: String,
-      username: String,
-    },
-    linkedIn: {
-      id: String,
-      email: String,
-      username: String,
-    },
     DATE_CREATE: {
       type: Date,
       default: Date.now
@@ -57,11 +42,7 @@ exports = module.exports = function(mongoose) {
     token: {
       type: Object
     },
-
     salt: String,
-    firstName: String,
-    lastName: String,
-    age: Number,
     guest: Boolean,
     provider: String,
     locked: Boolean,
@@ -176,35 +157,6 @@ exports = module.exports = function(mongoose) {
       'images': this.images
     };
   });
-
-  UserSchema
-   .virtual('FACEBOOK_USER_INFO')
-   .get(function() {
-    console.log('*************FACEBOOK USER INFO*************');
-    return {
-      'username': this.facebook.username || this.username,
-      'email': this.facebook.email || this.email
-    };
-  });
-
-  UserSchema
-   .virtual('GOOGLE_USER_INFO')
-   .get(function() {
-    console.log('*************GOOGLE USER INFO*************');
-    return {
-      'username': this.google.username || this.username,
-      'email': this.google.email || this.email
-    };
-  });
-
-  UserSchema.path('facebook.email').validate(function(email) {
-    console.log('************** facebook.email validator ******************');
-    if (!this.facebook.username) {
-      var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-      return emailRegex.test(email);
-    }
-    console.log('end validate');
-  }, 'The specified email is invalid.');
 
   UserSchema.methods = {
     calculateReputation: function(callback) {

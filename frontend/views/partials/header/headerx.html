@@ -1,44 +1,168 @@
-<div>
-  <div ng-controller="MainHeaderAngCtrl" class="mainHeader">
-    <div class="leftArea area">
-      <div class="logo_"></div>
-    </div>
-    <div class="centerArea" auto-complete url="/search" class="navbar-brand" model="data.tags">
-    </div>
-    <div ng-show="!currentUser" class="rightArea unlogged area">
-      <span class="mgr30">S'INSCRIRE</span>
-      <span ng-click="loginOpen = !loginOpen">SE CONNECTER</span>
-      <div class="loginDropdown" ng-class="{'open' : loginOpen}">
-        <form class="form" name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
-          <div>
-            <input type="email" class="" placeholder="Email" name="email" ng-model="user.emailLog" required mongoose-error/>
-          </div>
-          <div>
-            <input class="" placeholder="Mot de passe" type="password" name="password" ng-model="user.passwordLog" ng-minlength="4" required mongoose-error/>
-          </div>
-          <span class="bl" ng-show="errorAuth">{{errorAuth}}</span>
-          <button class="btn_" type="submit">Se Connecter</button>
-          <!--<a href="/forgot">Mot de passe oublié ?</a>-->
-          <div class="networkConnection">
-            <a class="btn_" href="" , data-ng-click="loginOauth('facebook')">Facebook</a>
-            <a class="btn_" href="" , data-ng-click="loginOauth('linkedin')">LinkedIn</a>
-            <a class="btn_" href="" , data-ng-click="loginOauth('google')">Google+</a>
-          </div>
-        </form>
-      </div>
-    </div>
-    <div ng-show="currentUser" class="rightArea logged">
-      <span>
-      <a class="mg_auto" ng-click="logout()">Déconnexion</a>
-
+<div ng-controller="MainHeaderAngCtrl" class="mainHeader">
+  <div class="container">
+    
+    <header id="navtop">
+      <nav class="fleft">
+        <div class="centerArea" auto-complete url="/search" class="navbar-brand" model="data.tags">
+        </div>
+      </nav>
+      <nav class="fright">
+        <ul ng-show="!currentUser">
+          <li><a ng-click="open('lg')" href="#">A propos</a></li>
+          <li><a ng-click="switch('home')">Accueil</a></li>
+        </ul>
+        <ul ng-show="!currentUser">
+          <li><a ng-click="switch('register')">S'inscrire</a></li>
+          <li><a ng-click="switch('login')">Se connecter</a></li>
+        </ul>
+        <ul ng-show="currentUser">
+          <li><div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+      <span class="badge">
+        {{currentUser.i}}
       </span>
-    </div>
+      Messages
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li ng-repeat="message in currentUser.messages" role="presentation">
+          {{message.userRec}}
+          <!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
+        </li>
+      </ul>
+    </div></li>
+        </ul>
+        <ul ng-show="currentUser">
+          <li><div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+      <span class="badge">
+        {{currentUser.i}}
+      </span>
+      Notifications
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li ng-repeat="notification in currentUser.notifications" role="presentation">
+          Requête d'amitié : {{notification.userRec}} <button type="button" class="btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
+          <!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
+        </li>
+      </ul>
+    </div></li>
+        </ul>
+        <ul ng-show="currentUser">
+          <li><a ng-click="logout()">Déconnexion</a></li>
+        </ul>
+      </nav>
+    </header>
   </div>
-  <nav ng-controller="NavbarAngCtrl" ng-init="init()" role="navigation" class="bodyHeader">
+  <hr>
+  <aside class="grid col-one-quarter mq2-col-full">
+    <!-- <p class="warning mbottom">Le site qui crypte vos données</p> -->
+    <menu>
+    <ul>
+      <li><a href="/actuality" class="arrow">Actualités</a></li>
+      <li><a href="/announces" class="arrow">Echanges</a></li>
+      <li><a href="/profile" class="arrow">Profile</a></li>
+      <li><a href="/messages" class="arrow">Messages</a></li>
+      <li><a href="/pictures" class="arrow">Images</a></li>
+      <li><a href="/transaction" class="arrow">Transactions</a></li>
+      <li><a href="/settings" class="arrow">Paramètres</a></li>
+    </ul>
+    </menu>
+  </aside>
+  <div class="contact-page main grid-wrap">
+    <section ng-if="page === 'login' && !currentUser" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
+      {{test}}
+      <h2>Connectez-vous</h2>
+      <form id="contact_form" class="contact_form" name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
+        <ul>
+          <li>
+            <input type="email" class="" placeholder="Email" name="email" ng-model="user.emailLog" required mongoose-error/>
+          </li>
+          <li>
+            <input class="" placeholder="Mot de passe" type="password" name="password" ng-model="user.passwordLog" ng-minlength="4" required mongoose-error/>
+          </li>
+          <li>
+            <span class="bl" ng-show="errorAuth">{{errorAuth}}</span>
+          </li>
+          <li>
+            <button id="submit" name="submit" type="submit">Se Connecter</button>
+          </li>
+        </ul>
+      </form>
+    </section>
+    <section ng-if="page === 'register' && !currentUser" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
+      <h2>Inscrivez-vous</h2>
+      <p ng-if="page === 'register' && !currentUser" class="warning mbottom">Vos informations resteront strictements confidentielles</p>
+      <form name="form" id="contact_form" class="contact_form" novalidate ng-submit="register(form)">
+        <header id="navtop">
+          <nav class="fleft">
+            <ul>
+              <li>
+                <input type="text" name="usernameReg" minlength="4" maxlength="30" ng-model="user.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
+                <p class="form-help" ng-show="form.usernameReg.$error.unique && form.usernameReg">
+                  That username is already taken.
+                </p>
+                <div ng-if="form.$submitted || form.usernameReg.$dirty" ng-messages="form.usernameReg.$error" class="errors">
+                  <div class="text-danger" ng-message="required">Vous n'avez pas entré votre pseudo</div>
+                  <div class="text-danger" ng-message="minlength">Votre pseudo doit comporter plus de 4 caractères</div>
+                  <div class="text-danger" ng-message="maxlength">Votre pseudo est trop long</div>
+                  <div class="text-danger" ng-message="pattern">Votre pseudo ne doit pas avoir des caractères alphanumériques</div>
+                  <div class="text-danger" ng-message="usernameAvailable">Ce pseudo a déjà été pris</div>
+                </div>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <input type="email" class="form-input" name="emailReg" ng-model="user.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
+                <p class="text-danger">
+                  {{ error.registeredMail }}
+                </p>
+                <div ng-if="form.$submitted || form.emailReg.$touched" ng-messages="form.emailReg.$error" class="errors">
+                  <div class="text-danger" ng-message="required">Vous n'avez pas entré votre email</div>
+                  <div class="text-danger" ng-message="email">Votre adresse mail n'est pas valide</div>
+                  <div class="text-danger" ng-message="emailAvailable">Cet email a déjà été enregistré</div>
+                </div>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <input type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="user.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
+                <div ng-if="form.$submitted || form.passwordReg.$touched" ng-messages="form.passwordReg.$error" class="errors">
+                  <div class="text-danger" ng-message="required">Vous n'avez pas entré votre mot de passe</div>
+                  <div class="text-danger" ng-message="minlength">Votre mot de passe est trop court</div>
+                  <div class="text-danger" ng-message="maxlength">Votre mot de passe est trop long</div>
+                  <div class="text-danger" ng-message="pattern">Votre mot de passe doit avoir des caractères alphanumériques</div>
+                </div>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <input type="password" class="input" name="passwordRegRepeat" required ng-model="user.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="user.password" autocomplete="off" />
+                <div ng-if="form.$submitted || form.passwordRegRepeat.$touched || form.passwordReg.$touched" ng-messages="form.passwordRegRepeat.$error" class="errors">
+                  <div class="text-danger" ng-message="required">Vous devez entrer un mot de passe de confirmation</div>
+                  <div class="text-danger" ng-message="compareTo">Les mots de passe sont différents</div>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <button id="submit" name="submit" type="submit" ng-disabled="form.$invalid">Valider</button>
+        </header>
+      </form>
+    </section>
+  </div>
+  <!--   <nav ng-controller="NavbarAngCtrl" ng-init="init()" role="navigation" class="bodyHeader">
     <li class="tab" ng-repeat="item in navMenu" ng-show="item.show == 1 || item.show == 2" ng-click="changeIx($index)" ng-class="{activated: ix==$index}">
       <a ng-show="item.path" href="{{item.path}}" class="icon {{item.classIcon}}">{{item.title}}<span class="badge" ng-show="item.title === 'Message'">{{currentUser.i}}</span></a>
     </li>
   </nav>
-
-
+  -->
+  <div ng-if="page === 'register' && !currentUser || page === 'login' && !currentUser">
+    <aside class="grid col-one-quarter mq2-col-full">
+      <menu>
+      <ul>
+      </ul>
+      </menu>
+    </aside>
+  </div>
 </div>

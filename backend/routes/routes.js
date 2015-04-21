@@ -43,29 +43,31 @@ var indexRoutes = [
 module.exports = function(app) {
   console.log('**********************routes******************');
 
-  var announceRoutes          = require('./announces/announceRoutes')();
-  var adminRoutes             = require('./sessions/adminRoutes')();
-  var messageRoutes           = require('./sockets/messageRoutes')();
-  var userRoutes              = require('./sessions/userRoutes')();
-  var sessionRoutes           = require('./sessions/sessionRoutes')();
-  var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes')();
-  var transactionRoutes       = require('./transactionRoutes')();
-  var notificationRoutes      = require('./sockets/notificationRoutes')();
-  var statusRoutes            = require('./statusRoutes')();
+  var announceRoutes          = require('./announces/announceRoutes');
+  var messageRoutes           = require('./sockets/messageRoutes');
+  var userRoutes              = require('./users/userRoutes');
+  var usernameRoutes          = require('./users/usernameRoutes');
+  var sessionRoutes           = require('./sessions/sessionRoutes');
+  var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes');
+  var transactionRoutes       = require('./transactionRoutes');
+  var notificationRoutes      = require('./sockets/notificationRoutes');
+  var statusRoutes            = require('./statusRoutes');
+  var friendsRoutes           = require('./sockets/friendsRoutes');
 
-  var routes = announceRoutes.concat(adminRoutes)
-  .concat(messageRoutes)
+  var routes = announceRoutes
+  .concat(friendsRoutes)
   .concat(userRoutes)
+  .concat(usernameRoutes)
+  .concat(notificationRoutes)
+  .concat(statusRoutes)
+  .concat(messageRoutes)
   .concat(sessionRoutes)
   .concat(announcesCommentsRoutes)
   .concat(transactionRoutes)
-  .concat(indexRoutes)
-  .concat(notificationRoutes)
-  .concat(statusRoutes);
+  .concat(indexRoutes);
 
-  app.param('announceId', AnnouncesCtrl.getAnnounce, AnnouncesCtrl.show);
-  app.param('friendId', FriendsCtrl.getAllFriends);
-  app.param('messageId', MessagesCtrl.all);
+  // app.param('announceId', AnnouncesCtrl.getAnnounce, AnnouncesCtrl.show);
+  // app.param('messageId', MessagesCtrl.all);
 
   _.each(routes, function(route) {
     var args = _.flatten([route.path, route.middleware]);

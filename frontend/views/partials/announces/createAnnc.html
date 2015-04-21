@@ -1,104 +1,123 @@
 <div header></div>
-<div class="ctx_">
-  <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
-  <div class="container_ createService">
-    <section class="newService">
-      <form ng-submit="create()">
-        <h2>Publiez votre service</h2>
-        <div class="form-group">
-          <label class="control-label" for="title">Demande</label>
-          <select name="demande" ng-model="type" class="form-input">
-            <option>Offre</option>
-            <option>Recherche</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="price">Prix</label>
-          <input type="number" ng-model="price" class="form-input mwf" placeholder="Prix" required/>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="title">Intitulé du service</label>
-          <div class="controls">
-            <input type="text" ng-model="title" class="form-input mwf" id="title" placeholder="Intitulé du service" required="" class="form-input">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="images">Ajouter des images</label>
-          <div class="images-list">
-            <div class="image-box image-box-bg" style="background-image: url({{image.small}});" ng-repeat="image in selectedImages">
-            </div>
-          </div>
-          <button ng-click="AddImages()" type="button" class="btn btn-default">Ajouter</button>
-        </div>
-        <div class="form-group">
-          <label>Catégorie</label>
-          <select ng-init="getCategories()" ng-model="category" class="form-input">
-            <option></option>
-            <option ng-repeat="category in categories" value="{{category._id}}">{{category.title}}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="content">Description</label>
-          <div class="controls">
-            <textarea id="title" ng-model="content" class="form-input" id="content" rows="10" placeholder="Content"></textarea>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="controls">
-            <button type="submit" class="btn_1">Enregistrer</button>
-          </div>
-        </div>
+<div class="home-page main" ng-init="initListAnnounce()">
+  <section class="grid-wrap" >
+    <div class="grid col-one-half mq2-col-full">
+      <p class="warning">Publiez votre service</p>
+      <form id="contact_form" class="contact_form" name="form" ng-submit="create()" autocomplete="off" novalidate>
+        <header id="navtop">
+          <nav class="fleft">
+            <ul>
+              <li>
+                <label class="control-label" for="title">Demande</label>
+                <select name="demande" ng-model="type">
+                  <option>Offre</option>
+                  <option>Recherche</option>
+                </select>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <label class="control-label" for="title">Catégories</label>
+                <select ng-init="getCategories()" ng-model="category">
+                  <option></option>
+                  <option></option>
+                </select>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <input type="text" ng-model="title" class="form-input mwf" id="title" placeholder="Intitulé du service" required="" class="form-input">
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <label for="price">Nombre d'heures</label>
+                <input type="number" ng-model="price" placeholder="Nombre d'heures" required/>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <textarea id="title" ng-model="content" id="content" rows="1" placeholder="Description"></textarea>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <button type="submit">Valider</button>
+              </li>
+            </ul>
+          </nav>
+        </header>
       </form>
-    </section>
+    </div>
+    
+    
+    <div class="grid col-one-half mq2-col-full">
+      <p class="warning">Liste de vos services</p>
+              <header id="navtop">
+          <nav class="fright my-controller">
+          <ul >
+              <li>
+                <input type="text" ng-model="searchString" placeholder="Rechercher" />
+              </li>
+                            <li>
+                <input type="number" min="1" max="100" ng-model="pageSize">
+              </li>
 
-    <section ng-init="findFromUser(currentUser._id)" class="size_1">
-      <h2>Liste de vos services</h2>
-      <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
-      <div class="my-controller">
-        <div class="row">
-          <div class="col-xs-3">
-            <h3>Page: {{ currentPage }}</h3>
-          </div>
-          <div class="col-xs-3">
-            <label for="search">Services per page:</label>
-            <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
-          </div>
-        </div>
-        <br>
-        
-        <table class="table">
-          <tr>
-            <th class="xsmall_hidden">Demande</th>
-            <th>Service</th>
-            <th>Actions</th>
-          </tr>
-          <tr dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
-            {{announce}}
-            <td ng-if="currentUser._id == announce.creator._id" class="xsmall_hide">
-              {{announce.type}}
-            </td>
-            <td ng-if="currentUser._id == announce.creator._id">
-              {{announce.title}}
-            </td>
-            <td ng-if="currentUser._id == announce.creator._id">
-              <div class="btn-group">
-                <a class="btn btn-default" href="/announces/{{announce._id}}">Voir</a>
-              </div>
-              <div class="btn-group">
-                <a class="btn btn-warning" ng-click="desactivate(announce._id)">Désactiver</a>
-              </div>
-              <div class="btn-group">
-                <a class="btn btn-danger" ng-click="remove(announce)">Supprimer</a>
-              </div>
-            </td>
-          </tr>
-        </table>
-        <div ng-controller="PaginationController" class="other-controller">
-          <div class="text-center">
-            <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
-          </div>
+          </ul>
+          <ul >
+            <li>
+                <p>Page: {{ currentPage }}</p>
+              </li>
+
+          </ul>
+          <ul >
+
+          </ul>
+          </nav>
+        </header>
+      
+      <table class="table">
+        <tr>
+          <th class="xsmall_hidden">Demande</th>
+          <th>Service</th>
+          <th>Actions</th>
+        </tr>
+        <tr dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
+          {{announce}}
+          <td ng-if="currentUser._id == announce.creator._id" class="xsmall_hide">
+            {{announce.type}}
+          </td>
+          <td ng-if="currentUser._id == announce.creator._id">
+            {{announce.title}}
+          </td>
+          <td ng-if="currentUser._id == announce.creator._id">
+            <div class="btn-group">
+              <a class="btn btn-default" href="/announces/{{announce._id}}">Voir</a>
+            </div>
+            <div class="btn-group">
+              <a class="btn btn-warning" ng-click="desactivate(announce._id)">Désactiver</a>
+            </div>
+            <div class="btn-group">
+              <a class="btn btn-danger" ng-click="remove(announce)">Supprimer</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div ng-controller="PaginationController" class="other-controller">
+        <div class="text-center">
+          <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+</div>
+<toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
+<div class="blog-page main grid-wrap">
+  <section  class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
+    
+  </section>
+  <aside ng-init="findFromUser(currentUser._id)" class="grid col-one-quarter mq2-col-one-second mq3-col-full blog-sidebar">
+    <div class="widget">
+    </div>
+  </aside>
 </div>

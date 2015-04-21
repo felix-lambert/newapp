@@ -1,6 +1,6 @@
 angular.module('InTouch')
-  .controller('ProfileAngCtrl', ['$scope', '$http', '$rootScope',
-    'Profile', 'Status', function($scope, $http, $rootScope, Profile, Status) {
+  .controller('ProfileAngCtrl', ['$scope', '$rootScope', 'Status',
+    function($scope, $rootScope, Status) {
 
       $scope.status = [];
 

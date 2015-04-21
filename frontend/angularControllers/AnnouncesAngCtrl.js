@@ -15,7 +15,6 @@ angular.module('InTouch')
     var allAnnounces = [];
 
     var filter = $scope.filter = {
-      category: [],
       rating: null
     };
 
@@ -26,18 +25,11 @@ angular.module('InTouch')
       console.log('meals page changed to ' + num);
     };
 
-    $scope.categories = [];
-
     function filterAndSortAnnounces() {
       console.log('_________filterAndSortannounces_______');
       $scope.announces = [];
-      console.log('filter category : [' + filter.category + ']');
       angular.forEach(allAnnounces, function(item, key) {
         if (filter.rating && filter.rating !== item.rating) {
-          return;
-        }
-        if (filter.category.length && item.category &&
-          filter.category.indexOf(item.category.title) === -1) {
           return;
         }
         $scope.announces.push(item);
@@ -155,13 +147,15 @@ angular.module('InTouch')
     };
 
     $scope.postComment = function() {
+
       comments.postComment({
-        content: this.AnnounceComment,
+        content: $scope.AnnounceComment,
         rating: this.rating,
       }, $routeParams.announceId).then(function(res) {
         if (res.newRating !== null) {
           $scope.announceRating = res.newRating;
         }
+        $scope.AnnounceComment = '';
         $scope.getComments();
       });
     };

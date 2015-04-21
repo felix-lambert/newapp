@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         src: [
               'backend/authentification/passport/passportSocial.js',
               'backend/authentification/auth.js',
-              'backend/authentification/strategy.js',
+              'backend/authentification/passportStrategy.js',
               'backent/socket.io/*',
               'backend/config/config.js',
               'backend/controllers/filesCtrl.js',

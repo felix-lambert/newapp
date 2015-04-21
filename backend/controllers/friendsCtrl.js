@@ -197,6 +197,8 @@ module.exports = {
                 });
               }
             }
+            console.log('///////////////////////////');
+            console.log(sendFriends);
             res.status(200).json(sendFriends);
           }
         });

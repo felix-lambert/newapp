@@ -1,9 +1,9 @@
 angular.module('InTouch')
-  .controller('MessageAngCtrl', ['$http', 'rooms', 'friends',
-    '$modal', '$log', '$scope', 'User', 'messages', '$rootScope',
-    'socket', 'useragent', 'geolocation',
-    function($http, rooms, friends, $modal, $log, $scope, User, messages,
-      $rootScope, socket, useragent, geolocation) {
+  .controller('MessageAngCtrl', ['rooms', 'friends',
+    '$modal', '$scope', 'User', 'messages', '$rootScope',
+    'socket',
+    function(rooms, friends, $modal, $scope, User, messages,
+      $rootScope, socket) {
 
       $scope.peopleCount  = 0;
       $scope.joined       = false;
@@ -17,6 +17,11 @@ angular.module('InTouch')
       $scope.typingPeople = [];
       var typing          = false;
       var timeout         = undefined;
+
+      rooms.getRooms().then(function(response) {
+        console.log(response);
+        $scope.rooms = response[0];
+      });
 
       function timeoutFunction() {
         typing = false;
@@ -121,24 +126,6 @@ angular.module('InTouch')
         $rootScope.users = data;
       });
 
-      // socket.on('joinedSuccessfully', function() {
-      //   var payload = {
-      //     countrycode: '',
-      //     device: ''
-      //   };
-      //   geolocation.getLocation().then(function(position) {
-      //     return geolocation.getCountryCode(position);
-      //   }).then(function(countryCode) {
-      //     payload.countrycode = countryCode;
-      //     return useragent.getUserAgent();
-      //   }).then(function(ua) {
-      //     return useragent.getIcon(ua);
-      //   }).then(function(device) {
-      //     payload.device = device;
-      //     socket.emit('userDetails', payload);
-      //   });
-      // });
-
       socket.on('updatePeopleCount', function(data) {
         $scope.peopleCount = data.count;
       });
@@ -156,6 +143,109 @@ angular.module('InTouch')
       $scope.pageSize    = 10;
       $scope.currentPage = 1;
       $scope.user        = '';
+
+      $scope.createRoom = function() {
+        var roomExists = false;
+        var room = this.roomname;
+        if (typeof room === 'undefined' ||
+          (typeof room === 'string' &&
+            room.length === 0)) {
+          $scope.error.create = 'Please enter a room name';
+        } else {
+          rooms.postRoom({
+          name: this.roomname
+        }).then(function(response) {
+          console.log('get messages from room');
+          console.log(response.roomId);
+          $scope.room = response.roomName;
+          $scope.roomId = response.roomId;
+          console.log('___________________ROOMS_____________________');
+          console.log($scope.room);
+          console.log('___________________ROOM ID___________________');
+          console.log($scope.roomId);
+        });
+          socket.emit('checkUniqueRoomName', room, function(data) {
+            roomExists = data.result;
+            if (roomExists) {
+              $scope.error.create = 'Room ' + room + ' already exists.';
+            } else {
+              socket.emit('createRoom', room);
+              $scope.error.create = '';
+              if (!$scope.user.inroom) {
+                $scope.messages = [];
+                $scope.roomname = '';
+              }
+            }
+          });
+        }
+      };
+
+      $scope.joinRoom = function(room) {
+        $scope.messages = [];
+        $scope.error.create = '';
+        $scope.message = '';
+        socket.emit('joinRoom', room.id);
+      };
+
+      $scope.leaveRoom = function(room) {
+        $scope.message = '';
+        socket.emit('leaveRoom', room.id);
+      };
+
+      $scope.deleteRoom = function(room) {
+        $scope.message = '';
+        socket.emit('deleteRoom', room.id);
+      };
+
+      $scope.disconnect = function() {
+
+        socket.on('disconnect', function() {
+          $scope.status = 'offline';
+          $scope.users = 0;
+          $scope.peopleCount = 0;
+        });
+      };
+
+      socket.on('sendUserDetail', function(data) {
+        $scope.user = data;
+      });
+
+      socket.on('listAvailableChatRooms', function(data) {
+        $scope.rooms.length = 0;
+        angular.forEach(data, function(room, key) {
+          $scope.rooms.push({name: room.name, id: room.id});
+        });
+      });
+
+      socket.on('sendChatMessage', function(message) {
+        $scope.messages.push(message);
+      });
+
+      socket.on('sendChatMessageHistory', function(data) {
+        angular.forEach(data, function(messages, key) {
+          $scope.messages.push(messages);
+        });
+      });
+
+      socket.on('connectingToSocketServer', function(data) {
+        $scope.status = data.status;
+      });
+
+      socket.on('usernameExists', function(data) {
+        $scope.error.join = data.data;
+      });
+
+      socket.on('updateUserDetail', function(data) {
+        $scope.users = data;
+      });
+
+      socket.on('updatePeopleCount', function(data) {
+        $scope.peopleCount = data.count;
+      });
+
+      socket.on('updateRoomsCount', function(data) {
+        $scope.roomCount = data.count;
+      });
 
       $scope.pageChangeHandler = function(num) {
         console.log('meals page changed to ' + num);
@@ -204,13 +294,11 @@ angular.module('InTouch')
       socket.on('sendChatMessage', function(message) {
         console.log('_______________ send _____________________');
         console.log(message);
-        
         messages.getMessagesFromRoom(message.roomId).then(function(response) {
           if (response && response.length > 0) {
             $scope.messages.push(message);
           }
         });
-        //$scope.messages.push(message);
       });
 
       socket.on('updatePeopleCount', function(data) {
@@ -222,213 +310,5 @@ angular.module('InTouch')
           $scope.rooms.push({name: room.name, id: room.id});
         });
       });
-                  // console.log('**************MessageCtrl***********************');
-
-                  // var typing = false;
-                  // var timeout = undefined;
-
-                  // $scope.error = {};
-                  // $scope.peopleCount = 0;
-                  // $scope.typingPeople = [];
-                  // $scope.user = {}; //holds information about the current user
-                  // $scope.saveChat = localStorage.getItem('chat');
-                  // $scope.saveUsers = localStorage.getItem('rooms');
-                  // $scope.rooms = (localStorage.getItem('rooms') !== null) ? JSON.parse($scope.saveUsers) : [];
-                  // $scope.chat = (localStorage.getItem('chat') !== null) ? JSON.parse($scope.saveChat) : [];
-
-                  // $scope.open = function (size, room) {
-                  //     $scope.messages = [];
-                  //     $scope.error.create = '';
-                  //     $scope.message = '';
-                  //     socket.emit('joinRoom', room);
-                  //     var modalInstance = $modal.open({
-                  //         templateUrl: 'views/modals/userChatModal.html',
-                  //         controller: 'ModalInstanceAngCtrl',
-                  //         size: size,
-                  //         resolve: {
-                  //             username: function () {
-                  //                 return $scope.username;
-                  //             }
-                  //         }
-                  //     });
-
-                  //     modalInstance.result.then(function (selectedItem) {
-                  //         $scope.selected = selectedItem;
-                  //     }, function () {
-                  //         $log.info('Modal dismissed at: ' + new Date());
-                  //     });
-                  // };
-
-                  // $scope.addChat = function () {
-                  //     console.log($scope.username);
-                  //     socket.emit('send', {
-                  //         message: $scope.chatText,
-                  //         username: $scope.username
-                  //     });
-                  // };
-                  // $scope.remaining = function () {
-                  //     var count = 0;
-                  //     angular.forEach($scope.chat, function (chat) {
-                  //         count += chat.done ? 0 : 1;
-                  //     });
-                  //     return count;
-                  // };
-
-                  // $scope.archive = function () {
-                  //     console.log('archive');
-                  //     $scope.chat = [];
-                  //     localStorage.removeItem('chat');
-                  // };
-
-                  // if ($rootScope.currentUser) {
-                  //     var username = $rootScope.currentUser.username;
-                  //     socket.emit('joinSocketServer', {
-                  //         name: username
-                  //     });
-                  //     $scope.username = username;
-                  //     var roomExists = false;
-                  //     var room = username;
-                  //     socket.emit('checkUniqueRoomName', room, function (data) {
-                  //         roomExists = data.result;
-                  //         socket.emit('createRoom', room);
-                  //         $scope.error.create = '';
-                  //         if (!$scope.user.inroom) {
-                  //             $scope.messages = [];
-                  //             $scope.roomname = '';
-                  //         }
-                  //         console.log('JOIN SCOPE');
-                  //     });
-                  // }
-
-                  // $scope.findOne = function () {
-                  //     messages.get({
-                  //         messageId: $routeParams.messageId
-                  //     }, function (thread) {
-                  //         $scope.message = message;
-                  //     });
-                  // };
-
-                  // console.log($rootScope.currentUser);
-
-                  // $scope.setUsername = function (suggestedUsername) {
-                  //     console.log(suggestedUsername);
-                  //     $scope.username = suggestedUsername;
-                  // }
-
-                  // function timeoutFunction() {
-                  //     typing = false;
-                  //     socket.emit('typing', false);
-                  // }
-
-                  // $scope.focus = function (bool) {
-                  //     $scope.focussed = bool;
-                  // }
-
-                  // $scope.typing = function (event, room) {
-                  //     if (event.which !== 13) {
-                  //         if (typing === false && $scope.focussed && room !== null) {
-                  //             typing = true;
-                  //             socket.emit('typing', true);
-                  //         } else {
-                  //             clearTimeout(timeout);
-                  //             timeout = setTimeout(timeoutFunction, 1000);
-                  //         }
-                  //     }
-                  // }
-
-                  // socket.on('isTyping', function (data) {
-                  //     if (data.isTyping) {
-                  //         $scope.isTyping = data.isTyping;
-                  //         $scope.typingPeople.push(data.person);
-                  //     } else {
-                  //         $scope.isTyping = data.isTyping;
-                  //         var index = $scope.typingPeople.indexOf(data.person);
-                  //         $scope.typingPeople.splice(index, 1);
-                  //         $scope.typingMessage = '';
-                  //     }
-                  // });
-
-                  // $scope.send = function () {
-                  //     console.log('----------------------send--------------------------');
-                  //     if (typeof this.message === 'undefined' || (typeof this.message === 'string' && this.message.length === 0)) {
-                  //         $scope.error.send = 'Please enter a message';
-                  //     } else {
-                  //         console.log('*************create message*****************');
-                  //         console.log(this.message);
-                  //         var message = new messages({
-                  //             content: this.message,
-                  //             type: this.type,
-                  //         });
-                  //         console.log('save message');
-                  //         message.$save(function (response) {
-                  //             console.log('inside saved message')
-                  //             console.log(response);
-                  //             console.log('save message');
-                  //             this.content = '';
-                  //         });
-                  //         var message = this.message;
-                  //         $localStorage.message = message;
-                  //         socket.emit('send', {
-                  //             message: this.message,
-                  //             name: this.username
-                  //         });
-                  //         $scope.message = $localStorage.message;
-                  //     }
-                  // }
-
-                  // socket.on('sendUserDetail', function (data) {
-                  //     console.log(data);
-                  //     $scope.user = data;
-                  // });
-
-                  // socket.on('sendChatMessage', function (message) {
-                  //     console.log(message);
-                  //     $scope.chat.push(message);
-                  //     $scope.chatText = ''; //clear the input after adding
-                  //     localStorage.setItem('chat', JSON.stringify($scope.chat));
-                  // });
-
-                  // socket.on('sendChatMessageHistory', function (data) {
-                  //     angular.forEach(data, function (messages, key) {
-                  //         $scope.messages.push(messages);
-                  //     });
-                  // });
-
-                  // socket.on('connectingToSocketServer', function (data) {
-                  //     console.log(data);
-                  //     $scope.status = data.status;
-                  // });
-
-                  // socket.on('usernameExists', function (data) {
-                  //     $scope.error.join = data.data;
-                  // });
-
-                  // socket.on('updateUserDetail', function (data) {
-                  //     console.log(data);
-                  //     $scope.users = data;
-                  // });
-
-                  // socket.on('updatePeopleCount', function (data) {
-                  //     console.log('-----------update people count----------------');
-                  //     $scope.peopleCount = data.count;
-                  // });
-
-                  // socket.on('joinedSuccessfully', function () {
-                  //     var payload = {
-                  //         countrycode: '',
-                  //         device: ''
-                  //     };
-                  //     geolocation.getLocation().then(function (position) {
-                  //         return geolocation.getCountryCode(position);
-                  //     }).then(function (countryCode) {
-                  //         payload.countrycode = countryCode;
-                  //         return useragent.getUserAgent();
-                  //     }).then(function (ua) {
-                  //         return useragent.getIcon(ua);
-                  //     }).then(function (device) {
-                  //         payload.device = device;
-                  //         socket.emit('userDetails', payload);
-                  //     });
-                  // });
     }
 ]);

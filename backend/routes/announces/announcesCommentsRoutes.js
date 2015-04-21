@@ -22,6 +22,4 @@ var routes = [{
     middleware: [AnnouncesCommentsCtrl.getComments]
 }];
 
-module.exports = function() {
-  return routes;
-};
+module.exports = routes;

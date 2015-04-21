@@ -7,6 +7,22 @@ var Notification = mongoose.model('Notification');
 module.exports = {
 
   /////////////////////////////////////////////////////////////////
+  // GET NOTIFICATION /////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  getNotification: function(req, res, next) {
+    console.log('___________get Notification________________________');
+    Notification.findUserNotifications({
+      creator: req.user
+    }, function(err, notifications) {
+      if (err) {
+        return res.status(501).json(err);
+      } else {
+        res.status(200).json(notifications);
+      }
+    });
+  },
+
+  /////////////////////////////////////////////////////////////////
   // DELETE NOTIFICATION //////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   deleteNotification: function(req, res) {
@@ -15,8 +31,9 @@ module.exports = {
     .exec(function(err) {
       if (err) {
         return res.status(501).json(err);
+      } else {
+        res.status(200).json('remove notif');
       }
-      res.status(200).json('remove notif');
     });
   },
 

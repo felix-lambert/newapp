@@ -4,10 +4,10 @@ function Room(name, id, owner) {
   this.owner  = owner;
   this.people = [];
   this.status = 'available';
-};
+}
 
 Room.prototype.addPerson = function(personID) {
-  if (this.status === "available") {
+  if (this.status === 'available') {
     this.people.push(personID);
   }
 };

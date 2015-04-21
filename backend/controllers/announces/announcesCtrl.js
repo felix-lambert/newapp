@@ -14,38 +14,36 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   // GET ANNOUNCE BY ID ///////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
-  getAnnounce: function(req, res, next, id) {
+  getAnnounce: function(req, res, next) {
     console.log('***************load announce*********************');
-    Announce.load(id, function(err, announce) {
+    Announce.load(req.params.announceId, function(err, announce) {
       if (err) {
         return next(err);
       }
       if (!announce) {
-        return next(new Error('Failed to load announce ' + id));
+        return next(new Error('Failed to load announce '));
       }
-      var announcePost = {
-          _id: announce._id,
-          created: announce.created,
-          creator: {
-              _id: announce.creator._id,
-              username: announce.creator.username,
-              usernameFacebook: announce.creator.facebook.username,
-              usernameGoogle: announce.creator.google.username,
-              usernameLinkedIn: announce.creator.linkedIn.username,
-              profileImage: announce.creator.profileImage
-          },
-          title: announce.title,
-          category: announce.category,
-          type: announce.type,
-          slug: announce.slug,
-          __v: announce.__v,
-          updated: announce.updated,
-          content: announce.content,
-          rating: announce.rating,
-          status: announce.status,
-          price: announce.price,
-          images:announce.images
-      };
+      console.log(announce);
+      // var announcePost = {
+      //     _id: announce._id,
+      //     created: announce.created,
+      //     creator: {
+      //         _id: announce.creator._id,
+      //         username: announce.creator.username,
+      //         profileImage: announce.creator.profileImage
+      //     },
+      //     title: announce.title,
+      //     category: announce.category,
+      //     type: announce.type,
+      //     slug: announce.slug,
+      //     __v: announce.__v,
+      //     updated: announce.updated,
+      //     content: announce.content,
+      //     rating: announce.rating,
+      //     status: announce.status,
+      //     price: announce.price,
+      //     images:announce.images
+      // };
       req.announce = announcePost;
       next();
     });
@@ -56,6 +54,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   postAnnounce: function(req, res) {
     console.log('_____________POST /api/announces_____');
+    console.log(req.user);
     var announce = new Announce({
         title: req.body.title,
         content: req.body.content,
@@ -64,13 +63,6 @@ module.exports = {
         category: req.body.category,
         creator : req.user._id,
     });
-    var images = req.body.images;
-    if (images) {
-      for (var i = 0; l = images.length, i < l; i++) {
-        announce.images.push(images[i]._id);
-      }
-    }
-
     announce.save(req, function(err, saveItem) {
       if (err) {
         res.status(400).json(err);
@@ -146,9 +138,7 @@ module.exports = {
             creator: req.params.userId
         })
         .sort('-created')
-        .populate('creator creatorComments',
-          'username facebook.username google.username ' +
-          'linkedIn.username profileImage')
+        .populate('creator creatorComments')
         .exec(function(err, announces) {
           if (err) {
             return res.status(501).json(err);
@@ -213,8 +203,7 @@ module.exports = {
       checkSort() === true) {
       Announce.find({}, {}, {skip: ((page - 1) * perPage),
         limit: perPage, sort: {created: sort}})
-      .populate('creator creatorComments', 'username facebook.username ' +
-        'google.username linkedIn.username profileImage')
+      .populate('creator creatorComments', 'profileImage')
       .populate('category', 'title')
       .exec(function(err, annonces) {
         if (err) {
@@ -236,8 +225,7 @@ module.exports = {
     console.log('************** Get All Announces **********');
     Announce.find()
       .sort('-created')
-      .populate('creator creatorComments', 'username facebook.username ' +
-        'google.username linkedIn.username profileImage')
+      .populate('creator creatorComments')
       .populate('category', 'title')
       .exec(function(err, announces) {
         if (err) {

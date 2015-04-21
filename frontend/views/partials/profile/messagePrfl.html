@@ -1,138 +1,130 @@
 <div header></div>
-<div class="ctx_">
-  <div class="container_">
+<div class="home-page main">
+  <section class="grid-wrap">
     <h1>Messages</h1>
-    <h2 class="glyphicon glyphicon-user bg-success">{{currentUser.username}}</h2>
-    <ul class="nav navbar-nav">
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ peopleCount }} online <b class="caret" ng-if="peopleCount > 0"></b></a>
-        <ul class="dropdown-menu">
-          <li ng-repeat="user in users"><p class="white">{{ user.name }} <span ng-if="user.countrycode"><img class="flag flag-{{user.countrycode}}"></span> <i class="fa fa-{{user.device}}"></i></p></li>
-        </ul>
-      </li>
-    </ul>
-    <div class="col-xs-4">
+    <div class="grid col-one-half mq2-col-full">
+      <h2 class="glyphicon glyphicon-user bg-success">{{currentUser.username}}</h2>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ peopleCount }} online <b class="caret" ng-if="peopleCount > 0"></b></a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="user in users"><p class="white">{{ user.name }} </p></li>
+          </ul>
+        </li>
+      </ul>
       <div class="my-controller">
-        <div class="row">
-          <div class="col-xs-4">
-            <h4>Page: {{ currentPage }}</h4>
-          </div>
-          <div class="col-xs-4">
-            <label for="search">Friends per page:</label>
-            <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
-          </div>
-        </div>
+        <h4>Page: {{ currentPage }}</h4>
+        <label for="search">Friends per page:</label>
+        <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
         <br>
         <table class="table svcList">
           <tbody>
             <tr dir-paginate="username in usernames | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
               <td class="service">
-                <form class="form-inline" role="form"><div class="form-group"><p class="white">{{username}}</p></div><button class="btn btn-success btn-xs" type="submit" ng-click='startChat(username)'>Join</button>
-              
-              
-              </form>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div ng-controller="PaginationController" class="other-controller">
-      <div class="text-center">
-        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
+                <form role="form">
+                  <p class="white">{{username}}</p><button class="btn btn-success btn-xs" type="submit" ng-click='startChat(username)'>Join</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div ng-controller="PaginationController" class="other-controller">
+        <div class="text-center">
+          <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/templates/dirPaginationTemplate.html"></dir-pagination-controls>
+        </div>
       </div>
     </div>
-  </div>
-  <section class="col-xs-4" ng-hide="!joined">
-    <h2 class="glyphicon glyphicon-user bg-danger">{{userRec}}</h2>
-    <div id="chatpanel">
-      <div id="chat">
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <label class="sr-only" for="message">Message: </label>
-            <input type="text" placeholder="Enter message" class="form-control" ng-model="message" name="message" id="message" ng-keypress="typing($event, currentUser.username)" on-focus="focus(true)" on-blur="focus(false)">
+    <div class="grid col-one-half mq2-col-full">
+      <section ng-hide="!joined">
+        <h2 class="glyphicon glyphicon-user bg-danger">{{userRec}}</h2>
+        <div id="chatpanel">
+          <div id="chat">
+            <form class="form-inline" role="form">
+              <div class="form-group">
+                <label class="sr-only" for="message">Message: </label>
+                <input type="text" placeholder="Enter message" class="form-control" ng-model="message" name="message" id="message" ng-keypress="typing($event, currentUser.username)" on-focus="focus(true)" on-blur="focus(false)">
+              </div>
+              <button type="submit" class="btn btn-default btn-sm" ng-click='send(currentUser.username)'>Send message</button>
+            </form>
+            <small  ng-if="error" class="text-danger">{{ error.send }}</small>
           </div>
-          <button type="submit" class="btn btn-default btn-sm" ng-click='send(currentUser.username)'>Send message</button>
-        </form>
-        <small  ng-if="error" class="text-danger">{{ error.send }}</small>
-      </div>
-      <table class="table svcList">
-        <tbody>
-          <tr ng-repeat="message in messages track by $index">
-            <td class="service">
-            
-              {{ message.name }}: {{ message.message }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="row">
-        <div class="col-lg-6">
+          <table class="table svcList">
+            <tbody>
+              <tr ng-repeat="message in messages track by $index">
+                <td class="service">
+                  
+                  {{ message.name }}: {{ message.message }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <div id="messages">
             <ul >
               <li class="list-unstyled"></li>
             </ul>
           </div>
-        </div>
-        <div class="col-lg-6X">
           <div id="sidebar">
             <ul ng-if="isTyping">
               <li  ng-repeat="person in typingPeople track by $index" class="text-muted list-unstyled"><small>{{ person }} is typing</small></li>
             </ul>
           </div>
         </div>
-      </div>
+      </section>
     </div>
+
+  </section class="grid-wrap">
+</div>
+<div class="about-page main grid-wrap">    
+    <aside class="grid col-one-quarter mq2-col-full">
+    </aside>
     
-  </section>
-<!-- <div class="ctx_">
-    <div class="container_">
-        <div style="text-align:center" id="main">
-            <div class="row">
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ peopleCount }} online <b class="caret" ng-if="peopleCount > 0"></b></a>
-                    <ul class="dropdown-menu">
-                        <li <li ng-repeat="room in rooms">
-                            <p class="white">{{ room.name }}
-                                <button class="btn btn-success btn-xs" type="submit" ng-click="open('lg', room)" ng-hide='room.name === currentUser.username'>
-                                    Lui parler</button>
-                            </p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="container">
-
-                </div>
-                <div class="container">
-                    <p>Hello {{currentUser.username}}</p>
-                    <section>
-                        <form data-ng-submit="addChat()" class="form-inline" role="form">
-                            <input type="text" data-ng-model="chatText" placeholder="Enter message" />
-                            <br />
-                            <input type="submit" value="Envoyer" />
-                            <a href="" data-ng-click="archive()">Archiver</a>
-                        </form>
-                    </section>
-
-                    <br/>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div>
-                                <ul>
-                                    <li class="list-unstyled" ng-repeat="chat in chat track by $index">{{chat.username}} : {{chat.message}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div id="sidebar">
-                                <ul ng-if="isTyping">
-                                    <li ng-repeat="person in typingPeople track by $index" class="text-muted list-unstyled"><small>{{ person }} is typing</small>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="grid col-three-quarters mq2-col-full">
+      
+      <article id="navteam">
+                <div class="grid col-one-half mq2-col-full">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ roomCount }} room<span ng-if="roomCount  === 0 || roomCount > 1">s</span> <b class="caret" ng-if="roomCount > 0"></b></a>
+        <ul class="dropdown-menu">
+          <li ng-repeat="room in rooms">
+            <form class="form-inline" role="form">{{ room.name }}
+              <button class="btn btn-success btn-xs" type="submit" ng-click='joinRoom(room)' ng-hide='room.id === user.owns || room.id === user.inroom || user.owns || user.inroom'>Joindre</button>
+              <button type="submit" ng-click='deleteRoom(room)' class="btn btn-xs btn-danger" ng-show='room.id === user.owns'>Effacer</button>
+              <button type="submit" ng-click="leaveRoom(room)" class="btn btn-xs btn-info" ng-hide='room.id === user.owns || !user.inroom || user.owns || user.inroom !== room.id'>Partir</button>
+            </form>
+          </li>
+        </ul>
+      </li>
+      <p>
+        <span  ng-if="user.owns">Vous êtes propriétaire de la chambre :
+          <strong>{{ user.roomname }}</strong>.
+        </span>
+        <span  ng-if="!user.owns && user.inroom">Vous avez joint cette chambre :
+          <strong>{{ user.roomname }}</strong>.
+          <br>
+          Vous pouvez aussi créer votre propre chambre
+        </span>
+        <br>
+      </p>
+      <p ng-show="!user.inroom">Créez une chambre de discussion ou joignez en une
+        <div id="createroom">
+          <form role="form" ng-hide="user.owns && user.inroom">
+            <ul>
+              <li>
+                <label class="sr-only" for="roomname">Nom de la chambre: </label>
+                <input type="text" placeholder="Entrez un nom de chambre" ng-model="roomname" name="roomname" id="roomname">
+              </li>
+              <li>
+                <button type="submit" class="btn btn-default btn-sm" ng-click="createRoom()">Créez une chambre</button>
+                <small  ng-if="error" class="text-danger">{{ error.create }}</small>
+              </li>
+            </ul>
+          </form>
         </div>
+      </p>
     </div>
-</div> -->
+      
+      </article>
+    </section>
+    
+  </div> <!--main-->

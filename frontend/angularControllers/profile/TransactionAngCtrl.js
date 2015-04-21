@@ -1,6 +1,7 @@
 angular.module('InTouch').controller('TransactionAngCtrl', ['$scope',
   '$rootScope', '$http', 'transactions', '$timeout', '$modal',
   function($scope, $rootScope, $http, transactions, $timeout, $modal) {
+    
     if ($rootScope.currentUser) {
       var userToken = $rootScope.currentUser.token;
       $http.defaults.headers.common['auth-token'] = userToken;

@@ -1,9 +1,10 @@
 angular.module('InTouch')
 
 .factory('announces', ['$q', '$http', function($q, $http) {
-  
+
   function postAnnounce(announce) {
     var deferred = $q.defer();
+    console.log('post annonce');
     $http.post('/api/announces/', announce).success(function(data) {
       deferred.resolve(data);
     }).error(function() {

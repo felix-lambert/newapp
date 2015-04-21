@@ -21,49 +21,7 @@ var routes = [
       path: '/auth/session',
       httpMethod: 'GET',
       middleware: [auth.ensureAuthenticated, SessionCtrl.getSession]
-  }, {
-      path: '/auth/google/callback',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('google', {
-          successRedirect: '/',
-          failureRedirect: '/'
-      })]
-  }, {
-      path: '/auth/google',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('google', {
-          scope: [
-              'https://www.googleapis.com/auth/userinfo.profile',
-              'https://www.googleapis.com/auth/userinfo.email'
-          ]
-      })]
-  }, {
-      path: '/auth/facebook',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('facebook')]
-  }, {
-      path: '/auth/facebook/callback',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('facebook', {
-          successRedirect: '/',
-          failureRedirect: '/'
-      })]
-  }, {
-      path: '/auth/linkedin',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('linkedin', {
-          state: 'DCEEFWF45453sdffef424'
-      })]
-  }, {
-      path: '/auth/linkedin/callback',
-      httpMethod: 'GET',
-      middleware: [passport.authenticate('linkedin', {
-          session: false,
-          successRedirect: '/',
-          failureRedirect: '/'
-      })]
   },
-
   /**
    * Post method to register a new user
    */
@@ -84,6 +42,4 @@ var routes = [
   }
 ];
 
-module.exports = function() {
-  return routes;
-};
+module.exports = routes;

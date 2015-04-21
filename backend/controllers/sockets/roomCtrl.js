@@ -146,9 +146,9 @@ function alphabetical(a, b) {
   var B = b.toLowerCase();
   if (A < B) {
     return -1;
-  }else if (A > B) {
+  } else if (A > B) {
     return 1;
-  }else {
+  } else {
     return 0;
   }
 }

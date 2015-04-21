@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
-var Token    = mongoose.model('Token');
+var Username = mongoose.model('Username');
 
 /////////////////////////////////////////////////////////////////
 // AUTH TOKEN Route middleware to ensure user is authenticated //
@@ -25,22 +25,20 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
           next();
         }
       });
+    } else if (decoded && decoded.username) {
+      Username.getUsernameToken(decoded.username, incomingToken, function(err, user) {
+        if (err) {
+          console.log(err);
+          res.status(400).json({error: 'Issue finding user.'});
+        } else {
+          req.user = user;
+          next();
+        }
+      });
     } else {
       res.status(400).json({error: 'Issue decoding incoming token.'});
     }
   } else {
     next();
   }
-};
-
-/////////////////////////////////////////////////////////////////
-// CHECK IF PAGE AUTHORIZED /////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-exports.hasAccess = function(accessLevel) {
-  return function(req, res, next) {
-      if (req.user && req.user.hasAccess(accessLevel)) {
-        return next();
-      }
-      return res.status(400).json('Unauthorized');
-    };
 };
