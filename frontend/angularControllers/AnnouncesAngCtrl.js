@@ -53,31 +53,31 @@ angular.module('InTouch')
         category: this.category,
         price: this.price,
         images: this.selectedImages,
+        activated: true
       }).then(function(response) {
-        $location.path('announces/' + response._id);
-      });
-
-      this.title = '';
-      this.content = '';
-      announces.getAnnounces().then(function(announces) {
-        console.log(announces);
-        $scope.announces = announces;
-        $scope.announces.push({
-          '_id': $scope._id,
-          'title': $scope.title,
-          'type': $scope.type,
-          'category': $scope.category
+        console.log(response);
+        this.title = '';
+        this.content = '';
+        announces.getAnnounces().then(function(announces) {
+          console.log(announces);
+          $scope.announces = announces;
+          $scope.announces.push({
+            '_id': $scope._id,
+            'title': $scope.title,
+            'type': $scope.type,
+            'category': $scope.category
+          });
+          $scope.title = '';
+          $scope.category = '';
+          $scope.type = '';
         });
-        $scope.title = '';
-        $scope.category = '';
-        $scope.type = '';
-
       });
     };
 
     $scope.remove = function(announce) {
+      console.log('remove');
       console.log(announce);
-      announces.deleteAnnounce(announce._id).then(function(announce) {});
+      announces.deleteAnnounce(announce._id).then(function(err) {});
       for (var i in $scope.announces) {
         if ($scope.announces[i] == announce) {
           $scope.announces.splice(i, 1);
@@ -86,6 +86,7 @@ angular.module('InTouch')
     };
 
     $scope.update = function() {
+      console.log('____________________update_____________________');
       announces.putAnnounce({
         _id: $scope.announce._id,
         content: $scope.announce.content,
@@ -103,7 +104,28 @@ angular.module('InTouch')
 
     $scope.desactivate = function(id) {
       // var announce = new announces({activated : false});
+      announces.putAnnounce({
+        _id: id,
+        activated: false
+      }).then(function() {});
+
       toaster.pop('warning', 'Ce service est désactivé');
+      console.log('__AnnouncesCtrl $scope.initListAnnouce__');
+      $scope.noAnnounces = false;
+      $scope.findFromUser($rootScope.currentUser._id);
+      // announce.$update({announceId: id}, function() {
+      // });
+    };
+
+    $scope.activate = function(id) {
+      // var announce = new announces({activated : false});
+      announces.putAnnounce({
+        _id: id,
+        activated: true
+      }).then(function() {});
+
+      toaster.pop('success', 'Ce service est activé');
+      $scope.findFromUser($rootScope.currentUser._id);
       // announce.$update({announceId: id}, function() {
       // });
     };
@@ -141,7 +163,6 @@ angular.module('InTouch')
       comments.getAnnounceComments($routeParams.announceId)
       .then(function(res) {
         console.log('GET COMMENTS');
-        console.log(res);
         $scope.comments = res;
       });
     };
@@ -187,6 +208,14 @@ angular.module('InTouch')
       $scope.getCategories();
     };
 
+    $scope.initListCreateAnnounce = function(id) {
+      console.log('__AnnouncesCtrl $scope.initListAnnouce__');
+      $scope.noAnnounces = false;
+      $scope.findFromUser(id);
+      $scope.$watch('filter', filterAndSortAnnounces, true);
+      $scope.getCategories();
+    };
+
     $scope.initViewAnnouce = function() {
       console.log('__AnnouncesCtrl $scope.initViewAnnounce__');
       $scope.findOne();
@@ -207,40 +236,4 @@ angular.module('InTouch')
       });
     };
 
-    var uploadSettings = {
-      tbz:'tbz',
-      thumbSize:80,
-      thumbMax:9,
-      url: '/api/upload/img',
-      onUpload: 'filesUploaded',
-      onUploadFail: 'failUpload',
-      onFilesDrop: 'onFilesDrop',
-      onFileRemove: 'onFileRemove',
-      background:'Glissez et Déposez vos images',
-      headers : {
-        'auth-token' : userToken,
-      }
-    };
-
-    $scope.AddImages = function() {
-      var modalInstance = $modal.open({
-        templateUrl: 'views/modals/uploadModal.html',
-        controller: 'uploadModalCtrl',
-        scope:$scope,
-        resolve: {
-          settings: function() {
-            return uploadSettings;
-          },
-          selectedImages : function() {
-            return $scope.selectedImages;
-          }
-        },
-      });
-
-      modalInstance.result.then(function(data) {
-        $scope.selectedImages = data;
-      }, function() {
-        console.log('Modal dismissed at: ' + new Date());
-      });
-    };
   }]);

@@ -1,65 +1,62 @@
-<div ng-controller="MainHeaderAngCtrl" class="mainHeader">
-  <div class="container">
-    
-    <header id="navtop">
-      <nav class="fleft">
-        <div class="centerArea" auto-complete url="/search" class="navbar-brand" model="data.tags">
-        </div>
-      </nav>
-      <nav class="fright">
-        <ul ng-show="!currentUser">
-          <li><a ng-click="open('lg')" href="#">A propos</a></li>
-          <li><a ng-click="switch('home')">Accueil</a></li>
-        </ul>
-        <ul ng-show="!currentUser">
-          <li><a ng-click="switch('register')">S'inscrire</a></li>
-          <li><a ng-click="switch('login')">Se connecter</a></li>
-        </ul>
-        <ul ng-show="currentUser">
-          <li><div class="dropdown">
-      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-      <span class="badge">
-        {{currentUser.i}}
-      </span>
-      Messages
-      <span class="caret"></span>
+<nav ng-controller="MainHeaderAngCtrl" class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
       </button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li ng-repeat="message in currentUser.messages" role="presentation">
-          {{message.userRec}}
-          <!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
-        </li>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">A propos <span class="sr-only">(current)</span></a></li>
+        <li><a ng-click="switch('home')">Accueil</a></li>
       </ul>
-    </div></li>
-        </ul>
-        <ul ng-show="currentUser">
-          <li><div class="dropdown">
-      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-      <span class="badge">
-        {{currentUser.i}}
-      </span>
-      Notifications
-      <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li ng-repeat="notification in currentUser.notifications" role="presentation">
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" placeholder="Rechercher un utilisateur" class="form-control"  ng-keydown="checkKeyDown($event)" ng-model="searchText" ng-change="search()" />
+<!--           <div auto-complete url="/search" model="data.tags" placeholder="Search">
+        </div> -->
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-show="currentUser" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Messages 
+          <span class="badge">{{currentUser.i}}</span> 
+          <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="message in currentUser.messages">
+              <a href="#">{{message.userRec}}</a>
+            </li>
+          </ul>
+        </li>
+        <li ng-show="currentUser" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Notifications <span class="badge">{{currentUser.i}}</span> 
+          <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="notification in currentUser.notifications">
           Requête d'amitié : {{notification.userRec}} <button type="button" class="btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
           <!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
         </li>
+          </ul>
+        </li>
+        <li ng-show="!currentUser"><a ng-click="switch('register')">S'inscrire</a></li>
+        <li ng-show="!currentUser"><a ng-click="switch('login')">Se connecter</a></li>
+        <li ng-show="currentUser"><a ng-click="logout()">Déconnexion</a></li>
       </ul>
-    </div></li>
-        </ul>
-        <ul ng-show="currentUser">
-          <li><a ng-click="logout()">Déconnexion</a></li>
-        </ul>
-      </nav>
-    </header>
-  </div>
-  <hr>
-  <aside class="grid col-one-quarter mq2-col-full">
-    <!-- <p class="warning mbottom">Le site qui crypte vos données</p> -->
-    <menu>
-    <ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<div class="row">
+  <div class="col-md-2">
+    <ul class="nav nav-pills nav-stacked">
       <li><a href="/actuality" class="arrow">Actualités</a></li>
       <li><a href="/announces" class="arrow">Echanges</a></li>
       <li><a href="/profile" class="arrow">Profile</a></li>
@@ -68,13 +65,12 @@
       <li><a href="/transaction" class="arrow">Transactions</a></li>
       <li><a href="/settings" class="arrow">Paramètres</a></li>
     </ul>
-    </menu>
-  </aside>
-  <div class="contact-page main grid-wrap">
-    <section ng-if="page === 'login' && !currentUser" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
+  </div>
+  <div class="col-md-10">
+    <section ng-if="page === 'login' && !currentUser">
       {{test}}
       <h2>Connectez-vous</h2>
-      <form id="contact_form" class="contact_form" name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
+      <form name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
         <ul>
           <li>
             <input type="email" class="" placeholder="Email" name="email" ng-model="user.emailLog" required mongoose-error/>
@@ -91,6 +87,11 @@
         </ul>
       </form>
     </section>
+  </div>
+</div>
+
+  <div class="contact-page main grid-wrap">
+
     <section ng-if="page === 'register' && !currentUser" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
       <h2>Inscrivez-vous</h2>
       <p ng-if="page === 'register' && !currentUser" class="warning mbottom">Vos informations resteront strictements confidentielles</p>

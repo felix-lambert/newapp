@@ -13,7 +13,7 @@ var app = angular.module('InTouch', [
 ]);
 
 var routeObject = {
-	'/': {
+  '/': {
 		templateUrl: '/partials/main.html',
 		controller: 'MainAngCtrl as form'
 	},

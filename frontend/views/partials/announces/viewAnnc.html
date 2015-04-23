@@ -1,5 +1,4 @@
 <div header></div>
-
 <div class="ctx_">
   <div class="container_">
     <section class="viewService" ng-init="initViewAnnouce()">
@@ -34,24 +33,53 @@
         </div>
       </div>
     </section>
-    <section class="comment">
-      <form class="postComment" ng-submit="postComment()">
-        <textarea id="comment" ng-model="AnnounceComment" name="AnnounceComment" class="form-control" placeholder="Ecrivez un commentaire" required></textarea>
-        <button id="comment" class="btn_1 inlb" type="submit">Poster</button>
+    <section class="grid-wrap">
+      <div class="grid col-one-half mq2-col-full">
+        <form ng-submit="postComment()">
+        <pre><textarea ng-model="AnnounceComment" name="AnnounceComment" placeholder="Ecrivez un commentaire" rows="1"></textarea></pre>
+        <button type="submit">Poster</button>
       </form>
-      <ul class="cmts">
-        <li class="cmt" ng-repeat="comment in comments">
-          <a class="removeComment" ng-if="currentUser._id == comment.author._id || currentUser._id == Annouce.creator._id" ng-click="removeComment(comment)">Supprimer</a>
-          <h3 class="author">
-          {{comment.author.username}}
-          <ul ng-if="comment.rating" class="rating">
-            <li class="selected" ng-repeat="n in range(1, announceRating)">★</li>
+    </div>
+  </section>
+  <div class="container">
+    <header id="navtop">
+      
+      <nav class="fright">
+      </nav>
+    </header>
+    <div class="blog-page main grid-wrap">
+      <header class="grid col-full">
+        <hr>
+      </header>
+      
+      
+      <section class="grid col-three-quarters mq2-col-two-thirds">
+        
+        <article ng-repeat="comment in comments" class="post">
+          <div class="meta">
+            <p>Posté le <span class="time">{{ comment.date | date:'medium' }}</span> par <a href="#" class="fn">{{comment.creator.username || comment.creatorUsername.username}}</a>.
+          </p>
+        </div>
+        <div id="messages">
+          <ul>
+            <p><li>{{comment.content}}</li></p>
           </ul>
-          </h3>
-          <p class="content">{{ comment.content }}</p>
-          <p class="date">{{ comment.date | date:'medium' }}</p>
-        </li>
-      </ul>
+        </div>
+        <!--         <div class="entry">
+          <p>          <ul ng-if="comment.rating" class="rating">
+            <li class="selected" ng-repeat="n in range(1, announceRating)">★</li>
+          </ul></p>
+        </div> -->
+        
+        <footer>
+          
+          <a ng-click="removeComment(comment)">Supprimer</a>
+        </footer>
+      </article>
+      
     </section>
+    
+    
+    </div> <!--main-->
   </div>
 </div>

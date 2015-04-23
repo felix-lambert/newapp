@@ -19,10 +19,10 @@ module.exports = {
       if (err) {
         return res.status(501).json(err);
       }
-      var comment = new Comment();
-      comment.content = req.body.content;
-      comment.author = req.user._id;
-      comment.announce = result;
+      var comment             = new Comment();
+      comment.content         = req.body.content;
+      comment.creator         = req.user._id;
+      comment.announce        = result;
       comment.save(function(err) {
         if (err) {
           res.status(400).json(err);
@@ -40,6 +40,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   removeComment: function(req, res) {
     console.log('______DELETE /api/announceComment___');
+
     Comment.findOne({
         _id: req.params.id
     }, function(err, result) {
@@ -49,32 +50,39 @@ module.exports = {
           Announce.findOne({
               _id: result.announce
           }, function(err, announce) {
-              if (req.user._id.equals(result.author)) {
-                Comment.remove(result, function(err) {
-                  if (err) {
-                    res.status(400).json(null);
-                  } else {
-                    res.status(200).json(null);
-                  }
-                });
-              } else if (err) {
-                res.status(400).json({
-                  'message': 'Impossible to find announce'
-                });
-              } else if (req.user._id == announce.creator) {
-                Comment.remove(result, function(err) {
-                  if (err) {
-                    res.status(400).json(null);
-                  } else {
-                    res.status(200).json(null);
-                  }
-                });
-              } else {
-                res.status(400).json({
-                    'message': 'error in remove comment'
-                });
-              }
-            });
+            console.log('////////////////////////////////////////////////////');
+            console.log(announce);
+            console.log(req.user);
+            if (req.user._id.equals(result.creator)) {
+              Comment.remove(result, function(err) {
+                if (err) {
+                  res.status(400).json(null);
+                } else {
+                  res.status(200).json(null);
+                }
+              });
+            } else if (err) {
+              res.status(400).json({
+                'message': 'Impossible to find announce'
+              });
+              console.log('req.user ' + req.user);
+              console.log(req.user._id);
+            } else if (req.user._id === announce.creator || req.user._id === announce.creatorUsername) {
+              console.log('************************************************');
+              console.log(result);
+              Comment.remove(result, function(err) {
+                if (err) {
+                  res.status(400).json(null);
+                } else {
+                  res.status(200).json(null);
+                }
+              });
+            } else {
+              res.status(400).json({
+                  'message': 'error in remove comment'
+              });
+            }
+          });
         }
       });
   },
@@ -88,7 +96,7 @@ module.exports = {
           announce: req.params.announceId
         })
         .sort('-date')
-        .populate('author')
+        .populate('creator creatorUsername')
         .exec(function(err, comments) {
           if (err) {
             res.status(501).json(err);

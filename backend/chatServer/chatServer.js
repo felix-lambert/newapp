@@ -50,29 +50,31 @@ module.exports = function(server) {
     });
 
     socket.on('typing', function(data, user) {
-      io.sockets.in(socket.room).emit('isTyping', {isTyping: data.isTyping, person: data.user});
+      io.sockets.in(socket.room).emit('isTyping',
+        {isTyping: data.isTyping, person: data.user});
     });
 
     socket.on('joinSocketServer', function(data) {
       var exists = false;
       _.find(people, function(k, v) {
         if (k.name.toLowerCase() === data.name.toLowerCase()) {
-          return exists = true;
+          exists = true;
+          return exists;
         }
       });
 
       if (!exists) {
         people[socket.id] = {name: data.name};
-        people[socket.id].inroom = null; //setup 'default' room value
+        people[socket.id].inroom = null;
         people[socket.id].owns = null;
         totalPeopleOnline = _.size(people);
         totalRooms = _.size(rooms);
         io.sockets.emit('updateRoomsCount', {count: totalRooms});
         io.sockets.emit('updateUserDetail', people);
         io.sockets.emit('updatePeopleCount', {count: totalPeopleOnline});
-        sendToSelf(socket, 'joinedSuccessfully'); //useragent and geolocation detection
+        sendToSelf(socket, 'joinedSuccessfully');
         io.sockets.emit('updateUserDetail', people);
-        sockets.push(socket); //keep a collection of all connected clients
+        sockets.push(socket);
       }
     });
 
@@ -98,7 +100,7 @@ module.exports = function(server) {
       if (!flag) {
         console.log('createRoom');
         var roomName = data.roomName;
-        var uniqueRoomID = data.roomId; //guarantees uniquness of room
+        var uniqueRoomID = data.roomId;
 
         var room = new Room(roomName, uniqueRoomID, socket.id);
 
@@ -113,7 +115,7 @@ module.exports = function(server) {
         io.sockets.emit('listAvailableChatRooms', rooms);
         io.sockets.emit('updateUserDetail', people);
         sendToSelf(socket, 'sendUserDetail', people[socket.id]);
-        chatHistory[socket.room] = []; //initiate chat history
+        chatHistory[socket.room] = [];
       }
     });
 

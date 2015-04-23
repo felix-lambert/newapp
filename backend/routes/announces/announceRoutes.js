@@ -15,7 +15,7 @@ var routes = [{
 }, {
     path: '/api/announces/:announceId',
     httpMethod: 'GET',
-    middleware: [AnnouncesCtrl.show]
+    middleware: [auth.ensureAuthenticated, AnnouncesCtrl.show]
 }, {
     path: '/api/announces/:announceId',
     httpMethod: 'PUT',

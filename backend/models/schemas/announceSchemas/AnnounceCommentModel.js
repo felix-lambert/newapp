@@ -4,9 +4,13 @@ exports = module.exports = function(mongoose) {
   var announceCommentSchema = new Schema({
       content: String,
       rating: Boolean,
-      author: {
+      creator: {
           type: Schema.ObjectId,
           ref: 'User'
+      },
+      creatorUsername: {
+          type: Schema.ObjectId,
+          ref: 'Username'
       },
       date: {
           type: Date,

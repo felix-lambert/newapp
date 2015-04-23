@@ -45,7 +45,7 @@ module.exports = {
     console.log('______CREATE ROOM TEST__________________');
     console.log(req.body);
 
-    var usernames =  new Array(req.body.nameRec, req.body.name);
+    var usernames = new Array(req.body.nameRec, req.body.name);
 
     usernames.sort(alphabetical);
 

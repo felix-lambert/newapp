@@ -1,5 +1,5 @@
 <div header></div>
-<div class="home-page main" ng-init="initListAnnounce()">
+<div class="home-page main" ng-init="initListCreateAnnounce(currentUser._id)">
   <section class="grid-wrap" >
     <div class="grid col-one-half mq2-col-full">
       <p class="warning">Publiez votre service</p>
@@ -59,7 +59,7 @@
               <li>
                 <input type="text" ng-model="searchString" placeholder="Rechercher" />
               </li>
-                            <li>
+              <li>
                 <input type="number" min="1" max="100" ng-model="pageSize">
               </li>
 
@@ -83,19 +83,24 @@
           <th>Actions</th>
         </tr>
         <tr dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage">
-          {{announce}}
-          <td ng-if="currentUser._id == announce.creator._id" class="xsmall_hide">
+          <td ng-if="currentUser._id == announce.creator || 
+          currentUser._id === announce.creatorUsername" class="xsmall_hide">
             {{announce.type}}
           </td>
-          <td ng-if="currentUser._id == announce.creator._id">
+          <td ng-if="currentUser._id == announce.creator || 
+          currentUser._id === announce.creatorUsername">
             {{announce.title}}
           </td>
-          <td ng-if="currentUser._id == announce.creator._id">
+          <td ng-if="currentUser._id == announce.creator || 
+          currentUser._id === announce.creatorUsername">
             <div class="btn-group">
               <a class="btn btn-default" href="/announces/{{announce._id}}">Voir</a>
             </div>
-            <div class="btn-group">
+            <div class="btn-group" ng-if="announce.activated === true">
               <a class="btn btn-warning" ng-click="desactivate(announce._id)">Désactiver</a>
+            </div>
+            <div class="btn-group" ng-if="announce.activated === false">
+              <a class="btn btn-success" ng-click="activate(announce._id)">Activer</a>
             </div>
             <div class="btn-group">
               <a class="btn btn-danger" ng-click="remove(announce)">Supprimer</a>

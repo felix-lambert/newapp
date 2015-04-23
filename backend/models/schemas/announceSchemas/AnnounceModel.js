@@ -13,6 +13,7 @@ exports = module.exports = function(mongoose) {
         type: String,
         required: false
     },
+    activated: Boolean,
     category: {
         type: Schema.ObjectId,
         ref: 'Category'
@@ -49,10 +50,6 @@ exports = module.exports = function(mongoose) {
         type: Number,
         min : 1,
     },
-    images: [{
-        type: Schema.ObjectId,
-        ref: 'Image'
-    }],
   });
 
   /////////////////////////////////////////////////////////////////
@@ -67,84 +64,84 @@ exports = module.exports = function(mongoose) {
     next();
   });
 
-  announceSchema.pre('save', function(next, req, cb) {
-    console.log('********* handle Category *********');
-    if (!req.body.category) {
-      return next();
-    }
-    var Category = mongoose.model('Category');
-    var self = this;
-    Category.findOne({
-        _id: req.body.category
-    }, function(err, doc) {
-      if (err) {
-        next(err);
-      }
-      if (doc) {
-        self.category = doc;
-      }
-      next();
-    });
-  });
+  // announceSchema.pre('save', function(next, req, cb) {
+  //   console.log('********* handle Category *********');
+  //   if (!req.body.category) {
+  //     return next();
+  //   }
+  //   var Category = mongoose.model('Category');
+  //   var self = this;
+  //   Category.findOne({
+  //       _id: req.body.category
+  //   }, function(err, doc) {
+  //     if (err) {
+  //       next(err);
+  //     }
+  //     if (doc) {
+  //       self.category = doc;
+  //     }
+  //     next();
+  //   });
+  // });
 
-  announceSchema.pre('save', function(next, req, cb) {
-    if (this.isNew) {
-      return next(cb);
-    }
-    var Transaction = mongoose.model('Transaction');
-    var self = this;
-    var tasks = [];
-    console.log('******** handle Price Change with existant transaction');
-    if (!req.body.price || self.price == req.body.price) {
-      return next(cb);
-    }
-    self.price = req.body.price;
-    console.log('price different ! reset transaction');
-    Transaction.find({announce:self._id}, function(err, transacs) {
-      if (err) {
-        return next(err);
-      }
-      if (!transacs) {
-        return next(cb);
-      }
-      transacs.forEach(function(item, index) {
-        console.log('- foreach');
-        item.client.status = 0;
-        item.owner.status = 0;
-        item.status = 0;
-        item.statusInformation = 'En attente, modifié par l\'auteur';
-        tasks.push(item.save());
-      });
-      console.log('Q.all');
-      Q.all(tasks)
-      .then(function(results) {
-        console.log('results : ');
-        console.log(results);
-        next(callback);
-      }, function(err) {
-        next(err);
-      });
-    });
-  });
+  // announceSchema.pre('save', function(next, req, cb) {
+  //   if (this.isNew) {
+  //     return next(cb);
+  //   }
+  //   var Transaction = mongoose.model('Transaction');
+  //   var self = this;
+  //   var tasks = [];
+  //   console.log('******** handle Price Change with existant transaction');
+  //   if (!req.body.price || self.price == req.body.price) {
+  //     return next(cb);
+  //   }
+  //   self.price = req.body.price;
+  //   console.log('price different ! reset transaction');
+  //   Transaction.find({announce:self._id}, function(err, transacs) {
+  //     if (err) {
+  //       return next(err);
+  //     }
+  //     if (!transacs) {
+  //       return next(cb);
+  //     }
+  //     transacs.forEach(function(item, index) {
+  //       console.log('- foreach');
+  //       item.client.status = 0;
+  //       item.owner.status = 0;
+  //       item.status = 0;
+  //       item.statusInformation = 'En attente, modifié par l\'auteur';
+  //       tasks.push(item.save());
+  //     });
+  //     console.log('Q.all');
+  //     Q.all(tasks)
+  //     .then(function(results) {
+  //       console.log('results : ');
+  //       console.log(results);
+  //       next(callback);
+  //     }, function(err) {
+  //       next(err);
+  //     });
+  //   });
+  // });
 
   /////////////////////////////////////////////////////////////////
   // STATICS //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   announceSchema.statics = {
-      load: function(id, cb) {
-        console.log('*****************load announce******************');
-        console.log(id);
-        this.findOne({
-            _id: id
-        }).populate('creator creatorUsername').exec(cb);
-      },
+    load: function(id, cb) {
+      console.log('*****************load announce******************');
+      console.log(id);
+      this.findOne({
+          _id: id
+      }).populate('creator creatorUsername').exec(cb);
+    },
 
-      findByTitle: function(title, callback) {
-        console.log('find annonce by title');
-        return this.find({
-            title: title
-        }, callback);
-      },
+    findByTitle: function(title, callback) {
+      console.log('find annonce by title');
+      return this.find({
+          title: title
+      }, callback);
+    },
   };
 
   /**

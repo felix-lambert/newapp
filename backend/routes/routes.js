@@ -47,6 +47,8 @@ module.exports = function(app) {
   var messageRoutes           = require('./sockets/messageRoutes');
   var userRoutes              = require('./users/userRoutes');
   var usernameRoutes          = require('./users/usernameRoutes');
+  var findRoutes              = require('./users/findRoutes');
+  var profileRoutes           = require('./users/profileRoutes');
   var sessionRoutes           = require('./sessions/sessionRoutes');
   var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes');
   var transactionRoutes       = require('./transactionRoutes');
@@ -58,6 +60,8 @@ module.exports = function(app) {
   .concat(friendsRoutes)
   .concat(userRoutes)
   .concat(usernameRoutes)
+  .concat(profileRoutes)
+  .concat(findRoutes)
   .concat(notificationRoutes)
   .concat(statusRoutes)
   .concat(messageRoutes)
@@ -65,9 +69,6 @@ module.exports = function(app) {
   .concat(announcesCommentsRoutes)
   .concat(transactionRoutes)
   .concat(indexRoutes);
-
-  // app.param('announceId', AnnouncesCtrl.getAnnounce, AnnouncesCtrl.show);
-  // app.param('messageId', MessagesCtrl.all);
 
   _.each(routes, function(route) {
     var args = _.flatten([route.path, route.middleware]);

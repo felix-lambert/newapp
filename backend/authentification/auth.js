@@ -26,7 +26,8 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
         }
       });
     } else if (decoded && decoded.username) {
-      Username.getUsernameToken(decoded.username, incomingToken, function(err, user) {
+      Username.getUsernameToken(decoded.username, incomingToken,
+        function(err, user) {
         if (err) {
           console.log(err);
           res.status(400).json({error: 'Issue finding user.'});

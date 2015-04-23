@@ -1,74 +1,39 @@
 /////////////////////////////////////////////////////////////////
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var mongoose  = require('mongoose');
-var Announce  = mongoose.model('Announce');
-var validator = require('validator');
-var Comment   = mongoose.model('AnnounceComment');
-var Q         = require('q');
-var User      = mongoose.model('User');
+var mongoose   = require('mongoose');
+var Announce   = mongoose.model('Announce');
+var validator  = require('validator');
+var Comment    = mongoose.model('AnnounceComment');
+var Q          = require('q');
+var User       = mongoose.model('User');
 var ImageModel = mongoose.model('Image');
 
 module.exports = {
-
-  /////////////////////////////////////////////////////////////////
-  // GET ANNOUNCE BY ID ///////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  getAnnounce: function(req, res, next) {
-    console.log('***************load announce*********************');
-    Announce.load(req.params.announceId, function(err, announce) {
-      if (err) {
-        return next(err);
-      }
-      if (!announce) {
-        return next(new Error('Failed to load announce '));
-      }
-      console.log(announce);
-      // var announcePost = {
-      //     _id: announce._id,
-      //     created: announce.created,
-      //     creator: {
-      //         _id: announce.creator._id,
-      //         username: announce.creator.username,
-      //         profileImage: announce.creator.profileImage
-      //     },
-      //     title: announce.title,
-      //     category: announce.category,
-      //     type: announce.type,
-      //     slug: announce.slug,
-      //     __v: announce.__v,
-      //     updated: announce.updated,
-      //     content: announce.content,
-      //     rating: announce.rating,
-      //     status: announce.status,
-      //     price: announce.price,
-      //     images:announce.images
-      // };
-      req.announce = announcePost;
-      next();
-    });
-  },
 
   /////////////////////////////////////////////////////////////////
   // CREATE AN ANNOUNCE ///////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   postAnnounce: function(req, res) {
     console.log('_____________POST /api/announces_____');
-    console.log(req.user);
     var announce = new Announce({
         title: req.body.title,
         content: req.body.content,
         type: req.body.type,
         price: req.body.price,
-        category: req.body.category,
         creator : req.user._id,
+        creatorUsername: req.user._id,
+        activated: req.body.activated
     });
-    announce.save(req, function(err, saveItem) {
+    console.log(announce);
+    announce.save(function(err, saveItem) {
+      console.log(err);
       if (err) {
-        res.status(400).json(err);
+        return res.status(400).json(err);
       } else {
-        announce.id = saveItem._id;
-        res.status(200).json(announce);
+        // announce.id = saveItem._id;
+        console.log('announce posted');
+        return res.status(200).json(announce);
       }
     });
   },
@@ -79,8 +44,9 @@ module.exports = {
   updateAnnounce: function(req, res) {
 
     console.log('*****************Update announce*******************');
+    console.log(req.params);
     Announce.findOne({
-        '_id': req.announce._id
+        '_id': req.params.announceId
     }, function(err, result) {
       if (err || !result) {
         return res.status(500).json(err);
@@ -92,7 +58,12 @@ module.exports = {
         if (req.body.content) {
           result.content = req.body.content;
         }
-        result.save(req, function(err) {
+        if (req.body.activated === false || req.body.activated === true) {
+          console.log(req.body.activated);
+          result.activated = req.body.activated;
+        }
+        console.log(result);
+        result.save(function(err) {
           if (err) {
             console.log('THERE IS THE ERROR');
             res.status(400).json(err);
@@ -111,7 +82,50 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   show: function(req, res) {
     console.log('show announce');
-    res.status(200).json(req.announce);
+
+    console.log('***************load announce*********************');
+    console.log(req.user);
+
+    Announce.load(req.params.announceId, function(err, announce) {
+      if (err) {
+        return next(err);
+      }
+      if (!announce) {
+        return next(new Error('Failed to load announce '));
+      } else {
+        var username = announce.creator ?
+        announce.creator.username :
+        announce.creatorUsername.username;
+        var creatorId = announce.creator ?
+        announce.creator :
+        announce.creatorUsername;
+        var profileImage = announce.creator ?
+        announce.creator.profileImage :
+        announce.creatorUsername.profileImage;
+        var announcePost = {
+          _id: announce._id,
+          created: announce.created,
+          creator: {
+              _id: creatorId,
+              username: username,
+              profileImage: profileImage
+          },
+          title: announce.title,
+          category: announce.category,
+          type: announce.type,
+          slug: announce.slug,
+          __v: announce.__v,
+          updated: announce.updated,
+          content: announce.content,
+          rating: announce.rating,
+          status: announce.status,
+          price: announce.price,
+          activated: announce.activated
+        };
+        res.status(200).json(announcePost);
+      }
+    });
+
   },
 
   /////////////////////////////////////////////////////////////////
@@ -119,12 +133,12 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   deleteAnnounce: function(req, res) {
     console.log('_____________________destroy announce____________');
-    var announce = req.announce;
-    Announce.remove(announce, function(err) {
+    console.log(req.params.announceId);
+    Announce.remove({'_id': req.params.announceId}, function(err, announce) {
       if (err) {
         res.status(400).json(err);
       } else {
-        res.status(200).json(announce);
+        res.status(200).json();
       }
     });
   },
@@ -151,9 +165,9 @@ module.exports = {
   // ANNOUNCE PAGINATION //////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   listPagination: function(req, res) {
-    var page = 1;
-    var perPage = 20;
-    var sort = 1;
+    var page                   = 1;
+    var perPage                = 20;
+    var sort                   = 1;
     var messageErrorPagination = '';
 
     function checkSort() {
@@ -231,13 +245,16 @@ module.exports = {
         if (err) {
           return res.status(501).json(err);
         } else {
-          for (var i = 0; l = announces.length, i < l; i++) {
-            tasks.push(ImageModel.populate(announces[i].creator, {
-              path:'profileImage', select:'name small xsmall'}));
+          for (var i = 0; l = announces.length, i < l; i++) { 
+            if (announces[i].activated === true) {
+              tasks.push(announces[i]);
+            }
           }
           Q.all(tasks)
           .then(function(results) {
-            res.status(200).json(announces);
+            console.log('results');
+            console.log(results);
+            res.status(200).json(results);
           }, function(err) {
             res.status(500).json({err:'oups'});
           });
