@@ -54,7 +54,15 @@ module.exports = function(grunt) {
               'frontend/angularFactories/auth/*.js',
               'frontend/angularFactories/socket/*.js',
               'frontend/angularFilters/*.js',
-              'frontend/angularLib/*.js',
+              'frontend/angularLib/angular.js',
+              'frontend/angularLib/angular-animate.js',
+              'frontend/angularLib/ui-bootstrap-tpls.js',
+              'frontend/angularLib/socket.io.js',
+              'frontend/angularLib/angular-file-upload.js',
+              'frontend/angularLib/angular-route.js',
+              'frontend/angularLib/angular-resource.js',
+              'frontend/angularLib/angular-messages.js',
+              'frontend/angularLib/toaster.js',
               'frontend/javascript/*.js'
         ],
         dest: 'build/minifiedProject.min.js'
