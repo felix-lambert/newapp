@@ -6,7 +6,6 @@ var express   = require('express');
 var mongoose  = require('mongoose');
 var config    = require('./backend/db/database');
 var multipart = require('connect-multiparty');
-var debug     = require('debug')('InTouch');
 
 /////////////////////////////////////////////////////////////////
 // CREATE AND CONFIG SERVER /////////////////////////////////////
