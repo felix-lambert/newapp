@@ -68,5 +68,4 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('heroku', ['uglify']);
 
-
 };

@@ -1,0 +1,17 @@
+<div class="admin">
+	<div header-adm></div>
+	<div class="ctx_">
+		<h1>Categories Administration</h1>
+		<form class="form size_200 inlb vat" name="form" novalidate ng-submit="addCategory()">
+			<div class="form-group">
+				<input type="text" name="title" ng-model="categorieTitle" placeholder="Title" class="form-input" required autofocus on-focus autocomplete="off"/>
+			</div>
+			<button class="btn_1 wf" type="submit" ng-disabled="form.$invalid">Ajouter</button>
+		</form>
+		<div class="listCategories" ng-init="getCategories()">
+			<li ng-click="removeCategory(category._id)" ng-repeat="category in categories">
+				{{category.title}}
+			</li>
+		</div>
+	</div>
+</div>

@@ -16,8 +16,9 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   upload: function(req, res) {
     console.log('//////File caracteristics/////////');
-    var destPath = path.join(__dirname, '../../frontend/images/');
+    var destPath = path.join(__dirname, '../../../frontend/images/');
     var originalFilename = req.files.file.originalFilename;
+    console.log(originalFilename);
     var hashName = crypto.createHash('md5').
     update(originalFilename).digest('hex') + '.jpeg';
     var writeStream = req.files.file.ws;
@@ -45,13 +46,13 @@ module.exports = {
     });
     var user = req.user;
     user.images.push(hashName);
-    user.profileImage = hashName;
     user.save(function(err) {
       if (!err) {
         res.status(200).json({
           images: user.images
         });
       } else {
+        console.log(err);
         console.log('Error: could not save image');
       }
     });

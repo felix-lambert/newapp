@@ -1,17 +1,41 @@
-<div header></div>
-<div class="home-page main">
-  <section class="grid-wrap" >
-    <div ng-show="uploader.isHTML5">
-      <img ng-repeat="image in images" class="list-img_" src="/images/{{image}}">
+<style>
+/*.row {
+    margin: 80px 0px 80px 0px;
+    }*/
+
+img {
+    -webkit-transform: scale(1, 1);
+    -ms-transform: scale(1, 1);
+    transform: scale(1, 1);
+    transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s; /* Safari */
+    }
+
+img:hover {
+  cursor: pointer;
+  -webkit-transform: scale(2, 2);
+    -ms-transform: scale(2, 2);
+    transform: scale(2, 2);
+    transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s; /* Safari */
+    box-shadow: 10px 10px 5px #888888;
+    z-index: 1;
+    }
+</style>
+
+<div ng-show="uploader.isHTML5">
+      <div class="row">
+                <img  ng-repeat="image in images" src="/images/{{image}}" alt="Short alt text">
+        </div>
+</div>
+
     </div>
-    <div ng-show="noImages">
-      <figure class="grid col-one-third mq1-col-one-half mq2-col-one-third mq3-col-full work_1">
-        <a href="work1.html" >
-          <img class="list-img_" src="/images/default.png">
-        </a>
-      </figure>
     </div>
-    <div class="grid col-one-half mq2-col-full">
+    <div ng-show="noImages" class="container image-container">
+      <img class="list-img_" src="/images/default.png">
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
         <h3>Choisissez votre image</h3>
         <div ng-show="uploader.isHTML5">
           <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
@@ -24,7 +48,7 @@
         <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
         <input type="file" nv-file-select="" uploader="uploader" multiple/>
         <br/>
-    </div>
+      </div>
       <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9" style="margin-bottom: 40px">
         <h2>Ajoutez votre liste de photos</h2>
         <h3>Liste</h3>
@@ -81,5 +105,3 @@
         </div>
       </div>
     </div>
-  </section>
-</div>

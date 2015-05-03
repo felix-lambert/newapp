@@ -1,7 +1,7 @@
 angular.module('InTouch')
-.controller('AnnouncesAngCtrl', ['$scope', '$http', 'announces', 'comments',
-  '$location', '$routeParams', '$rootScope', 'toaster', '$modal',
-  'transactions', function($scope, $http, announces, comments,
+.controller('AnnouncesAngCtrl', ['Announce', '$scope', '$http', 'announces',
+  'comments', '$location', '$routeParams', '$rootScope', 'toaster', '$modal',
+  'transactions', function(Announce, $scope, $http, announces, comments,
     $location, $routeParams, $rootScope, toaster, $modal, transactions) {
 
     console.log('*************AnnounceCtrl************************');
@@ -18,23 +18,140 @@ angular.module('InTouch')
       rating: null
     };
 
-    $scope.pageSize = 10;
-    $scope.currentPage = 1;
-
-    $scope.pageChangeHandler = function(num) {
-      console.log('meals page changed to ' + num);
+    $scope.decorateNumberPage = function(page, decoration, weight) {
+      $('#bt' + page).css('text-decoration', decoration);
+      $('#bt' + page).css('font-weight', weight);
     };
 
-    function filterAndSortAnnounces() {
-      console.log('_________filterAndSortannounces_______');
-      $scope.announces = [];
-      angular.forEach(allAnnounces, function(item, key) {
-        if (filter.rating && filter.rating !== item.rating) {
-          return;
+    $scope.page = 1;
+    $scope.limit = 5;
+    $scope.total = 0;
+    $scope.pageNumbers = [];
+    
+    $scope.paginate = function(page) {
+      $scope.page = page;
+      Announce.paginate({
+          page : $scope.page,
+          limit : $scope.limit
+      }, function(data) {
+        $scope.announces = data.announces;
+        $scope.total = data.total;
+        $scope.pageNumbers = [];
+        for (var i = 0; i < $scope.total; i++) {
+          $scope.pageNumbers.push(i + 1);
         }
-        $scope.announces.push(item);
       });
-    }
+      angular.forEach($scope.pageNumbers, function(page, key) {
+        $scope.decorateNumberPage(page, 'none', 'normal');
+      });
+      $scope.decorateNumberPage(page, 'underline', 'bold');
+    };
+
+    $scope.paginateUser = function(page) {
+      console.log('paginate user announces');
+      $scope.page = page;
+      announces.getAnnouncesFromUser({
+          page : $scope.page,
+          limit : $scope.limit,
+          user: $rootScope.currentUser._id
+      }).then(function(data) {
+        console.log(data.announces);
+        $scope.announces = data.announces;
+        $scope.total = data.total;
+        $scope.pageNumbers = [];
+        for (var i = 0; i < $scope.total; i++) {
+          $scope.pageNumbers.push(i + 1);
+        }
+      });
+      angular.forEach($scope.pageNumbers, function(page, key) {
+        $scope.decorateNumberPage(page, 'none', 'normal');
+      });
+      $scope.decorateNumberPage(page, 'underline', 'bold');
+    };
+
+    $scope.listUsers = function() {
+      $scope.paginate($scope.page);
+    };
+
+    $scope.previous = function() {
+      if ($scope.page > 1) {
+        $scope.page--;
+      }
+      $scope.paginate($scope.page);
+    };
+
+    $scope.previousUser = function() {
+      if ($scope.page > 1) {
+        $scope.page--;
+      }
+      $scope.paginateUser($scope.page);
+    };
+
+    $scope.next = function() {
+      console.log($scope.page);
+      console.log($scope.total);
+      if ($scope.page < $scope.total) {
+        $scope.page++;
+      }
+      $scope.paginate($scope.page);
+    };
+
+    $scope.nextUser = function() {
+      console.log($scope.page);
+      console.log($scope.total);
+      if ($scope.page < $scope.total) {
+        $scope.page++;
+      }
+      $scope.paginateUser($scope.page);
+    };
+
+    $scope.reset = function() {
+      $scope.successMessage = null;
+      $scope.errorMessage = null;
+      $scope.nameErrorMessage = null;
+      $scope.usernameErrorMessage = null;
+      $scope.passwordErrorMessage = null;
+      $scope.listUsers();
+    };
+
+    // $scope.pageChangeHandler = function(num, size) {
+    //   console.log('page change handler');
+    //   console.log(num);
+    //   console.log(size);
+    //   announces.getAnnouncesPerPage(num, size, 1).then(function(res) {
+    //     console.log(res);
+    //     $scope.announces = res;
+    //   });
+    //   console.log('going to page ' + num);
+    // };
+
+    // $scope.changeAnnouncesPerPage = function(size) {
+    //   console.log($scope.currentPage);
+    //   console.log(size);
+    //   announces.getAnnouncesPerPage($scope.currentPage, size, 1).then(function(res) {
+    //     console.log(res);
+    //     $scope.announces = res;
+    //   });
+    // };
+    
+
+    // $scope.getAnnouncesPerPage = function(currentPage) {
+    //   announces.getAnnouncesPerPage(currentPage, 10, 1).then(function(res) {
+    //     console.log(res);
+    //     $scope.announces = res;
+    //   });
+    // };
+
+    // function filterAndSortAnnounces() {
+    //   console.log('_________filterAndSortannounces_______');
+    //   $scope.announces = [];
+    //   angular.forEach(allAnnounces, function(item, key) {
+    //     if (filter.rating && filter.rating !== item.rating) {
+    //       return;
+    //     }
+    //     $scope.announces.push(item);
+    //   });
+    // }
 
     $scope.range = function(min, max, step) {
       step = step || 1;
@@ -188,32 +305,33 @@ angular.module('InTouch')
             $scope.comments.splice(i, 1);
           }
         }
+        console.log('delete');
       });
     };
 
-    $scope.getCategories = function() {
-      $http({
-        method: 'GET',
-        url: '/api/categories',
-      }).success(function(data, status, headers, config) {
-        $scope.categories = data;
-      });
-    };
+    // $scope.getCategories = function() {
+    //   $http({
+    //     method: 'GET',
+    //     url: '/api/categories',
+    //   }).success(function(data, status, headers, config) {
+    //     $scope.categories = data;
+    //   });
+    // };
 
     $scope.initListAnnounce = function() {
       console.log('__AnnouncesCtrl $scope.initListAnnouce__');
-      $scope.noAnnounces = false;
-      $scope.find();
-      $scope.$watch('filter', filterAndSortAnnounces, true);
-      $scope.getCategories();
+
+      $scope.paginate($scope.page);
+      // $scope.$watch('filter', filterAndSortAnnounces, true);
     };
 
     $scope.initListCreateAnnounce = function(id) {
-      console.log('__AnnouncesCtrl $scope.initListAnnouce__');
-      $scope.noAnnounces = false;
-      $scope.findFromUser(id);
-      $scope.$watch('filter', filterAndSortAnnounces, true);
-      $scope.getCategories();
+      // console.log('__AnnouncesCtrl $scope.initListAnnouce__');
+      // $scope.noAnnounces = false;
+      // $scope.findFromUser(id);
+      // // $scope.$watch('filter', filterAndSortAnnounces, true);
+      // $scope.getCategories();
+      $scope.paginateUser($scope.page);
     };
 
     $scope.initViewAnnouce = function() {

@@ -20,7 +20,7 @@ var routes = [{
 }, {
     path: '/upload',
     httpMethod: 'POST',
-    middleware: [UserCtrl.upload]
+    middleware: [auth.ensureAuthenticated, UserCtrl.upload]
 },
 ];
 

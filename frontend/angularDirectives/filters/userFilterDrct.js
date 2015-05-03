@@ -70,14 +70,13 @@ angular.module('InTouch')
           scope.follow = function(userDes) {
             console.log('_____follow_____');
             scope.suggestions = '';
-
             friends.postFriend({
               usernameWaitFriendRequest: userDes[0],
               idUser: userDes[1]
             }).then(function(response) {
               console.log('friend request done');
             });
-
+            console.log('toaster');
             toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
             socket.emit('sendFriendRequest', {
                 user: $rootScope.currentUser.username,

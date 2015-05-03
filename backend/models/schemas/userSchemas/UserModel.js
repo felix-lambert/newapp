@@ -3,13 +3,13 @@ exports = module.exports = function(mongoose) {
   /*
    * Module dependencies
    */
-  var role                  = require('mongoose-role');
   var Token                 = mongoose.model('Token');
   var moment                = require('moment');
   var jwt                   = require('jwt-simple');
   var Schema                = mongoose.Schema;
   var passportLocalMongoose = require('passport-local-mongoose');
   var tokenSecret           = 'bloc';
+
 
   var UserSchema = new Schema({
     email: {
@@ -42,6 +42,7 @@ exports = module.exports = function(mongoose) {
     token: {
       type: Object
     },
+    images: [String],
     salt: String,
     guest: Boolean,
     provider: String,
@@ -93,7 +94,6 @@ exports = module.exports = function(mongoose) {
       var self = this;
       this.findOne({email: email})
       .populate('profileImage').exec(function(err, usr) {
-        console.log('get user token');
         if (err || !usr) {
           console.log('ERROR');
           cb(err, null);
@@ -102,7 +102,8 @@ exports = module.exports = function(mongoose) {
           usr.FORMATTED_DATE = FORMATTED_DATE;
           cb(false, usr);
         } else {
-          cb(new Error('Token does not exist or does not match.'), null);
+          // cb(new Error('Token does not exist or does not match.'), null);
+          cb(false, usr);
         }
       });
     },
@@ -127,10 +128,13 @@ exports = module.exports = function(mongoose) {
 
     invalidateUserToken: function(email, cb) {
       var self = this;
+      console.log('invalidateUserToken');
+      console.log(email);
       this.findOne({email: email}, function(err, usr) {
         if (err || !usr) {
           console.log('err');
         }
+        console.log(usr);
         usr.token = null;
         usr.save(function(err, usr) {
           if (err) {
@@ -187,17 +191,10 @@ exports = module.exports = function(mongoose) {
           reputation: reput
         }));
       });
-    }
-  };
+    },
 
-  UserSchema.plugin(role, {
-    roles: ['user', 'moderator', 'admin'],
-    accessLevels: {
-      'moderator': ['moderator', 'admin'],
-      'user': ['user', 'moderator', 'admin'],
-      'admin': ['admin']
-    }
-  });
+
+  };
 
   UserSchema.plugin(passportLocalMongoose, {
     usernameField: 'email',

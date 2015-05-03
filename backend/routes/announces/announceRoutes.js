@@ -29,22 +29,16 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.getAllAnnounces]
 }, {
-    path: '/api/announces/list/:page/:perpage/:sort',
+    path: '/api/announces/:page/:limit/',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listPagination]
-}, {
-    path: '/api/announces/list/:page/:perpage',
+}, 
+{
+    path: '/api/announces/:page/:limit/:user',
     httpMethod: 'GET',
-    middleware: [AnnouncesCtrl.listPagination]
-}, {
-    path: '/api/announces/list/:page',
-    httpMethod: 'GET',
-    middleware: [AnnouncesCtrl.listPagination]
-}, {
-    path: '/api/announces/user/:userId',
-    httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, AnnouncesCtrl.getAnnouncesFromUser]
+    middleware: [AnnouncesCtrl.listUserPagination]
 },
+
 ];
 
 module.exports = routes;

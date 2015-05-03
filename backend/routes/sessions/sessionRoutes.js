@@ -14,13 +14,13 @@ var routes = [
    * Authentication routes
    */
   {
-      path: '/auth/login',
-      httpMethod: 'DELETE',
+      path: '/auth/logout/:id',
+      httpMethod: 'GET',
       middleware: [SessionCtrl.logout]
   }, {
       path: '/auth/session',
       httpMethod: 'GET',
-      middleware: [auth.ensureAuthenticated, SessionCtrl.getSession]
+      middleware: [SessionCtrl.getSession]
   },
   /**
    * Post method to register a new user
@@ -37,8 +37,7 @@ var routes = [
   {
       path: '/auth/login',
       httpMethod: 'POST',
-      middleware: [passport.authenticate('local', {session: false}),
-      SessionCtrl.authenticate]
+      middleware: [SessionCtrl.passportAuthenticate, SessionCtrl.authenticate]
   }
 ];
 

@@ -13,6 +13,17 @@ angular.module('InTouch')
     return deferred.promise;
   }
 
+  function getAnnouncesPerPage(page, perpage, sort) {
+    var deferred = $q.defer();
+    $http.get('api/announces/list/' + page + '/' + perpage + '/' + sort)
+      .success(function(data) {
+        deferred.resolve(data);
+      }).error(function() {
+        deferred.reject();
+      });
+    return deferred.promise;
+  }
+
   function getAnnounces() {
     var deferred = $q.defer();
     $http.get('/api/announces/').success(function(data) {
@@ -25,7 +36,8 @@ angular.module('InTouch')
 
   function getAnnouncesFromUser(id) {
     var deferred = $q.defer();
-    $http.get('/api/announces/user/' + id).success(function(data) {
+    $http.get('/api/announces/' + id.page + '/' + id.limit  + '/' + id.user)
+    .success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();
@@ -66,6 +78,7 @@ angular.module('InTouch')
 
   return {
     postAnnounce: postAnnounce,
+    getAnnouncesPerPage: getAnnouncesPerPage,
     getAnnounces: getAnnounces,
     getAnnouncesFromUser: getAnnouncesFromUser,
     getAnnounceById: getAnnounceById,

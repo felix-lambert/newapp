@@ -8,6 +8,7 @@ var Comment    = mongoose.model('AnnounceComment');
 var Q          = require('q');
 var User       = mongoose.model('User');
 var ImageModel = mongoose.model('Image');
+var async      = require('async');
 
 module.exports = {
 
@@ -25,7 +26,6 @@ module.exports = {
         creatorUsername: req.user._id,
         activated: req.body.activated
     });
-    console.log(announce);
     announce.save(function(err, saveItem) {
       console.log(err);
       if (err) {
@@ -51,15 +51,11 @@ module.exports = {
       if (err || !result) {
         return res.status(500).json(err);
       }
+
       if (result.creator.equals(req.user._id)) {
-        if (req.body.title) {
-          result.title = req.body.title;
-        }
-        if (req.body.content) {
-          result.content = req.body.content;
-        }
+        result.title = req.body.title;
+        result.content = req.body.content;
         if (req.body.activated === false || req.body.activated === true) {
-          console.log(req.body.activated);
           result.activated = req.body.activated;
         }
         console.log(result);
@@ -81,11 +77,8 @@ module.exports = {
   // SHOW AN ANNOUNCE /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   show: function(req, res) {
-    console.log('show announce');
-
     console.log('***************load announce*********************');
-    console.log(req.user);
-
+    
     Announce.load(req.params.announceId, function(err, announce) {
       if (err) {
         return next(err);
@@ -93,35 +86,7 @@ module.exports = {
       if (!announce) {
         return next(new Error('Failed to load announce '));
       } else {
-        var username = announce.creator ?
-        announce.creator.username :
-        announce.creatorUsername.username;
-        var creatorId = announce.creator ?
-        announce.creator :
-        announce.creatorUsername;
-        var profileImage = announce.creator ?
-        announce.creator.profileImage :
-        announce.creatorUsername.profileImage;
-        var announcePost = {
-          _id: announce._id,
-          created: announce.created,
-          creator: {
-              _id: creatorId,
-              username: username,
-              profileImage: profileImage
-          },
-          title: announce.title,
-          category: announce.category,
-          type: announce.type,
-          slug: announce.slug,
-          __v: announce.__v,
-          updated: announce.updated,
-          content: announce.content,
-          rating: announce.rating,
-          status: announce.status,
-          price: announce.price,
-          activated: announce.activated
-        };
+        var announcePost = Announce.addAnnouncePost(announce);
         res.status(200).json(announcePost);
       }
     });
@@ -165,71 +130,60 @@ module.exports = {
   // ANNOUNCE PAGINATION //////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   listPagination: function(req, res) {
-    var page                   = 1;
-    var perPage                = 20;
-    var sort                   = 1;
-    var messageErrorPagination = '';
+    var findAnnounces = function(next) {
+      Announce
+          .find()
+          .populate('creator')
+          .select()
+          .skip((req.params.limit * req.params.page) - req.params.limit)
+          .limit(req.params.limit)
+          .sort({date_added: -1})
+          .exec(next);
+    };
+    var countAnnounces = function(next) {
+      Announce.count().exec(next);
+    };
 
-    function checkSort() {
-      if (typeof req.params.sort !== 'undefined' && req.params.sort) {
-        if (validator.isNumeric(req.params.sort) === true &&
-          req.params.sort < 2 && req.params.sort > -1) {
-          if (req.params.sort === 0) {
-            sort = -1;
-          } else {
-            req.params.sort = 1;
-          }
-        } else {
-          messageErrorPagination += 'Erreur de l\'argument SORT (3). ';
-          return false;
-        }
-      }
-      return true;
-    }
-
-    function checkPerPage() {
-      if (typeof req.params.perpage !== 'undefined' && req.params.perpage) {
-        if (validator.isNumeric(req.params.perpage) === true &&
-          req.params.perpage >= 0) {
-          perPage = req.params.perpage;
-        } else {
-          messageErrorPagination += 'Erreur de l\'argument PERPAGE (2). ';
-          return false;
-        }
-      }
-      return true;
-    }
-
-    function checkPage() {
-      if (typeof req.params.page !== 'undefined' && req.params.page) {
-        if (validator.isNumeric(req.params.page) === true &&
-          req.params.page > 0) {
-          page = req.params.page;
-        } else {
-          messageErrorPagination += 'Erreur de l\'argument PAGE (1). ';
-          return false;
-        }
-      }
-      return true;
-    }
-
-    if (checkPage() === true && checkPerPage() === true &&
-      checkSort() === true) {
-      Announce.find({}, {}, {skip: ((page - 1) * perPage),
-        limit: perPage, sort: {created: sort}})
-      .populate('creator creatorComments', 'profileImage')
-      .populate('category', 'title')
-      .exec(function(err, annonces) {
-        if (err) {
-          return res.status(500).send({
-            message: 'Erreur pendant la requete de liste des annonces'});
-        }
-        return res.status(200).send(annonces);
+    async.parallel({
+        find: findAnnounces,
+        count: countAnnounces
+    }, function done(err, results) {
+      return res.json({
+          total: Math.ceil(results.count / req.params.limit),
+          announces: results.find
       });
-    } else {
-      return res.status(400).send({message: messageErrorPagination});
-    }
+    });
+
   },
+
+  listUserPagination: function(req, res) {
+    console.log(req.params);
+    var findAnnounces = function(next) {
+      Announce
+          .find({creator: req.params.user})
+          .select()
+          .skip((req.params.limit * req.params.page) - req.params.limit)
+          .limit(req.params.limit)
+          .sort({date_added: -1})
+          .exec(next);
+    };
+    var countAnnounces = function(next) {
+      Announce.count({creator: req.params.user}).exec(next);
+    };
+
+    async.parallel({
+        find: findAnnounces,
+        count: countAnnounces
+    }, function done(err, results) {
+      console.log(results);
+      return res.status(200).json({
+        total: Math.ceil(results.count / req.params.limit),
+        announces: results.find
+      });
+    });
+
+  },
+
 
   /////////////////////////////////////////////////////////////////
   // GET ALL ANNOUNCES ////////////////////////////////////////////

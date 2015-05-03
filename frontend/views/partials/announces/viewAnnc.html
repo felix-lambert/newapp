@@ -1,85 +1,140 @@
-<div header></div>
-<div class="ctx_">
-  <div class="container_">
+<style>
+/*font Awesome http://fontawesome.io*/
+@import url(//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css);
+/*Comment List styles*/
+.comment-list .row {
+  margin-bottom: 0px;
+}
+.comment-list .panel .panel-heading {
+  padding: 4px 15px;
+  position: absolute;
+  border:none;
+  /*Panel-heading border radius*/
+  border-top-right-radius:0px;
+  top: 1px;
+}
+.comment-list .panel .panel-heading.right {
+  border-right-width: 0px;
+  /*Panel-heading border radius*/
+  border-top-left-radius:0px;
+  right: 16px;
+}
+.comment-list .panel .panel-heading .panel-body {
+  padding-top: 6px;
+}
+.comment-list figcaption {
+  /*For wrapping text in thumbnail*/
+  word-wrap: break-word;
+}
+/* Portrait tablets and medium desktops */
+@media (min-width: 768px) {
+  .comment-list .arrow:after, .comment-list .arrow:before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent;
+  }
+  .comment-list .panel.arrow.left:after, .comment-list .panel.arrow.left:before {
+    border-left: 0;
+  }
+  /*****Left Arrow*****/
+  /*Outline effect style*/
+  .comment-list .panel.arrow.left:before {
+    left: 0px;
+    top: 30px;
+    /*Use boarder color of panel*/
+    border-right-color: inherit;
+    border-width: 16px;
+  }
+  /*Background color effect*/
+  .comment-list .panel.arrow.left:after {
+    left: 1px;
+    top: 31px;
+    /*Change for different outline color*/
+    border-right-color: #FFFFFF;
+    border-width: 15px;
+  }
+  /*****Right Arrow*****/
+  /*Outline effect style*/
+  .comment-list .panel.arrow.right:before {
+    right: -16px;
+    top: 30px;
+    /*Use boarder color of panel*/
+    border-left-color: inherit;
+    border-width: 16px;
+  }
+  /*Background color effect*/
+  .comment-list .panel.arrow.right:after {
+    right: -14px;
+    top: 31px;
+    /*Change for different outline color*/
+    border-left-color: #FFFFFF;
+    border-width: 15px;
+  }
+}
+.comment-list .comment-post {
+  margin-top: 6px;
+}
+</style>
+
+
     <section class="viewService" ng-init="initViewAnnouce()">
       <h2>{{announce.title}} - {{announce.price}} crédit(s)
-      <ul class="rating">
-        <li class="selected" ng-repeat="n in range(1,announceRating)">★</li>
+      <ul class="fm-rating">
+        <li class="fm-selected" ng-repeat="n in range(1,announceRating)">★</li>
       </ul>
       </h2>
+      <p>{{announce.content}}</p>
       <div class="images-list">
         <div class="image-box image-box-bg" ng-repeat="image in announce.images" style="background-image: url('{{image.small}}');">
         </div>
       </div>
       <div ng-show="currentUser">
-        <a ng-show="currentUser._id === announce.creator._id || announce.creator.username === currentUser.username" href="/announces/{{announce._id}}/edit">
+        <a ng-show="currentUser._id === announce.author._id" href="/announces/{{announce._id}}/edit">
           <button class="btn btn-default">edit</button>
         </a>
-        <div ng-show="currentUser._id != announce.creator._id && announce.creator.username != currentUser.username && announce.status == 1" class="blockBg">
-          <strong>Intéressé ?</strong>
-          <div class="mgv10"><input ng-model="clientprice" type="number" class="form-input" style="width:80px; display:inline-block"/> crédit(s)</div>
-          <div class="commentStyle mgb10" style="width:400px;">(Ce prix est à titre indicatif uniquement</br>
-            Si vous n'indiquez aucun prix, cela signifira que vous acceptez le prix définit par l'auteur de l'annonce,</br>
-          Dans le cas contraire, vous êtes libre de négocier)</div>
-          <button class="btn btn-default" ng-click="startTransaction()">Lancer la transaction</button>
-          <span style="color:red;" ng-show="transactionError">{{transactionError}}</span>
         </div>
-      </div>
-      <p>{{announce.content}}</p>
       <div>
-        <span class="badge badge-success-success">Posté {{announce.created | date:'medium'}}</span>
+        <span class="badge badge-success-success">Posted {{announce.date_created | date:'medium'}}</span>
         <div class="col-md-offset-9">
-          <span class="badge badge-success">Posté par {{announce.creator.username}}</span>
+          <span class="badge badge-success">Posted by {{announce.author.username}}</span>
         </div>
       </div>
     </section>
-    <section class="grid-wrap">
-      <div class="grid col-one-half mq2-col-full">
-        <form ng-submit="postComment()">
-        <pre><textarea ng-model="AnnounceComment" name="AnnounceComment" placeholder="Ecrivez un commentaire" rows="1"></textarea></pre>
-        <button type="submit">Poster</button>
+    <section class="comment">
+      <form class="postComment" ng-submit="postComment()">
+        <textarea id="comment" ng-model="AnnounceComment" name="AnnounceComment" class="form-control" placeholder="Ecrivez un commentaire" required></textarea>
+        <button id="comment" class="btn_1 inlb" type="submit">Poster</button>
       </form>
-    </div>
-  </section>
-  <div class="container">
-    <header id="navtop">
-      
-      <nav class="fright">
-      </nav>
-    </header>
-    <div class="blog-page main grid-wrap">
-      <header class="grid col-full">
-        <hr>
-      </header>
-      
-      
-      <section class="grid col-three-quarters mq2-col-two-thirds">
-        
-        <article ng-repeat="comment in comments" class="post">
-          <div class="meta">
-            <p>Posté le <span class="time">{{ comment.date | date:'medium' }}</span> par <a href="#" class="fn">{{comment.creator.username || comment.creatorUsername.username}}</a>.
-          </p>
-        </div>
-        <div id="messages">
-          <ul>
-            <p><li>{{comment.content}}</li></p>
-          </ul>
-        </div>
-        <!--         <div class="entry">
-          <p>          <ul ng-if="comment.rating" class="rating">
-            <li class="selected" ng-repeat="n in range(1, announceRating)">★</li>
-          </ul></p>
-        </div> -->
-        
-        <footer>
-          
-          <a ng-click="removeComment(comment)">Supprimer</a>
-        </footer>
-      </article>
-      
+  <div class="row">
+    <div class="col-md-8">
+        <section class="comment-list" ng-repeat="comment in comments">
+          <!-- First Comment -->
+          <article class="row">
+            <div class="col-md-2 col-sm-2 hidden-xs">
+              <figure class="thumbnail">
+                <img class="img-responsive" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />
+                <figcaption class="text-center"></figcaption>
+              </figure>
+            </div>
+            <div class="col-md-10 col-sm-10">
+              <div class="panel panel-default arrow left">
+                <div class="panel-body">
+                  <header class="text-left">
+                    <div class="comment-user"><i class="fa fa-user"></i> {{comment.creator.username}}</div>
+                    <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i> {{ comment.date}}</time>
+                  </header>
+                  <div class="comment-post">
+                    <p>
+                      {{ comment.content }}
+                    </p>
+                  </div>
+                  <p class="text-right"><a ng-if="currentUser._id == comment.creator._id || currentUser._id == Annouce.creator._id" ng-click="removeComment(comment)" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> Supprimer</a></p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
     </section>
-    
-    
-    </div> <!--main-->
-  </div>
-</div>

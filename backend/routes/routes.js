@@ -34,10 +34,11 @@ var indexRoutes = [
     httpMethod: 'GET',
     middleware: [
       function(req, res) {
+        console.log(req.flash);
         res.render('index');
       }
     ]
-  }
+  },
 ];
 
 module.exports = function(app) {
@@ -69,6 +70,8 @@ module.exports = function(app) {
   .concat(announcesCommentsRoutes)
   .concat(transactionRoutes)
   .concat(indexRoutes);
+
+  // require('phx-pagination').init(app);
 
   _.each(routes, function(route) {
     var args = _.flatten([route.path, route.middleware]);

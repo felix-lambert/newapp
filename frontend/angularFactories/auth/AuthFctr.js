@@ -1,12 +1,13 @@
 angular.module('InTouch')
-    .factory('Auth', ['$localStorage', '$rootScope',
+    .factory('Auth', ['$timeout', '$window', '$localStorage', '$rootScope',
       'Session', 'User', '$http', 'notifications',
-        function($localStorage, $rootScope,
+        function($timeout, $window, $localStorage, $rootScope,
           Session, User, $http, notifications) {
 
           return {
-            login: function(provider, user, callback) {
+            login: function(user, callback) {
               var cb = callback || angular.noop;
+              console.log('login');
               console.log(user);
               Session.save({
                   email: user.email,
@@ -25,6 +26,7 @@ angular.module('InTouch')
                 });
                 return cb();
               }, function(err) {
+                console.log(err);
                 return cb(err.data);
               });
             },
@@ -33,6 +35,7 @@ angular.module('InTouch')
               var scope = this;
               var cb = callback || angular.noop;
               var userToken = $localStorage.currentUser.token;
+
               $http.defaults.headers.common['auth-token'] = userToken;
               Session.delete(function(res) {
                 console.log('delete');

@@ -21,7 +21,8 @@
         <p ng-repeat="comment in status"> {{ comment.content }} <a href="" ng-click="removeStatus(comment)">x</a></p>
       </ul>
     </form>
-    <div ng-controller="AnnouncesAngCtrl">
+
+        <div ng-controller="AnnouncesAngCtrl">
       <section ng-init="findFromUser(currentUser._id)">
         <h2>Liste de vos services</h2>
         <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
@@ -35,13 +36,13 @@
             </th>
           </tr>
           <tr ng-repeat="announce in announces | searchFor:searchString">
-            <td ng-if="currentUser._id == announce.creator._id" class="xsmall_hide">
+            <td ng-if="currentUser._id == announce.author._id" class="xsmall_hide">
               {{announce.type}}
             </td>
-            <td ng-if="currentUser._id == announce.creator._id">
+            <td ng-if="currentUser._id == announce.author._id">
               {{announce.title}}
             </td>
-            <td ng-if="currentUser._id == announce.creator._id">
+            <td ng-if="currentUser._id == announce.author._id">
               <div class="btn-group">
                 <a class="btn btn-default" href="/announces/{{announce._id}}">Voir</a>
               </div>
@@ -59,5 +60,6 @@
         <strong>( total : {{total}} )</strong></p>
       </div>
     </div>
+  </div>
   </div>
 </div>

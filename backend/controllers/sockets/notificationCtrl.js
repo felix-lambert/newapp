@@ -45,8 +45,7 @@ module.exports = {
     Notification.find({
         'creator': req.body.userDesId
     }).sort('-created')
-    .populate('creator', 'username facebook.username google.username ' +
-      'linkedIn.username')
+    .populate('creator', 'username')
     .exec(function(err, notifications) {
       var notification;
       for (var i = notifications.length - 1; i > -1; i--) {
@@ -62,12 +61,13 @@ module.exports = {
       });
       notification.creator = req.body.userDesId;
       notification.save(function(err, saveNotification) {
-          if (err) {
-            res.status(400).json(err);
-          } else {
-            res.status(201).json('save succeeded');
-          }
-        });
+        if (err) {
+          res.status(400).json(err);
+        } else {
+          console.log('NOTICATION SAVED');
+          res.status(201).json('save succeeded');
+        }
+      });
     });
   },
 };

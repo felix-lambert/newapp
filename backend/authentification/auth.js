@@ -12,9 +12,9 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
   'use strict';
   console.log('_________________Ensure authentification__________________');
   var incomingToken = req.headers['auth-token'];
+  console.log('token : ' + incomingToken);
   if (incomingToken) {
     var decoded = User.decode(incomingToken);
-    //Now do a lookup on that email in mongodb ... if exists it's a real user
     if (decoded && decoded.email) {
       User.getUserToken(decoded.email, incomingToken, function(err, user) {
         if (err) {

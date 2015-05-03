@@ -3,7 +3,7 @@ var Q = require('q');
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 
-  var announceSchema = new Schema({
+  announceSchema = new Schema({
     title: {
         type: String,
         index: true,
@@ -51,6 +51,7 @@ exports = module.exports = function(mongoose) {
         min : 1,
     },
   });
+
 
   /////////////////////////////////////////////////////////////////
   // PRE SAVE /////////////////////////////////////////////////////
@@ -123,11 +124,45 @@ exports = module.exports = function(mongoose) {
   //     });
   //   });
   // });
-
+  
   /////////////////////////////////////////////////////////////////
   // STATICS //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   announceSchema.statics = {
+
+    addAnnouncePost: function(announce) {
+      var username = announce.creator ?
+      announce.creator.username :
+      announce.creatorUsername.username;
+      var creatorId = announce.creator ?
+      announce.creator :
+      announce.creatorUsername;
+      var profileImage = announce.creator ?
+      announce.creator.profileImage :
+      announce.creatorUsername.profileImage;
+      var announcePost = {
+        _id: announce._id,
+        created: announce.created,
+        creator: {
+            _id: creatorId,
+            username: username,
+            profileImage: profileImage
+        },
+        title: announce.title,
+        category: announce.category,
+        type: announce.type,
+        slug: announce.slug,
+        __v: announce.__v,
+        updated: announce.updated,
+        content: announce.content,
+        rating: announce.rating,
+        status: announce.status,
+        price: announce.price,
+        activated: announce.activated
+      };
+      return announcePost;
+    },
+
     load: function(id, cb) {
       console.log('*****************load announce******************');
       console.log(id);
@@ -169,6 +204,8 @@ exports = module.exports = function(mongoose) {
   }
 
   announceSchema.plugin(slugGenerator());
+
+
 
   /////////////////////////////////////////////////////////////////
   // create the model for announce and expose it to our app ///////

@@ -1,5 +1,4 @@
 var app = angular.module('InTouch', [
-  'ngAnimate',
   'ngResource',
   'ngRoute',
   'ngMessages',
@@ -8,7 +7,6 @@ var app = angular.module('InTouch', [
   'ngStorage',
   'toaster',
   'door3.css',
-  'angular-paginate',
   'angularFileUpload'
 ]);
 
@@ -106,7 +104,8 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider',
     });
     $locationProvider.html5Mode(true);
   }])
-  .run(function($localStorage, $rootScope, $location) {
+  .run(['$localStorage', '$rootScope', '$location',
+    function($localStorage, $rootScope, $location) {
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
       console.log('________ROUTE TEST_________________');
 
@@ -128,4 +127,4 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider',
         }
       }
     });
-  });
+  }]);

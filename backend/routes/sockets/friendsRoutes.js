@@ -20,6 +20,10 @@ var routes = [{
     path: '/api/friends/user/:userId',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.getFriendsFromUser]
+}, {
+    path: '/api/friends/',
+    httpMethod: 'POST',
+    middleware: [auth.ensureAuthenticated, FriendsCtrl.postFriend]
 },
 ];
 

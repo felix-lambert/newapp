@@ -12,7 +12,6 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   addComment: function(req, res) {
     console.log('_______ADD COMMENT_____');
-
     Announce.findOne({
       _id: req.params.announceId
     }, function(err, result) {
@@ -41,6 +40,16 @@ module.exports = {
   removeComment: function(req, res) {
     console.log('______DELETE /api/announceComment___');
 
+    function checkRemove(announce) {
+      if (req.user._id.equals(announce.creator) ||
+              req.user._id === announce.creator ||
+              req.user._id === announce.creatorUsername) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     Comment.findOne({
         _id: req.params.id
     }, function(err, result) {
@@ -50,10 +59,7 @@ module.exports = {
           Announce.findOne({
               _id: result.announce
           }, function(err, announce) {
-            console.log('////////////////////////////////////////////////////');
-            console.log(announce);
-            console.log(req.user);
-            if (req.user._id.equals(result.creator)) {
+            if (checkRemove(announce)) {
               Comment.remove(result, function(err) {
                 if (err) {
                   res.status(400).json(null);
@@ -64,18 +70,6 @@ module.exports = {
             } else if (err) {
               res.status(400).json({
                 'message': 'Impossible to find announce'
-              });
-              console.log('req.user ' + req.user);
-              console.log(req.user._id);
-            } else if (req.user._id === announce.creator || req.user._id === announce.creatorUsername) {
-              console.log('************************************************');
-              console.log(result);
-              Comment.remove(result, function(err) {
-                if (err) {
-                  res.status(400).json(null);
-                } else {
-                  res.status(200).json(null);
-                }
               });
             } else {
               res.status(400).json({
@@ -99,7 +93,7 @@ module.exports = {
         .populate('creator creatorUsername')
         .exec(function(err, comments) {
           if (err) {
-            res.status(501).json(err);
+            return res.status(501).json(err);
           }
           res.status(200).json(comments);
         });

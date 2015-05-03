@@ -1,71 +1,36 @@
-<div header></div>
 
-<div class="blog-page main grid-wrap">
-  
-  <section ng-init="initListAnnounce()" class="grid col-three-quarters mq2-col-two-thirds mq3-col-full">
-    <header id="navtop">
-      <nav class="fleft">
-        <ul>
-          <li>Page: {{ currentPage }}</li>
-        </ul>
-        <ul>
-          <li><input id="search" type="search" ng-model="searchString" name="search" placeholder="Rechercher une annonce" ></li>
-        </ul>
-        
-        <ul><li>
-          <input type="number" min="1" max="100" ng-model="pageSize"></li>
-        </ul>
-      </nav>
-    </header>
-    <div class="my-controller">
-      <article dir-paginate="announce in announces | searchFor:searchString | itemsPerPage: pageSize" current-page="currentPage" class="post">
-        <div ng-show="announce.creator.profileImage.small" class="image-box image-box-bg" style="background-image: url('{{announce.creator.profileImage.small}}');">
-        </div>
-        <h2><a href="blogpost.html" class="post-title">{{announce.title}}</a></h2>
-        <div class="meta">
-          <p>Posté le <span class="time">{{announce.created | date:'medium'}}</span> par <a href="#" class="fn">{{announce.creator.username}}</a> avec <a href="#" class="comments-link">42 commentaires</a>. Statut : <span ng-if="announce.status == 1" style="color:#19C919">Disponible</span>
-          <span ng-if="announce.status != 1" style="color:red;">Non disponible</span></p>
-          <p class="warning">{{announce.price}} crédit(s)</p>
-          
-        </div>
-        <div class="entry">
+    <!-- Initialize a new AngularJS app and associate it with a module named "instantSearch"-->
+    <section ng-init="initListAnnounce()">
+
+        <div ng-repeat="announce in announces">
+  <div class="well">
+      <div class="media">
+        <a class="pull-left" href="#">
+        <img class="media-object" src="http://placekitten.com/150/150">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">                            <a href="announces/{{announce._id}}">
+                              <b>{{announce.title}}</b>
+                            </a></h4>
+          <p class="text-right">{{announce.creator.username}}</p>
           <p>{{announce.content | cutFilter }}</p>
-        </div>
-      </article>
-    </div>
-  </section>
-  <aside class="grid col-one-quarter mq2-col-one-third mq3-col-full blog-sidebar">
-    <a href="/announces/create" class="arrow fright">Ajouter une annonce</a>
-    <br/>
-    <hr>
-    <div class="widget">
-      <h2>Annonces les plus populaires</h2>
-      <ul>
-        <li><a href="#" title="">Nullam porttitor elementum ligula</a></li>
-        <li><a href="#" title="">Vestibulum interdum</a></li>
-        <li><a href="#" title="">Quisque venenatis ante sit amet dolor</a></li>
-        <li><a href="#" title="">Aliquam adipiscing libero vitae leo</a></li>
-        <li><a href="#" title="">Sed accumsan quam ac tellus</a></li>
+          <ul class="list-inline list-unstyled">
+        <li><span><i class="glyphicon glyphicon-calendar"></i> 2 days, 8 hours </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i> 2 comments</span>
+            <li>|</li>
+            <li>
+               <span class="glyphicon glyphicon-star"></span>
+                <span class="glyphicon glyphicon-star"></span>
+                <span class="glyphicon glyphicon-star"></span>
+                <span class="glyphicon glyphicon-star"></span>
+                <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>{{announce.price}} crédit(s)</li>
       </ul>
+       </div>
     </div>
-    
-    <div class="widget">
-      <h2>Categories</h2>
-      <ul>
-        <li><a href="http://">Design (99+)</a></li>
-        <li><a href="http://">Web (53)</a></li>
-        <li><a href="http://">Other (12)</a></li>
-        <li><a href="http://">Weird (4)</a></li>
-      </ul>
-    </div>
-    <div class="widget">
-      <h2>Notation</h2>
-      <ul>
-        <li></li>
-      </ul>
-    </div>
-  </aside>
-  
-  
-  
-</div>
+  </div>
+  </div>
+            </section>
