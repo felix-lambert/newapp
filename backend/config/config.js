@@ -8,7 +8,6 @@ var methodOverride = require('method-override');
 var cookieParser   = require('cookie-parser');
 var expressSession = require('express-session');
 var mongoStore     = require('connect-mongo')(expressSession);
-var flash          = require('connect-flash');
 
 /////////////////////////////////////////////////////////////////
 // CONFIGURATION ////////////////////////////////////////////////
@@ -26,5 +25,4 @@ exports = module.exports = function(app, express, config) {
   app.use(bodyParser.json());
   app.use(methodOverride());
   app.use(express.static(path.join(__dirname, '/../../frontend')));
-  app.use(flash());
 };
