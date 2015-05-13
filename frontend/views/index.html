@@ -18,6 +18,7 @@
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="${w:encodeURL('/css/bs-doc.css')}" />
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -41,6 +42,14 @@
         <div ng-view></div>
     </div>
     </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
     <div ng-include src="'views/partials/header/footer.html'"></div>
     <script type="text/javascript" src="angularLib/angular.js"></script>
     <script type="text/javascript" src="angularLib/angular-animate.js"></script>
@@ -49,19 +58,19 @@
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="angularLib/angular-messages.js"></script>
     <script type="text/javascript" type="text/javascript" src="angularLib/angular-route.js"></script>
-<!--     <script type="text/javascript" src="angularLib/ui-bootstrap.js"></script>
+    <script type="text/javascript" src="angularLib/ui-bootstrap.js"></script>
     <script type="text/javascript" src="angularLib/angular-css.min.js"></script>
     <script type="text/javascript" src="angularLib/http-auth-interceptor.js"></script>
     <script type="text/javascript" src="angularLib/angular-resource.js"></script>
     <script type="text/javascript" src="angularLib/ngStorage.js"></script>
     <script type="text/javascript" src="angularLib/toaster.js"></script>
-    <script type="text/javascript" src="angularLib/angular-file-upload.js"></script> -->
+    <script type="text/javascript" src="angularLib/angular-file-upload.js"></script>
+    <script src="http://mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>
     
     <script src="angularLib/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="angularConstant/useragentmsgs.js"></script>
     <script type="text/javascript" src="angularConstant/config.js"></script>
-    <script type="text/javascript" src="angularControllers/AdminNavbarAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/MainHeaderAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/MainAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/AnnouncesAngCtrl.js"></script>
@@ -105,11 +114,12 @@
     <script type="text/javascript" src="angularFactories/socket/chat/RoomsFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/SocketFctr.js"></script>
     <script type="text/javascript" src="angularFactories/auth/user/ProfileFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/ImageFctr.js"></script>
     <script type="text/javascript" src="angularFilters/starsFltr.js"></script>
     <script type="text/javascript" src="angularFilters/cutFltr.js"></script>
     <script type="text/javascript" src="angularFilters/searchForFltr.js"></script>
 
-    <script type="text/javascript" src="angularFactories/ImageFctr.js"></script>
+    
 
   </body>
 </html>

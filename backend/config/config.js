@@ -13,9 +13,12 @@ var mongoStore     = require('connect-mongo')(expressSession);
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 exports = module.exports = function(app, express, config) {
+
+
   app.set('views', __dirname + '/../../frontend/views');
   app.engine('html', require('ejs').renderFile);
   app.set('view engine', 'html');
+
 
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({

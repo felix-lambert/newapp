@@ -13,17 +13,8 @@ var users       = {};
 module.exports = function(server) {
 
   var io = require('socket.io').listen(server);
-  io.set('log level', 1);
 
   io.sockets.on('connection', function(socket) {
-
-    socket.on('disconnect', function(data) {
-      if (!socket.nickname) {
-        return;
-      }
-      delete users[socket.nickname];
-      updateNicknames();
-    });
 
     totalPeopleOnline = _.size(people);
 
@@ -44,6 +35,7 @@ module.exports = function(server) {
       console.log('receiveAcceptFriendRequest');
       io.sockets.emit('receiveAcceptFriendRequest', user);
     });
+
     socket.on('sendMessage', function(data) {
       console.log('SEND MESSAGE');
       io.sockets.in(socket.room).emit('sendChatMessage', data);
@@ -85,10 +77,6 @@ module.exports = function(server) {
       if (!flag) {
         socket.room = username.roomName;
         socket.join(socket.room);
-
-        //roomToJoin.addPerson(socket.id);
-        //people[socket.id].inroom = username.roomId;
-        // people[socket.id].roomname = username.roomName;
         io.sockets.emit('updateUserDetail', people);
         sendToSelf(socket, 'sendUserDetail', people[socket.id]);
       }

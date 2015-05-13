@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var Comment  = mongoose.model('AnnounceComment');
 var Announce = mongoose.model('Announce');
+var moment   = require('moment');
 
 module.exports = {
 
@@ -12,6 +13,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   addComment: function(req, res) {
     console.log('_______ADD COMMENT_____');
+
     Announce.findOne({
       _id: req.params.announceId
     }, function(err, result) {
@@ -22,7 +24,7 @@ module.exports = {
       comment.content         = req.body.content;
       comment.creator         = req.user._id;
       comment.announce        = result;
-      comment.save(function(err) {
+      comment.save(function(err, comments) {
         if (err) {
           res.status(400).json(err);
         } else {
@@ -49,7 +51,7 @@ module.exports = {
         return false;
       }
     }
-
+    // Faire une promise
     Comment.findOne({
         _id: req.params.id
     }, function(err, result) {
@@ -87,15 +89,25 @@ module.exports = {
   getComments: function(req, res) {
     console.log('_____GET /api/announceComment/' + req.params.announceId);
     Comment.find({
-          announce: req.params.announceId
-        })
-        .sort('-date')
-        .populate('creator creatorUsername')
-        .exec(function(err, comments) {
-          if (err) {
-            return res.status(501).json(err);
-          }
-          res.status(200).json(comments);
-        });
+      announce: req.params.announceId
+    })
+    .sort('-date')
+    .populate('creator creatorUsername announce')
+    .exec(function(err, comments) {
+      if (err) {
+        return res.status(501).json(err);
+      }
+      console.log(comments);
+      var sendComments = [];
+      comments.forEach(function(item) {
+        if (item.FORMATTED_DATE) {
+          var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
+          item.FORMATTED_DATE = m.fromNow();
+          console.log(m.fromNow());
+        }
+        sendComments.push(item);
+      });
+      res.status(200).json(sendComments);
+    });
   }
 };

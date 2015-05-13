@@ -1,99 +1,194 @@
+<style>
+.top-buffer{
+    padding-top:20px;
+}
+.tags-wrapper {
+    position: relative;
+}
+
+.tags-cloud .tag {
+    float: left;
+    padding: 4px 6px;
+    font-size: 1em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background: #f2f2f2;
+    font-weight: 600;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #dddddd;
+}
+
+.tags-cloud .tag:hover {
+    border: 1px solid #cccccc;
+}
+
+.tags-cloud .tag:hover .cross {
+    opacity: 1;
+}
+
+.tags-cloud .tag .cross {
+    margin-left: 5px;
+    margin-right: 3px;
+    font-size: 1em;
+    color: #20a28e;
+    opacity: .7;
+    cursor: pointer;
+}
+
+.suggestions-list {
+    position: absolute;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    font-size: 14px;
+}
+
+
+.suggestions-list li {
+    color: #333333;
+    font-weight: 600;
+    padding: 4px 25px;
+    font-size: 1em;
+    cursor: pointer;
+    background: #f2f2f2;
+    border-bottom: 1px solid #dddddd;
+}
+
+.suggestions-list li:hover {
+    background: #dddddd;
+}
+
+.suggestions-list li:active,
+.suggestions-list li.active {
+    color: #20a28e;
+    background: #dddddd;
+}
+
+.suggestions-list:focus{
+    outline:none;
+
+}
+</style>
+
 <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
+<div class="row">
   <section class="newService">
-        <div class="col-md-6">
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <span class="glyphicon glyphicon-file">
-                            </span>Publier un service
-                        </h4>
+    <div class="col-md-6">
+      <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+            <span class="glyphicon glyphicon-file">
+            </span>Publier un service
+            </h4>
+          </div>
+          <form ng-submit="create()">
+            <div id="collapseOne" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="title">Demande</label>
+                      <select name="demande" ng-model="type" class="form-control">
+                        <option>Offre</option>
+                        <option>Recherche</option>
+                      </select>
                     </div>
-                        <form ng-submit="create()">
-                    <div id="collapseOne" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                      <label for="title">Demande</label>
-                                        <select name="demande" ng-model="type" class="form-control">
-                                          <option>Offre</option>
-                                          <option>Recherche</option>
-                                        </select>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-6">
-                                    <div class="form-group">
-                                      <label for="price">Nombre d'heures</label>
-                                      <input type="number" ng-model="price" class="form-control" placeholder="Prix" required/>
-                                    </div>
-                                  </div>
-                                  </div>
-                                  <div class="row">
-                                  <div class="col-md-12">
-                                    <div class="form-group">
-                                        <input type="text" ng-model="title" class="form-control" placeholder="Titre" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <textarea ng-model="content" class="form-control" placeholder="Description" rows="5" required></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="category">
-                                            Category</label>
-                                        <select ng-init="getCategories()" ng-model="category" class="form-control" id="category">
-                                            <option>Ménage</option>
-                                            <option>Education</option>
-                                            <option>Sport</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tags">
-                                            Tags</label>
-                                        <input type="text" class="form-control" id="tags" placeholder="Tags" />
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="form-group">
-                              <button type="submit" class="btn btn-success btn-sm">
-                                  <span class="glyphicon glyphicon-floppy-disk"></span>Valider</button>
-                          </div>
-                        </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="price">Nombre d'heures</label>
+                      <input type="number" ng-model="price" class="form-control" placeholder="Prix" required/>
                     </div>
-                    </form>
+                  </div>
                 </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="text" ng-model="title" class="form-control" placeholder="Titre" required />
+                    </div>
+                    <div class="form-group">
+                      <textarea ng-model="content" class="form-control" placeholder="Description" rows="5" required></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="category">
+                      Category</label>
+                      <select ng-model="category" class="form-control">
+                        <optgroup label="Réparations">
+                          <option>Appareils</option>
+                          <option>Meubles</option>
+                          <option>Vêtements</option>
+                        </optgroup>
+                        <optgroup label="Echanges de savoirs">
+                          <option>Informatique</option>
+                          <option>Musique</option>
+                          <option>Cours de langue</option>
+                          <option>Photographie</option>
+                          <option>Production vidéo</option>
+                        </optgroup>
+                        <option>Transport</option>
+                        <option>Garde d'enfants</option>
+                        <option>Ménage</option>
+                        <option>Bricolage</option>
+                        <option>Peinture</option>
+                        <option>Jardinage</option>
+                        <option>Expertise comptable</option>
+                        <optgroup label="Services de restauration">
+                          <option>Préparation de plats cuisiniers</option>
+                          <option>Aide pour la mise en place d'un festin</option>
+                        </optgroup>
+                        <option>Encadrement des activités sportives</option>
+                        <option>Soins médicaux</option>
+                        <option>Coupe de cheveux</option>
+                        <option>Manucure</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="tags">
+                      Talents</label>
+                      <div auto-complete url="/search" ng-model="tags" model="data.tags"></div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-success btn-sm">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>Valider</button>
+                </div>
+              </div>
             </div>
-        </div>
-
-  </section>
-  <section ng-init="initListCreateAnnounce(currentUser._id)" class="size_1">
-    <h2>Liste de vos services</h2>
-    <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
-    <div class="my-controller">
-      <div class="row">
-        <div class="col-xs-3">
-          <h3>Page: {{ currentPage }}</h3>
-        </div>
-        <div class="col-xs-3">
-          <label for="search">Services per page:</label>
-          <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+          </form>
         </div>
       </div>
-      <br>
-      
+
+    <div ng-init="initListCreateAnnounce(currentUser._id)" class="col-md-6">
+      <h2>Liste de vos services</h2>
+      <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
       <table class="table">
         <tr>
           <th class="xsmall_hidden">Demande</th>
           <th>Service</th>
           <th>Actions</th>
         </tr>
-        <tr ng-repeat="announce in announces">
+        <tr ng-repeat="announce in announces | searchFor:searchString">
           {{announce}}
           <td ng-if="currentUser._id == announce.creator">
             {{announce.type}}
@@ -111,5 +206,13 @@
           </td>
         </tr>
       </table>
+      <ul class="pager" ng-show="total > 1">
+        <li><a href="" ng-click="previous()">Previous</a></li>
+        <li ng-repeat="pageNumber in pageNumbers">
+          <a href="" id="bt{{pageNumber}}" ng-click="paginateUser(pageNumber)">{{pageNumber}}</a>
+        </li>
+        <li><a href="" ng-click="next()">Next</a></li>
+      </ul>
     </div>
   </section>
+</div> 

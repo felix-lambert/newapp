@@ -1,18 +1,29 @@
 angular.module('InTouch')
-    .controller('PictureAngCtrl', ['$scope', '$rootScope', 'FileUploader',
-        '$http', function($scope, $rootScope, FileUploader, $http) {
+    .controller('PictureAngCtrl', ['Images', '$scope', '$rootScope', 'FileUploader',
+        '$http', function(Images, $scope, $rootScope, FileUploader, $http) {
 
           console.log('--------------UPLOAD PICTURES----------------------');
+
+          var userToken = $rootScope.currentUser.token;
+          $http.defaults.headers.common['auth-token'] = userToken;
+
           $scope.noImages = false;
-          $scope.images = $rootScope.currentUser.images;
+          if ($rootScope.currentUser) {
+            Images.getImages().then(function(response) {
+              console.log(response);
+              $rootScope.currentUser.images = response;
+              $scope.images = $rootScope.currentUser.images;
+            });
+          }
+
+
           if ($rootScope.currentUser.images && $rootScope.currentUser.images.length === 0) {
             $scope.noImages = true;
           } else {
             $scope.images = $rootScope.currentUser.images;
           }
 
-          var userToken = $rootScope.currentUser.token;
-          $http.defaults.headers.common['auth-token'] = userToken;
+
           var uploader = $scope.uploader = new FileUploader({
               headers: {
                   'auth-token': $rootScope.currentUser.token

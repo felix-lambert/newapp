@@ -14,13 +14,14 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, UserCtrl.show]
 }, {
-    path: '/getReputation',
-    httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, UserCtrl.getReputation]
-}, {
     path: '/upload',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, UserCtrl.upload]
+},
+{
+    path: '/api/images',
+    httpMethod: 'GET',
+    middleware: [auth.ensureAuthenticated, UserCtrl.getImages]
 },
 ];
 

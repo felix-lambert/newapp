@@ -25,10 +25,6 @@ var routes = [{
     httpMethod: 'DELETE',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.deleteAnnounce]
 }, {
-    path: '/api/announces',
-    httpMethod: 'GET',
-    middleware: [AnnouncesCtrl.getAllAnnounces]
-}, {
     path: '/api/announces/:page/:limit/',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listPagination]

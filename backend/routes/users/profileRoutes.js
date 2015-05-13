@@ -10,10 +10,6 @@ var auth        = require('../../authentification/auth');
  */
 var routes = [{
     path: '/api/profile',
-    httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, ProfileCtrl.profile]
-}, {
-    path: '/api/profile',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, ProfileCtrl.editProfile]
 }, {

@@ -46,12 +46,12 @@ module.exports = {
     .populate('creator')
     .exec(function(err, usernames) {
       var notification;
-      for (var i = usernames.length - 1; i > -1; i--) {
-        if (usernames[i].username === req.body.username) {
+      usernames.forEach(function(item) { 
+        if (item.username === req.body.username) {
           console.log('Username already exist');
           return res.status(400).json('Username already exist');
         }
-      }
+      });
       username = new Username({
           username: req.body.username
       });
@@ -66,9 +66,9 @@ module.exports = {
               Username.getUsernameToken(req.body.username, usersToken,
                 function(err, user) {
                 if (err) {
-                  console.log(err);
                   res.status(400).json({error: 'Issue finding user.'});
                 } else {
+                  console.log(user.username);
                   res.status(200).json({
                     _id: user._id,
                     username: user.username,

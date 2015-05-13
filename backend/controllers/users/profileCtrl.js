@@ -7,20 +7,6 @@ var User         = mongoose.model('User');
 var Notification = mongoose.model('Notification');
 
 module.exports = {
-  /////////////////////////////////////////////////////////////////
-  // PROFILE //////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  profile: function(req, res) {
-    var user = req.user;
-
-    var xUser = {
-        email: user.email,
-        reputation: user.reputation,
-        username: user.username,
-        _id: user._id,
-    };
-    res.status(201).json(xUser);
-  },
 
   /////////////////////////////////////////////////////////////////
   // EDIT PROFILE /////////////////////////////////////////////////
@@ -41,9 +27,6 @@ module.exports = {
           obj.email = user.email;
           obj.errorEmail = true;
         }
-        user.age = req.body.age;
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
         user.save(function(err) {
           if (err) {
             res.status(400).json(null);

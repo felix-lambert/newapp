@@ -10,7 +10,6 @@ exports = module.exports = function(mongoose) {
   var passportLocalMongoose = require('passport-local-mongoose');
   var tokenSecret           = 'bloc';
 
-
   var UserSchema = new Schema({
     email: {
       type: String,
@@ -129,12 +128,10 @@ exports = module.exports = function(mongoose) {
     invalidateUserToken: function(email, cb) {
       var self = this;
       console.log('invalidateUserToken');
-      console.log(email);
       this.findOne({email: email}, function(err, usr) {
         if (err || !usr) {
           console.log('err');
         }
-        console.log(usr);
         usr.token = null;
         usr.save(function(err, usr) {
           if (err) {
@@ -192,8 +189,6 @@ exports = module.exports = function(mongoose) {
         }));
       });
     },
-
-
   };
 
   UserSchema.plugin(passportLocalMongoose, {

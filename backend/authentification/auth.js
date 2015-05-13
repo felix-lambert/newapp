@@ -11,8 +11,9 @@ var Username = mongoose.model('Username');
 exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
   'use strict';
   console.log('_________________Ensure authentification__________________');
+  console.log('______________________________________________________________________');
   var incomingToken = req.headers['auth-token'];
-  console.log('token : ' + incomingToken);
+  console.log(incomingToken);
   if (incomingToken) {
     var decoded = User.decode(incomingToken);
     if (decoded && decoded.email) {

@@ -6,7 +6,7 @@ exports = module.exports = function(mongoose) {
       userRec: String,
       userDes: String,
       userId: String,
-      reset: String,
+      type: String,
       DATE_CREATED: {
           type: Date,
           default: Date.now
@@ -52,21 +52,22 @@ exports = module.exports = function(mongoose) {
         var sendNotifications = [];
         this.find(user)
           .sort('-created')
-          .populate('creator', 'username facebook.username ' +
-            'google.username linkedIn.username')
+          .populate('creator')
           .exec(function(err, notifications) {
             if (err) {
               cb(err, null);
             }
-            for (i = 0; i < notifications.length; i++) {
+            console.log(notifications);
+            notifications.forEach(function(item) {
               sendNotifications.push({
-                userDes: notifications[i].userDes,
-                userRec : notifications[i].userRec,
-                userId: notifications[i].userId,
-                reset: notifications[i].reset,
-                id: notifications[i]._id
+                userDes: item.userDes,
+                userRec : item.userRec,
+                userId: item.userId,
+                reset: item.reset,
+                id: item._id,
+                type: item.type
               });
-            }
+            });
             cb(false, sendNotifications);
           });
       }

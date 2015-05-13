@@ -1,4 +1,6 @@
-var Q = require('q');
+var Q            = require('q');
+var moment       = require('moment');
+var autopopulate = require('mongoose-autopopulate');
 
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
@@ -9,15 +11,14 @@ exports = module.exports = function(mongoose) {
         index: true,
         required: true
     },
+    nbComment: Number,
+    tags: [String],
     type: {
         type: String,
         required: false
     },
     activated: Boolean,
-    category: {
-        type: Schema.ObjectId,
-        ref: 'Category'
-    },
+    category: String,
     rating: {
         type: Number,
         max: 5,
@@ -36,8 +37,10 @@ exports = module.exports = function(mongoose) {
         type: Number,
         default: 1,
     },
+    FORMATTED_DATE: String,
     created: Date,
     updated: [Date],
+    timeSave: String,
     creator: {
         type: Schema.ObjectId,
         ref: 'User'
@@ -46,22 +49,31 @@ exports = module.exports = function(mongoose) {
         type: Schema.ObjectId,
         ref: 'Username'
     },
+    creatorAnnounce: {
+      type: Schema.ObjectId,
+      ref: 'AnnounceComment'
+    },
     price: {
-        type: Number,
-        min : 1,
+      type: Number,
+      min : 1,
     },
   });
 
-
+  announceSchema.plugin(autopopulate);
   /////////////////////////////////////////////////////////////////
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   announceSchema.pre('save', function(next, req, callback) {
     console.log('***************presave announce*****************');
+    var FORMATTED_DATE;
     if (this.isNew) {
       this.created = Date.now();
+      FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+      this.FORMATTED_DATE = FORMATTED_DATE;
     }
     this.updated.push(Date.now());
+    FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+    this.FORMATTED_DATE = FORMATTED_DATE;
     next();
   });
 
@@ -158,7 +170,8 @@ exports = module.exports = function(mongoose) {
         rating: announce.rating,
         status: announce.status,
         price: announce.price,
-        activated: announce.activated
+        activated: announce.activated,
+        tags: announce.tags
       };
       return announcePost;
     },

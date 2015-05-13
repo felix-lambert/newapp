@@ -46,13 +46,13 @@ module.exports = function(app) {
 
   var announceRoutes          = require('./announces/announceRoutes');
   var messageRoutes           = require('./sockets/messageRoutes');
+  var roomsRoutes             = require('./sockets/roomsRoutes');
   var userRoutes              = require('./users/userRoutes');
   var usernameRoutes          = require('./users/usernameRoutes');
   var findRoutes              = require('./users/findRoutes');
   var profileRoutes           = require('./users/profileRoutes');
   var sessionRoutes           = require('./sessions/sessionRoutes');
   var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes');
-  var transactionRoutes       = require('./transactionRoutes');
   var notificationRoutes      = require('./sockets/notificationRoutes');
   var statusRoutes            = require('./statusRoutes');
   var friendsRoutes           = require('./sockets/friendsRoutes');
@@ -66,12 +66,11 @@ module.exports = function(app) {
   .concat(notificationRoutes)
   .concat(statusRoutes)
   .concat(messageRoutes)
+  .concat(roomsRoutes)
   .concat(sessionRoutes)
   .concat(announcesCommentsRoutes)
-  .concat(transactionRoutes)
   .concat(indexRoutes);
 
-  // require('phx-pagination').init(app);
 
   _.each(routes, function(route) {
     var args = _.flatten([route.path, route.middleware]);

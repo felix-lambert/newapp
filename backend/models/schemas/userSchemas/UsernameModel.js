@@ -30,6 +30,7 @@ exports = module.exports = function(mongoose) {
         type: Number,
         max: 5
       },
+
       guest: Boolean,
       joinedSocketServer: Boolean,
       provider: String,
@@ -88,11 +89,11 @@ exports = module.exports = function(mongoose) {
             cb(err, null);
           } else {
             var filter = [];
-            for (var i = 0; i < user.length; i++) {
-              if (user[i].username && user[i].username !== username) {
-                filter.push([user[i].username, user[i]._id]);
+            user.forEach(function(item) {
+              if (item.username && item.username !== username) {
+                filter.push([item.username, item._id]);
               }
-            }
+            });
             cb(false, filter);
           }
         });

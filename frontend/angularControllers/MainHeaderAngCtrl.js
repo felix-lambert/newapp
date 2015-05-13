@@ -1,14 +1,17 @@
 angular.module('InTouch')
     .controller('MainHeaderAngCtrl', ['$attrs', 'friends', 'toaster', '$timeout', '$localStorage', '$window', '$route', 'notifications', 'socket', '$modal', 
-      '$http', '$scope', '$rootScope', 'Auth', '$location',
+      '$http', '$scope', '$rootScope', 'Auth', '$location', '$element', '$filter',
       function($attrs, friends, toaster, $timeout, $localStorage, $window, $route, notifications, socket, $modal, $http, $scope, $rootScope,
-            Auth, $location) {
+            Auth, $location, $element, $filter) {
 
         console.log('************ Main HEADER CTRL **********');
+        $scope.suggestions = [];
+        $scope.usernames = [];
 
         if ($rootScope.currentUser) {
           var userToken = $rootScope.currentUser.token;
           $http.defaults.headers.common['auth-token'] = userToken;
+          console.log($scope.currentUser.notifications);
         }
 
         var reset = null;
@@ -25,7 +28,8 @@ angular.module('InTouch')
             userDes: user.userDes,
             user: user.user,
             userId: user.id,
-            userDesId: user.userDesId
+            userDesId: user.userDesId,
+            type: 'friendRequest'
           }).then(function(response) {
             console.log('notifications success');
           });
@@ -34,7 +38,7 @@ angular.module('InTouch')
               $scope.currentUser.notifications = response;
               console.log('________________RESPONSE____________');
               console.log(response);
-              $rootScope.currentUser.i = response.length;
+              $rootScope.currentUser.notificationsCount = response.length;
             });
           }
           if ($rootScope.currentUser &&
@@ -49,6 +53,21 @@ angular.module('InTouch')
           console.log('_________receive friend request___________');
           console.log(user);
           if ($rootScope.currentUser.username === user.userRec) {
+            notifications.postNotification({
+              userDes: user.userDes,
+              user: user.userRec,
+              userId: user.id,
+              userDesId: user.userDesId,
+              type: 'accept'
+            }).then(function(response) {
+              console.log('notifications success');
+            });
+            notifications.getNotifications().then(function(response) {
+              $scope.currentUser.notifications = response;
+              console.log('________________RESPONSE____________');
+              console.log(response);
+              $rootScope.currentUser.notificationsCount = response.length;
+            });
             toaster.pop('success', user.userDes + ' a accepté votre ' +
               'requête d\'amitié');
             console.log('define currentUser ! ');
@@ -56,13 +75,14 @@ angular.module('InTouch')
         });
 
         $scope.search = function() {
-            if ($rootScope.currentUser) {
-              var userToken = $rootScope.currentUser.token;
-              $http.defaults.headers.common['auth-token'] = userToken;
-            }
-            $http.get($attrs.url + '?term=' + $scope.searchText)
+          console.log('rechercher');
+          console.log($scope.searchText);
+          if ($rootScope.currentUser) {
+            var userToken = $rootScope.currentUser.token;
+            $http.defaults.headers.common['auth-token'] = userToken;
+          }
+          $http.get('/search/' + '?term=' + $scope.searchText)
             .success(function(data) {
-              console.log(data);
               if ($rootScope.currentUser) {
                 $rootScope.currentUser = $rootScope.currentUser;
                 $scope.currentUser = $rootScope.currentUser;
@@ -70,9 +90,9 @@ angular.module('InTouch')
                 .then(function(usernames) {
                   for ($scope.i = 0; $scope.i < usernames.length; $scope.i++) {
                     if (usernames[$scope.i].wait !== undefined) {
-                      scope.usernames[$scope.i] = usernames[$scope.i].wait;
+                      $scope.usernames[$scope.i] = usernames[$scope.i].wait;
                     } else if (usernames[$scope.i].accepted !== undefined) {
-                      scope.usernames[$scope.i] = usernames[$scope.i].accepted;
+                      $scope.usernames[$scope.i] = usernames[$scope.i].accepted;
                     }
                   }
                   for ($scope.j = 0; $scope.j < data.length; $scope.j++) {
@@ -137,43 +157,35 @@ angular.module('InTouch')
 
         $scope.refuseFriendRequest = function(user) {
           console.log('_____refuse friends request_____________________');
-          console.log(user);
+          console.log(user.userDes);
 
           console.log($rootScope.currentUser._id);
-          /*
-          var friend = new friends({
-              idUser: user.userId,
-              refuse: 'refuse'
-          });
+
           var userToken = $rootScope.currentUser.token;
           $http.defaults.headers.common['auth-token'] = userToken;
           console.log('save');
-          friend.$save();
 
-          var notification = new notifications({
-            userToDelete: user.id,
+          friends.deleteFriend(user.userId, user.userDes).then(function(response) {
+            console.log('delete friend request done');
           });
-          notification.$update(function(res) {
+
+          notifications.updateNotification({
+            userToDelete: user.id
+          }).then(function(response) {
             console.log('remove');
           });
-          */
-          /*
-          var userToken = $rootScope.currentUser.token;
-          $http.defaults.headers.common['auth-token'] = userToken;
-          notifications.query(function(response) {
-            console.log('________________RESPONSE____________');
-            console.log(response);
+
+          notifications.getNotifications().then(function(response) {
             $scope.currentUser.notifications = response;
-            $rootScope.currentUser.i = response.length;
+            $rootScope.currentUser.notificationsCount = response.length;
+
           });
-          */
-          toaster.pop('warning', 'Je compte réorganiser l\'implémentation du refuse friendRequest');
+          toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + user.userRec);
         };
 
         $scope.acceptFriendRequest = function(user) {
           console.log('_____accept friends request_____________________');
           console.log(user);
-          console.log($rootScope.currentUser._id);
 
           notifications.updateNotification({
             userToDelete: user.id,
@@ -199,20 +211,20 @@ angular.module('InTouch')
             console.log('________________RESPONSE____________');
             console.log(response);
             $scope.currentUser.notifications = response;
-            $rootScope.currentUser.i = response.length;
+            $rootScope.currentUser.notificationsCount = response.length;
           });
           toaster.pop('success', 'Vous êtes désormais ami avec : ' +
             user.userRec);
         };
 
-        if ($rootScope.currentUser) {
-          notifications.getNotifications(function(response) {
-            console.log('________________RESPONSE____________');
-            console.log(response);
-            $scope.currentUser.notifications = response;
-            $rootScope.currentUser.i = response.length;
-          });
-        }
+        // if ($rootScope.currentUser) {
+        //   notifications.getNotifications(function(response) {
+        //     console.log('________________RESPONSE GET NOTIFICATION____________');
+        //     console.log(response);
+        //     $scope.currentUser.notifications = response;
+        //     $rootScope.currentUser.i = response.length;
+        //   });
+        // }
         $scope.open = function(size) {
           var modalInstance = $modal.open({
               templateUrl: 'views/modals/aboutModal.html',
@@ -250,7 +262,7 @@ angular.module('InTouch')
           Auth.login({
             'email': $scope.user.emailLog,
             'password': $scope.user.passwordLog
-          }, function (err) {
+          }, function(err) {
             if (!err) {
               $location.path('/');
             }
@@ -263,6 +275,7 @@ angular.module('InTouch')
           console.log('logout');
           delete $localStorage.currentUser;
           delete $localStorage;
+          delete $rootScope.currentUser;
           $window.location.href = '/auth/logout/' + userToken;
           console.log('logout');
         };

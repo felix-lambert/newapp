@@ -1,36 +1,13 @@
 <div class="tags-wrapper">
-  <div id="tagsList" class="tags-cloud">
-    <div ng-repeat="selectedTag in selectedTags" class="tag">
-      <span class="tagName">{{selectedTag}}</span>
-      <span>&nbsp;<b ng-click="removeTag($index)" class="fa fa-times cross"></b></span>
+    <div id="tagsList" class="tags-cloud">
+        <input type="text" placeholder="Start typing a programming language name" id="searchInput" ng-keydown="checkKeyDown($event)" class="form-control" ng-model="searchText" ng-change="search()"/>
+         <div ng-repeat="selectedTag in selectedTags" class="tag">
+
+            <span class="tagName">{{selectedTag}}</span>
+            <span>&nbsp;<b ng-click="removeTag($index)" class="fa fa-times cross"></b></span>
+        </div>
     </div>
-    <input type="text" placeholder="Rechercher ..." id="searchInput" ng-keydown="checkKeyDown($event)" class="" ng-model="searchText" ng-change="search()" />
-  </div>
-  <table class="table" ng-init="initListFriend()">
-    <thead id="suggestions" class="suggestions-list">
-      <tr ng-repeat="suggestion in suggestions" class="blockSpan">
-        <th>{{suggestion.follow[0] || suggestion.notFollow[0]}}</th>
-        <th>
-          <div class="btn-group">
-            <a class="btn btn-default" ng-click="see()">Voir</a>
-          </div>
-        </th>
-        <th ng-show="suggestion.follow[0]">
-          <div ng-show="suggestion " class="btn-group">
-            <p class="btn btn-warning" ng-click="follow(suggestion.follow)"> Suivre</p>
-          </div>
-        </th>
-        <th ng-show="suggestion.notFollow[0]">
-          
-          <div ng-repeat="username in usernames track by $index" class="btn-group" ng-if="username.wait === suggestion.notFollow[0]">
-            <p>En attente de confirmation</p>
-          </div>
-          <div class=" btn-group"  ng-repeat="username in usernames track by $index" ng-if="username.accepted === suggestion.notFollow[0]">
-            <p class="text-success">Ami</p>
-          </div>
-          
-        </th>
-      </tr>
-    </thead>
-  </table>
+    <ul id="suggestions" class="suggestions-list">
+       <li ng-repeat="suggestion in suggestions" class="blockSpan" ng-click="addToSelectedTags($index)" ng-mouseover="$parent.selectedIndex=$index" ng-class="{active : selectedIndex===$index}">{{suggestion}}</li>
+     </ul>
 </div>

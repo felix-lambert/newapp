@@ -54,75 +54,52 @@ ul.dropdown-cart li .item-right button{
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><img alt="Brand" src="/icons/logo.png"></a>
+          <a class="navbar-brand" href="#" ng-click="switch('index')"><img alt="Brand" src="/icons/logo.png"></a>
         </div>
-    
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-collapse-3">
           <form class="navbar-form navbar-left" role="search">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Rechercher un utilisateur" />
+                <input type="text" class="form-control" placeholder="Rechercher ..." id="searchInput" ng-keydown="checkKeyDown($event)" class="" ng-model="searchText" ng-change="search()" />
+                <ul class="list-group" ng-init="initListFriend()">
+                    <li ng-repeat="suggestion in suggestions" class="list-group-item"
+                        ng-class="{active : isSelected(suggestion)}"
+                        ng-click="setSelected(suggestion)">
+                        <h4 class="list-group-item-heading">{{suggestion.follow[0] || suggestion.notFollow[0]}}</h4> <span
+                        class="list-group-item-text" ng-show="suggestion.follow[0]">
+                          <div ng-show="suggestion " class="btn-group">
+                            <p class="btn btn-warning" ng-click="follow(suggestion.follow)"> Suivre</p>
+                          </div>
+                        </span><span ng-show="suggestion.notFollow[0]"><div ng-repeat="username in usernames track by $index" class="btn-group" ng-if="username.wait === suggestion.notFollow[0]">
+                          <p>En attente de confirmation</p>
+                        </div>
+                        <div class=" btn-group"  ng-repeat="username in usernames track by $index" ng-if="username.accepted === suggestion.notFollow[0]">
+                          <p class="text-success">Ami</p>
+                        </div></span>
+                    </li>
+                </ul>
               </div>
             </form>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Accueil</a></li>
-            <li><a href="#">A propos</a></li>
+            <li><a href='/' ng-click="switch('index')">Accueil</a></li>
+            <li><a href='/' ng-click="open('lg')">A propos</a></li>
             <li ng-show="currentUser" class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-shopping-cart"></span> 7 - Notifications<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-pencil"></span> {{currentUser.notificationsCount}} - Notifications<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-cart" role="menu">
-              <li>
+              <li ng-repeat="notification in currentUser.notifications">
                   <span class="item">
                     <span class="item-left">
                         <img src="http://lorempixel.com/50/50/" alt="" />
                         <span class="item-info">
-                            <span>Item name</span>
-                            <span>23$</span>
+                            <span ng-if="notification.type !== 'accept'">Requête d'amitié</span>
+                            <span ng-if="notification.type === 'accept'">Acceptation d'amitié</span>
+                            <span ng-if="notification.type !== 'accept'">{{notification.userRec}}</span>
+                            <span ng-if="notification.type === 'accept'">{{notification.userDes}}</span>
                         </span>
                     </span>
                     <span class="item-right">
-                        <button class="btn btn-xs btn-danger pull-right">x</button>
-                    </span>
-                </span>
-              </li>
-              <li>
-                  <span class="item">
-                    <span class="item-left">
-                        <img src="http://lorempixel.com/50/50/" alt="" />
-                        <span class="item-info">
-                            <span>Item name</span>
-                            <span>23$</span>
-                        </span>
-                    </span>
-                    <span class="item-right">
-                        <button class="btn btn-xs btn-danger pull-right">x</button>
-                    </span>
-                </span>
-              </li>
-              <li>
-                  <span class="item">
-                    <span class="item-left">
-                        <img src="http://lorempixel.com/50/50/" alt="" />
-                        <span class="item-info">
-                            <span>Item name</span>
-                            <span>23$</span>
-                        </span>
-                    </span>
-                    <span class="item-right">
-                        <button class="btn btn-xs btn-danger pull-right">x</button>
-                    </span>
-                </span>
-              </li>
-              <li>
-                  <span class="item">
-                    <span class="item-left">
-                        <img src="http://lorempixel.com/50/50/" alt="" />
-                        <span class="item-info">
-                            <span>Item name</span>
-                            <span>23$</span>
-                        </span>
-                    </span>
-                    <span class="item-right">
-                        <button class="btn btn-xs btn-danger pull-right">x</button>
+                      <button type="button" ng-if="notification.type !== 'accept'" class="btn btn-xs btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
+                      <button data-ng-click="refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
                     </span>
                 </span>
               </li>
@@ -130,19 +107,7 @@ ul.dropdown-cart li .item-right button{
               <li><a class="text-center" href="">View Cart</a></li>
           </ul>
           </li>
-          <li ng-show="currentUser" class="dropdown">
-
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Notifications <span class="badge">{{currentUser.i}}</span>
-            <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li ng-repeat="notification in currentUser.notifications">
-                Requête d'amitié : {{notification.userRec}} <button type="button" class="btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
-                <!--           <button type="button" data-ng-click="refuseFriendRequest(notification)" class="btn btn-danger">Refuser</button> -->
-              </li>
-
-          </ul>
-          </li>
-          <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+          <li class="dropdown" ng-show='currentUser'><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
                     class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary">42</span>
                 </a>
                     <ul class="dropdown-menu">
@@ -153,8 +118,8 @@ ul.dropdown-cart li .item-right button{
                         <li><a href="#" class="text-center">View All</a></li>
                     </ul>
                 </li>
-                        <li ng-show="!currentUser"><a ng-click="switch('login')">Se connecter</a></li>
-              <li ng-show="currentUser"><a ng-click="logout()">Déconnexion</a></li>
+                <li ng-show="!currentUser"><a href='/' ng-click="switch('login')">Se connecter</a></li>
+              <li ng-show="currentUser"><a href='/' ng-click="logout()">Déconnexion</a></li>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container -->
     </nav><!-- /.navbar -->

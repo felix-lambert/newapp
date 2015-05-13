@@ -22,7 +22,7 @@ angular.module('InTouch')
                   console.log(response);
                   console.log(response.length);
                   $rootScope.currentUser.notifications = response;
-                  $rootScope.currentUser.i = response.length;
+                  $rootScope.currentUser.notificationsCount = response.length;
                 });
                 return cb();
               }, function(err) {

@@ -94,6 +94,7 @@ angular.module('InTouch')
               roomId: response.roomId,
               roomName: response.roomName
             });
+            console.log('room created');
           } else if (response.status === 'join') {
             console.log('JOIN');
             socket.emit('joinRoom', {
@@ -217,10 +218,6 @@ angular.module('InTouch')
         });
       });
 
-      socket.on('sendChatMessage', function(message) {
-        $scope.messages.push(message);
-      });
-
       socket.on('sendChatMessageHistory', function(data) {
         angular.forEach(data, function(messages, key) {
           $scope.messages.push(messages);
@@ -293,11 +290,9 @@ angular.module('InTouch')
 
       socket.on('sendChatMessage', function(message) {
         console.log('_______________ send _____________________');
-        console.log(message);
         messages.getMessagesFromRoom(message.roomId).then(function(response) {
-          if (response && response.length > 0) {
             $scope.messages.push(message);
-          }
+            console.log($scope.messages);
         });
       });
 

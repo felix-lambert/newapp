@@ -8,16 +8,13 @@ var auth        = require('../../authentification/auth');
 /**
  * Defines routes for application
  */
-var routes = [{
-    path: '/api/friends/:friendId',
+var routes = [
+{
+    path: '/api/friends/:friendId/:user',
     httpMethod: 'DELETE',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.deleteFriend]
 }, {
     path: '/api/friends/:friendId',
-    httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, FriendsCtrl.getAllFriends]
-}, {
-    path: '/api/friends/user/:userId',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.getFriendsFromUser]
 }, {

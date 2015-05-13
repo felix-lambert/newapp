@@ -1,7 +1,7 @@
 angular.module('InTouch')
-.controller('AnnouncesAngCtrl', ['Announce', '$scope', '$http', 'announces',
+.controller('AnnouncesAngCtrl', ['notifications', '$timeout', '$localStorage', 'Announce', '$scope', '$http', 'announces',
   'comments', '$location', '$routeParams', '$rootScope', 'toaster', '$modal',
-  'transactions', function(Announce, $scope, $http, announces, comments,
+  'transactions', function(notifications, $timeout, $localStorage, Announce, $scope, $http, announces, comments,
     $location, $routeParams, $rootScope, toaster, $modal, transactions) {
 
     console.log('*************AnnounceCtrl************************');
@@ -18,6 +18,8 @@ angular.module('InTouch')
       rating: null
     };
 
+    $scope.tags = [];
+
     $scope.decorateNumberPage = function(page, decoration, weight) {
       $('#bt' + page).css('text-decoration', decoration);
       $('#bt' + page).css('font-weight', weight);
@@ -27,13 +29,14 @@ angular.module('InTouch')
     $scope.limit = 5;
     $scope.total = 0;
     $scope.pageNumbers = [];
-    
+
     $scope.paginate = function(page) {
       $scope.page = page;
       Announce.paginate({
-          page : $scope.page,
-          limit : $scope.limit
+        page : $scope.page,
+        limit : $scope.limit
       }, function(data) {
+        console.log(data);
         $scope.announces = data.announces;
         $scope.total = data.total;
         $scope.pageNumbers = [];
@@ -50,23 +53,25 @@ angular.module('InTouch')
     $scope.paginateUser = function(page) {
       console.log('paginate user announces');
       $scope.page = page;
-      announces.getAnnouncesFromUser({
-          page : $scope.page,
-          limit : $scope.limit,
-          user: $rootScope.currentUser._id
-      }).then(function(data) {
-        console.log(data.announces);
-        $scope.announces = data.announces;
-        $scope.total = data.total;
-        $scope.pageNumbers = [];
-        for (var i = 0; i < $scope.total; i++) {
-          $scope.pageNumbers.push(i + 1);
-        }
-      });
-      angular.forEach($scope.pageNumbers, function(page, key) {
-        $scope.decorateNumberPage(page, 'none', 'normal');
-      });
-      $scope.decorateNumberPage(page, 'underline', 'bold');
+      if ($rootScope.currentUser) {
+        announces.getAnnouncesFromUser({
+            page : $scope.page,
+            limit : $scope.limit,
+            user: $rootScope.currentUser._id
+        }).then(function(data) {
+          console.log(data.announces);
+          $scope.announces = data.announces;
+          $scope.total = data.total;
+          $scope.pageNumbers = [];
+          for (var i = 0; i < $scope.total; i++) {
+            $scope.pageNumbers.push(i + 1);
+          }
+        });
+        angular.forEach($scope.pageNumbers, function(page, key) {
+          $scope.decorateNumberPage(page, 'none', 'normal');
+        });
+        $scope.decorateNumberPage(page, 'underline', 'bold');
+      }
     };
 
     $scope.listUsers = function() {
@@ -163,32 +168,66 @@ angular.module('InTouch')
     };
 
     $scope.create = function() {
-      announces.postAnnounce({
-        title: this.title,
-        content: this.content,
-        type: this.type,
-        category: this.category,
-        price: this.price,
-        images: this.selectedImages,
-        activated: true
-      }).then(function(response) {
-        console.log(response);
-        this.title = '';
-        this.content = '';
-        announces.getAnnounces().then(function(announces) {
-          console.log(announces);
-          $scope.announces = announces;
-          $scope.announces.push({
-            '_id': $scope._id,
-            'title': $scope.title,
-            'type': $scope.type,
-            'category': $scope.category
-          });
+      console.log('create');
+      if ($rootScope.currentUser) {
+        console.log(this);
+        announces.postAnnounce({
+          title: this.title,
+          content: this.content,
+          type: this.type,
+          category: this.category,
+          price: this.price,
+          images: this.selectedImages,
+          activated: true,
+          tags: this.data.tags
+        }).then(function(response) {
+          console.log(response);
+          this.title = '';
+          this.content = '';
+          $scope.paginateUser($scope.page);
           $scope.title = '';
           $scope.category = '';
           $scope.type = '';
         });
-      });
+      } else {
+        var modalInstance = $modal.open({
+          templateUrl: 'views/modals/addUsernameModal.html',
+          controller: 'AuthModalAngCtrl'
+        });
+
+        $scope.announce = this;
+        modalInstance.result.then(function(selectedItem) {
+          $scope.selected = selectedItem;
+        }, function(user) {
+          $timeout(function() {
+            console.log('________________RESPONSE LOGIN____________');
+            console.log(user);
+            $localStorage.currentUser = user;
+            $rootScope.currentUser = $localStorage.currentUser;
+            console.log($scope.announce);
+            var userToken = user.token;
+            $http.defaults.headers.common['auth-token'] = userToken;
+            announces.postAnnounce({
+              title: $scope.announce.title,
+              content: $scope.announce.content,
+              type: $scope.announce.type,
+              category: $scope.announce.category,
+              price: $scope.announce.price,
+              images: $scope.announce.selectedImages,
+              activated: true
+            }).then(function(response) {
+              console.log(response);
+              $scope.paginateUser($scope.page);
+              $scope.content = '';
+              $scope.title = '';
+              $scope.category = '';
+              $scope.type = '';
+            });
+          });
+
+        });
+
+      }
     };
 
     $scope.remove = function(announce) {
@@ -227,7 +266,7 @@ angular.module('InTouch')
       }).then(function() {});
 
       toaster.pop('warning', 'Ce service est désactivé');
-      console.log('__AnnouncesCtrl $scope.initListAnnouce__');
+      console.log('__AnnouncesCtrl $scope.initListAnnounce__');
       $scope.noAnnounces = false;
       $scope.findFromUser($rootScope.currentUser._id);
       // announce.$update({announceId: id}, function() {
@@ -247,15 +286,6 @@ angular.module('InTouch')
       // });
     };
 
-    $scope.find = function() {
-      announces.getAnnounces().then(function(announces) {
-        if (!announces) {
-          $scope.noAnnounces = true;
-        }
-        $scope.announces = announces;
-        allAnnounces = announces;
-      });
-    };
 
     $scope.findFromUser = function(userId) {
       announces.getAnnouncesFromUser(userId).then(function(announces) {
@@ -319,9 +349,10 @@ angular.module('InTouch')
     // };
 
     $scope.initListAnnounce = function() {
-      console.log('__AnnouncesCtrl $scope.initListAnnouce__');
+      console.log('__AnnouncesCtrl $scope.initListAnnounce__');
 
       $scope.paginate($scope.page);
+
       // $scope.$watch('filter', filterAndSortAnnounces, true);
     };
 
@@ -334,7 +365,7 @@ angular.module('InTouch')
       $scope.paginateUser($scope.page);
     };
 
-    $scope.initViewAnnouce = function() {
+    $scope.initViewAnnounce = function() {
       console.log('__AnnouncesCtrl $scope.initViewAnnounce__');
       $scope.findOne();
       $scope.getComments();

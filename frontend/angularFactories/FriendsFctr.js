@@ -22,9 +22,9 @@ angular.module('InTouch')
     return deferred.promise;
   }
 
-  function deleteFriend(id) {
+  function deleteFriend(id, user) {
     var deferred = $q.defer();
-    $http.delete('/api/friends/' + id).success(function(data) {
+    $http.delete('/api/friends/' + id + '/' + user).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();
@@ -35,7 +35,7 @@ angular.module('InTouch')
   return {
     postFriend: postFriend,
     getFriendsFromUser: getFriendsFromUser,
-    deleteRoom: deleteFriend
+    deleteFriend: deleteFriend
   };
 
     // return $resource('/api/friends/:userId', {

@@ -12,14 +12,6 @@
       <input type="number" ng-model="announce.price" class="form-input mwf" placeholder="Prix" required/>
     </div>
     <div class="form-group">
-      <label class="control-label" for="images">Ajouter des images</label>
-      <div class="images-list">
-        <div class="image-box image-box-bg" style="background-image: url({{image.small}});" ng-repeat="image in selectedImages">
-        </div>
-      </div>
-      <button ng-click="AddImages()" type="button" class="btn btn-default">Ajouter</button>
-    </div>
-    <div class="form-group">
       <label class="control-label" for="content">Content</label>
       <div class="controls">
         <textarea ng-model="announce.content" class="form-control" id="content" rows="10" placeholder="Content"></textarea>

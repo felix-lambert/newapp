@@ -11,7 +11,7 @@ angular.module('InTouch')
     });
     return deferred.promise;
   }
-
+  
   function getNotifications() {
     var deferred = $q.defer();
     $http.get('/api/notifications/').success(function(data) {

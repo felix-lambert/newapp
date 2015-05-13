@@ -4,17 +4,9 @@
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
 var Username = mongoose.model('Username');
-var passport    = require('passport');
+var passport = require('passport');
 
 module.exports = {
-
-  /////////////////////////////////////////////////////////////////
-  // GET SESSION //////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  getSession: function(req, res) {
-    console.log('***** auth/session callback *****');
-    res.status(201).json('authentified');
-  },
 
   /////////////////////////////////////////////////////////////////
   // LOGOUT ///////////////////////////////////////////////////////
@@ -22,13 +14,23 @@ module.exports = {
   logout: function(req, res) {
     console.log('******************logout******************');
     var incomingToken = req.params.id;
-    console.log(incomingToken);
     if (incomingToken) {
       var decoded = User.decode(incomingToken);
-      if (decoded) {
-        console.log(decoded);
-        var decodeUser = decoded.email || decoded.username;
+      console.log(decoded);
+      if (decoded.email) {
+        var decodeUser = decoded.email;
         User.invalidateUserToken(decodeUser,
+          function(err, user) {
+          if (err) {
+            res.status(400).json({error: 'Issue finding user.'});
+          } else {
+            console.log('redirect');
+            res.redirect('/');
+          }
+        });
+      } else if (decoded.username) {
+        var decodeUser = decoded.username;
+        Username.invalidateUsernameToken(decodeUser,
           function(err, user) {
           if (err) {
             res.status(400).json({error: 'Issue finding user.'});
@@ -40,8 +42,6 @@ module.exports = {
       } else {
         res.status(400).json({error: 'Issue decoding incoming token.'});
       }
-    } else {
-      res.redirect('/');
     }
   },
 
@@ -63,7 +63,6 @@ module.exports = {
 
   authenticate: function(req, res) {
     console.log('authenticate');
-    console.log(req.user);
     User.createUserToken(req.user.email, function(err, usersToken) {
       if (err) {
         res.status(400).json({error: 'Issue generating token'});
@@ -92,6 +91,8 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   register: function(req, res, next) {
     console.log('**********************Register***********************');
+    console.log(req.body.password);
+    console.log(req.body.confPassword);
     if (req.body.password === req.body.confPassword) {
       var user = new User({
         username: req.body.username,
@@ -104,11 +105,12 @@ module.exports = {
         }
         User.createUserToken(req.body.email, function(err, usersToken) {
           if (err) {
+            console.log('Issue generating token');
             res.status(400).json({error: 'Issue generating token'});
           } else {
             User.getUserToken(req.body.email, usersToken, function(err, user) {
               if (err) {
-                console.log(err);
+                console.log('Issue finding user');
                 res.status(400).json({error: 'Issue finding user'});
               } else {
                 res.status(200).json({
@@ -125,6 +127,9 @@ module.exports = {
           }
         });
       });
+    } else {
+      console.log('The confirm password don\'t match');
+      res.status(400).json('The confirm password don\'t match');
     }
   }
 };

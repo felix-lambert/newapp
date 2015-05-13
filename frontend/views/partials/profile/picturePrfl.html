@@ -25,7 +25,7 @@ img:hover {
 
 <div ng-show="uploader.isHTML5">
       <div class="row">
-                <img  ng-repeat="image in images" src="/images/{{image}}" alt="Short alt text">
+        <img  ng-repeat="image in images track by $index" src="/images/{{image}}" alt="Short alt text">
         </div>
 </div>
 

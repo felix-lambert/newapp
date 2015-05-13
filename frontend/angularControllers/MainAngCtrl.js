@@ -39,7 +39,7 @@ angular.module('InTouch')
             console.log('____________________________________________');
 
             if (!err) {
-              $rootScope.currentUser.i = 0;
+              $rootScope.currentUser.notificationsCount = 0;
               $location.path('/');
             }
           });

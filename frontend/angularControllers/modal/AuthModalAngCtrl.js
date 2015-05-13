@@ -7,19 +7,12 @@ angular.module('InTouch')
           console.log(this.username);
           Username.postUsername({username: this.username}).then(function(response) {
             console.log('username success');
+            $modalInstance.dismiss(response);
           });
-          $modalInstance.dismiss('cancel');
+          
         };
-
-
         $scope.cancel = function() {
           $modalInstance.dismiss('cancel');
         };
-
-
-
-
-
-
       }
 ]);

@@ -1,19 +1,11 @@
 // test/myapp.test.js
 var assert  = require('chai').assert;
 var request = require('supertest');
-var server  = require('../myapp');
+var server  = require('./myapp');
 var app     = server();
 
 it('get / return a 200 response', function(done) {
   request(app).get('/').expect(200, done);
-});
-
-it('get /api/images return a 400 response', function(done) {
-  request(app).get('/api/images').expect(400, done);
-});
-
-it('get /api/rooms return a 400 response', function(done) {
-  request(app).get('/api/rooms/').expect(400, done);
 });
 
 it('get /api/messages/ return a 200 response', function(done) {
@@ -28,35 +20,6 @@ it('get /* return a 200 response', function(done) {
   request(app).get('/*').expect(200, done);
 });
 
-it('get /api/money return a 400 response', function(done) {
-  request(app).get('/api/money').expect(400, done);
-});
-
-it('get /api/transactions return a 400 response', function(done) {
-  request(app).get('/api/transactions').expect(400, done);
-});
-
-it('get /api/money return a 400 response', function(done) {
-  request(app).get('/api/money').expect(400, done);
-});
-
-it('get /api/categories return a 200 response (get categories)',
-  function(done) {
-  request(app).get('/api/categories').expect(200, done);
-});
-
-it('get /api/admin/users return a 400 response', function(done) {
-  request(app)
-      .get('/api/admin/users')
-      .expect(400, done);
-});
-
-it('get /auth/session return a 400 response', function(done) {
-  request(app)
-      .get('/auth/session')
-      .expect(400, done);
-});
-
 it('get /search return a 200 response (search)', function(done) {
   request(app)
       .get('/search')
@@ -69,27 +32,15 @@ it('get /api/notifications/ return a 400 response', function(done) {
       .expect(400, done);
 });
 
-it('get /getReputation return a 400 response', function(done) {
+it('get /auth/username-exists return a 400 response', function(done) {
   request(app)
-      .get('/getReputation')
+      .get('/auth/username-exists')
       .expect(400, done);
 });
 
-it('get /auth/username-exists return a 200 response', function(done) {
-  request(app)
-      .get('/auth/username-exists')
-      .expect(200, done);
-});
-
-it('get /auth/email-exists return a 200 response', function(done) {
+it('get /auth/email-exists return a 400 response', function(done) {
   request(app)
       .get('/auth/email-exists')
-      .expect(200, done);
-});
-
-it('get /api/profile return a 400 response', function(done) {
-  request(app)
-      .get('/api/profile')
       .expect(400, done);
 });
 
@@ -100,6 +51,102 @@ it('should return the correct HTML', function(done) {
         assert.isTrue(res.text.indexOf('</html>') > 0);
         done();
       });
+});
+
+it('Sign in user', function(done) {
+  request(app).post('/auth/login')
+      .send({
+        email : 'frepirtjiupghtr',
+        password : 'frejrpijgtripjgtr'
+      })
+      .expect(400, done)
+});
+
+it('Sign in user', function(done) {
+  request(app).post('/auth/login')
+      .send({
+        email : 'frepirtjiupghtr@gmail.com',
+        password : 'frejrpijgtripjgtr'
+      })
+      .expect(400, done)
+});
+
+it('Sign in user', function(done) {
+  request(app).post('/auth/login')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelon'
+      })
+      .expect(200, done)
+});
+
+it('Sign in user', function(done) {
+  request(app).post('/auth/login')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelodn'
+      })
+      .expect(400, done)
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelodn',
+        passwordConf: 'frergtrgtrtgr'
+      })
+      .expect(400, done);
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelon',
+        passwordConf: 'lebarbarelemelon'
+      })
+      .expect(400, done);
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelon',
+        confPassword: 'lebarbarelemelon'
+      })
+      .expect(400, done);
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelodn',
+        confPassword: 'frergtrgtrtgr'
+      })
+      .expect(400, done);
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'lambertfelix8@gmail.com',
+        password : 'lebarbarelemelon',
+        confPassword: 'lebarbarelemelon'
+      })
+      .expect(400, done);
+});
+
+it('Register', function(done) {
+  request(app).post('/auth/register')
+      .send({
+        email : 'bobby@gmail.com',
+        password : 'lebarbarelemelon',
+        confPassword: 'lebarbarelemelon'
+      })
+      .expect(200, done);
 });
 
 // it('should return the correct HTML', function(done) {

@@ -17,10 +17,6 @@ var routes = [
       path: '/auth/logout/:id',
       httpMethod: 'GET',
       middleware: [SessionCtrl.logout]
-  }, {
-      path: '/auth/session',
-      httpMethod: 'GET',
-      middleware: [SessionCtrl.getSession]
   },
   /**
    * Post method to register a new user

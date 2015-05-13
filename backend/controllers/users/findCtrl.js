@@ -44,7 +44,7 @@ module.exports = {
         res.status(ok ? 200 : 400).json({
               ok: ok
         });
-      }, 500);
+      }, 400);
     });
   },
 

@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var Friend   = mongoose.model('Friend');
 var User     = mongoose.model('User');
+var Q        = require('q');
 
 module.exports = {
 
@@ -51,42 +52,39 @@ module.exports = {
   // CREATE A FRIEND //////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   postFriend: function(req, res) {
-    console.log('______ POST /api/friends (new friend) _____');
-    if (req.body.refuse) {
-      console.log('inside ');
+
+    function testIfFriendRequestDone(userId) {
       Friend.findOne({
         creator: req.body.idUser
       }).exec(function(err, result) {
-        console.log('refuse');
-        result.remove();
+        if (result && result.length > 0) {
+          console.log('Friend request already done');
+          return false;
+        } else {
+          return true;
+        }
       });
-      Friend.findOne({
-        creator: req.user._id
-      }).exec(function(err, result) {
-        console.log('refuse');
-        result.remove();
-      });
-      return;
-    } else if (req.body.usernameAcceptedFriendRequest) {
-      console.log('username accepted');
+    }
+
+    function saveFriend(friend, user) {
       Friend.findOneAndUpdate({
         $and: [
-        {creator: req.body.idUser},
-        {usernameWaitFriendRequest: req.user.username}
+        {creator: friend.idUser},
+        {usernameWaitFriendRequest: user.username}
         ]
       }, {
-        usernameAcceptedFriendRequest: req.user.username,
+        usernameAcceptedFriendRequest: user.username,
       }, {upsert: true}).exec(function(err, userOne) {
         if (err) {
           return res.status(500).json(err);
         } else {
           Friend.findOneAndUpdate({
             $and: [
-              {creator: req.user._id},
-              {usernameWaitFriendRequest: req.body.usernameAcceptedFriendRequest}
+              {creator: user._id},
+              {usernameWaitFriendRequest: friend.usernameAcceptedFriendRequest}
             ]
           }, {
-            usernameAcceptedFriendRequest: req.body.usernameAcceptedFriendRequest,
+            usernameAcceptedFriendRequest: friend.usernameAcceptedFriendRequest,
           }, {upsert: true}).exec(function(err, result) {
             if (err) {
               return res.status(500).json(err);
@@ -96,34 +94,19 @@ module.exports = {
           });
         }
       });
-    } else if (req.body.usernameWaitFriendRequest) {
-      console.log('username wait');
-      Friend.findOne({
-        creator: req.body.idUser
-      }).exec(function(err, result) {
-        if (result && result.length > 0) {
-          console.log('Friend request already done');
-          return;
-        }
-      });
-      Friend.findOne({
-        creator: req.user._id
-      }).exec(function(err, result) {
-        if (result && result.length > 0) {
-          console.log('Friend request already done');
-          return;
-        }
-      });
-      var friend = new Friend();
-      var waitFriendRequest = req.body.usernameWaitFriendRequest;
-      friend.usernameWaitFriendRequest = waitFriendRequest;
-      friend.creator = req.user._id;
-      friend.save(function(err, doc) {
+    }
+
+    function saveWaitFriendRequest(user, friend) {
+      var firstFriend = new Friend();
+      var waitFriendRequest = friend.usernameWaitFriendRequest;
+      firstFriend.usernameWaitFriendRequest = waitFriendRequest;
+      firstFriend.creator = user._id;
+      firstFriend.save(function(err, doc) {
         if (err) {
           return res.status(500).json(err);
         } else {
           var secondFriend = new Friend();
-          secondFriend.usernameWaitFriendRequest = req.user.username;
+          secondFriend.usernameWaitFriendRequest = user.username;
           secondFriend.save(function(err, doc) {
             if (err) {
               return res.status(500).json(err);
@@ -134,49 +117,41 @@ module.exports = {
         }
       });
     }
+
+    if (req.body.usernameAcceptedFriendRequest) {
+      console.log('username accepted');
+      saveFriend(req.body, req.user);
+    } else if (req.body.usernameWaitFriendRequest) {
+      console.log('username wait');
+      testIfFriendRequestDone(req.body.idUser);
+      testIfFriendRequestDone(req.user._id);
+      saveWaitFriendRequest(req.user, req.body);
+    }
   },
 
-  /////////////////////////////////////////////////////////////////
-  // DELETE A FRIEND //////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////
+  // DELETE A FRIEND ////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////
   deleteFriend: function(req, res) {
     console.log('_________destroy friend_____________');
-    var friend = req.friend;
-    Friend.remove(friend, function(err) {
-      if (err) {
-        console.log(err);
-        res.status(400).json(err);
-      } else {
-        res.status(200).json(friend);
-      }
+    console.log('______ DELETE/api/friends (new friend) _____');
+    
+    console.log(req.params);
+    console.log(req.user._id);
+    Friend.findOne({
+      creator: req.params.friendId
+    }).where('usernameWaitFriendRequest').equals(req.params.user)
+    .remove(function(err, result) {
+      console.log('result');
+      res.status(200).json();
     });
+    
   },
 
   /////////////////////////////////////////////////////////////////
-  // GET FRIENDS FROM USER ////////////////////////////////////////
+  // LIST ALL FRIENDS FROM USER////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   getFriendsFromUser: function(req, res) {
-    console.log('_____________________GET FRIENDS FROM USER________________');
-    Friend.find({
-            creator: req.params.userId
-        })
-        .sort('-created')
-        .exec(function(err, friends) {
-          if (err) {
-            res.status(501).json(err);
-          } else {
-            for (i = 0; i < friends.length; i++) {
-              sendFriends.push(friends[i].usernameWaitFriendRequest);
-            }
-            res.status(200).json(friends);
-          }
-        });
-  },
-
-  /////////////////////////////////////////////////////////////////
-  // LIST ALL FRIENDS//////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  getAllFriends: function(req, res) {
     console.log('************** Get All Friends **********');
     var sendFriends = [];
     Friend.find({creator: req.params.friendId})
@@ -186,19 +161,17 @@ module.exports = {
             console.log('ERREUR');
             res.status(501).json(err);
           } else {
-            for (var i = 0; i < friends.length; i++) {
-              if (friends[i].usernameAcceptedFriendRequest) {
+            friends.forEach(function(item) {
+              if (item.usernameAcceptedFriendRequest) {
                 sendFriends.push({
-                    accepted: friends[i].usernameAcceptedFriendRequest
+                    accepted: item.usernameAcceptedFriendRequest
                 });
-              } else if (friends[i].usernameWaitFriendRequest) {
+              } else if (item.usernameWaitFriendRequest) {
                 sendFriends.push({
-                    wait: friends[i].usernameWaitFriendRequest
+                    wait: item.usernameWaitFriendRequest
                 });
               }
-            }
-            console.log('///////////////////////////');
-            console.log(sendFriends);
+            });
             res.status(200).json(sendFriends);
           }
         });

@@ -7,7 +7,8 @@ var app = angular.module('InTouch', [
   'ngStorage',
   'toaster',
   'door3.css',
-  'angularFileUpload'
+  'angularFileUpload',
+  'ngTagsInput'
 ]);
 
 var routeObject = {

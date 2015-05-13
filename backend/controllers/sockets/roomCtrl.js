@@ -43,16 +43,13 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   create: function(req, res) {
     console.log('______CREATE ROOM TEST__________________');
-    console.log(req.body);
-
     var usernames = new Array(req.body.nameRec, req.body.name);
 
     usernames.sort(alphabetical);
 
     roomName = usernames.join('');
 
-    console.log(roomName);
-
+    
     Room.find({name: roomName}, function(err, results) {
       var room = [];
       if (results && results.length > 0) {
@@ -114,14 +111,6 @@ module.exports = {
         res.status(200).json(room);
       }
     });
-  },
-
-  /////////////////////////////////////////////////////////////////
-  // SHOW ROOM ////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  show: function(req, res) {
-    console.log('show room');
-    res.status(200).json(req.room);
   },
 
   /////////////////////////////////////////////////////////////////
