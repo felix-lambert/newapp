@@ -131,45 +131,36 @@ module.exports = {
   listPagination: function(req, res) {
     var findAnnounces = function(next) {
       Announce
-          .find()
-          .sort('-created')
-          .populate('creator')
-          .select()
-          .skip((req.params.limit * req.params.page) - req.params.limit)
-          .limit(req.params.limit)
-          .exec(next);
+        .find()
+        .sort('-created')
+        .populate('creator')
+        .skip((req.params.limit * req.params.page) - req.params.limit)
+        .limit(req.params.limit)
+        .exec(next);
     };
     var countAnnounces = function(next) {
       Announce.count().exec(next);
     };
-
-    var countComments = function(next) {
-      Comment.count({
-        announce: item._id
-      }).exec(next);
-    };
-
     async.parallel({
         find: findAnnounces,
-        count: countAnnounces,
-        countComments: countComments
+        count: countAnnounces
     }, function done(err, results) {
-      var sendAnnounces = [];
-      async.parallel({}, function done(err, results) {
-
-      });
-      results.find.forEach(function(item) {
+      var countComments = function(item, doneCallback) {
         if (item.FORMATTED_DATE) {
           var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
           item.FORMATTED_DATE = m.fromNow();
         }
-        item.nbComment = count;
-        console.log(item.nbComment);
-        sendAnnounces.push(item);
-      });
-      return res.json({
-        total: Math.ceil(results.count / req.params.limit),
-        announces: sendAnnounces
+        Comment.count({announce: item._id}).exec(function(err, result) {
+          console.log(result);
+          item.nbComment = result;
+          doneCallback(null, item);
+        });
+      };
+      async.map(results.find, countComments, function(err, result) {
+        return res.json({
+          total: Math.ceil(results.count / req.params.limit),
+          announces: result
+        });
       });
     });
   },
