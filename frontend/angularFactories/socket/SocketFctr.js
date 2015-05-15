@@ -1,6 +1,6 @@
 angular.module('InTouch')
     .factory('socket', ['$rootScope', 'ENV', function($rootScope, ENV) {
-      var socket = io.connect(ENV.apiEndPoint);
+      var socket = io.connect();
       if (socket.connected === false) {
         $rootScope.status = 'offline';
       }
