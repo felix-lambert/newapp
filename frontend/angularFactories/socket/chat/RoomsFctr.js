@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('rooms', ['$q', '$http', function($q, $http) {
+.factory('rooms', ['$q', '$http', rooms]);
+
+function rooms($q, $http) {
 
   function postRoom(room) {
     var deferred = $q.defer();
@@ -47,4 +49,4 @@ angular.module('InTouch')
   //   },
 
   // });
-}]);
+}

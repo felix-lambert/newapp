@@ -1,5 +1,7 @@
 angular.module('InTouch')
-.filter('searchFor', function() {
+.filter('searchFor', searchFor);
+
+function searchFor() {
   return function(arr, searchString) {
 
     if (!searchString) {
@@ -17,4 +19,4 @@ angular.module('InTouch')
     });
     return result;
   };
-});
+}

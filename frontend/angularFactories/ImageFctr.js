@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('Images', ['$q', '$http', function($q, $http) {
+.factory('Images', ['$q', '$http', Images]);
+
+function Images($q, $http) {
 
 
   function getImages() {
@@ -18,4 +20,4 @@ angular.module('InTouch')
     getImages: getImages
   };
 
-}]);
+}

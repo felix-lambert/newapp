@@ -1,5 +1,7 @@
 angular.module('InTouch')
-.factory('Announce', ['$resource', function($resource) {
+.factory('Announce', ['$resource', Announce]);
+
+function Announce($resource) {
   return $resource('api/announces/:id:page/:limit', {
       id: '@id',
       page: '@page',
@@ -11,4 +13,4 @@ angular.module('InTouch')
       save: {method: 'POST'},
       remove: {method: 'DELETE'}
   });
-}]);
+}

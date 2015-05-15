@@ -1,6 +1,7 @@
 angular.module('InTouch')
   .controller('JournalAngCtrl', ['$scope', '$rootScope', '$location',
-    function($scope, $rootScope, $location) {
+    JournalAngCtrl]);
 
-    }
-]);
+function JournalAngCtrl($scope, $rootScope, $location) {
+
+}

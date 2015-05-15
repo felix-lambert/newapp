@@ -1,6 +1,6 @@
 angular.module('InTouch')
-  .controller('ActualityAngCtrl', ['$scope', '$rootScope', '$location',
-    function($scope, $rootScope, $location) {
+  .controller('ActualityAngCtrl', ['$scope', '$rootScope', '$location', ActualityAngCtrl]);
 
-    }
-]);
+function ActualityAngCtrl($scope, $rootScope, $location) {
+
+}

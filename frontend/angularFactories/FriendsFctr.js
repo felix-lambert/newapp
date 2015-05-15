@@ -1,6 +1,9 @@
 angular.module('InTouch')
 
-.factory('friends', ['$q', '$http', function($q, $http) {
+.factory('friends', ['$q', '$http', friends]);
+
+
+function friends($q, $http) {
 
   function postFriend(friend) {
     var deferred = $q.defer();
@@ -45,4 +48,4 @@ angular.module('InTouch')
     //         method: 'PUT'
     //     }
     // });
-}]);
+}

@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('announces', ['$q', '$http', function($q, $http) {
+.factory('announces', ['$q', '$http', announces]);
+
+function announces($q, $http) {
 
   function postAnnounce(announce) {
     var deferred = $q.defer();
@@ -85,4 +87,4 @@ angular.module('InTouch')
     deleteAnnounce: deleteAnnounce,
     putAnnounce: putAnnounce
   };
-}]);
+}

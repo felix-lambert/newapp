@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('messages', ['$q', '$http', function($q, $http) {
+.factory('messages', ['$q', '$http', messages]);
+
+function messages($q, $http) {
   function postMessage(message) {
     var deferred = $q.defer();
     $http.post('/api/messages/', message).success(function(data) {
@@ -40,4 +42,4 @@ angular.module('InTouch')
   // return $resource('/api/messages/:messageId', {
   //     messageId: '@_id'
   // });
-}]);
+}

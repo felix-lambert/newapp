@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('Status', ['$q', '$http', function($q, $http) {
+.factory('Status', ['$q', '$http', Status]);
+
+function Status($q, $http) {
 
   function postStatus(status, id) {
     var deferred = $q.defer();
@@ -38,4 +40,4 @@ angular.module('InTouch')
     removeStatus: removeStatus
   };
 
-}]);
+}

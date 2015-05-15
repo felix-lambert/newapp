@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('Username', ['$q', '$http', function($q, $http) {
+.factory('Username', ['$q', '$http', Username]);
+
+function Username($q, $http) {
 
   function postUsername(username) {
     var deferred = $q.defer();
@@ -38,4 +40,4 @@ angular.module('InTouch')
     removeUsername: removeUsername
   };
 
-}]);
+}

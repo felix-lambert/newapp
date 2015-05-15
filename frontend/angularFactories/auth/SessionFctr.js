@@ -1,5 +1,7 @@
 angular.module('InTouch')
-    .factory('Session', ['$resource', function($resource) {
-      console.log('*************session----------********************');
-      return $resource('/auth/login');
-    }]);
+    .factory('Session', ['$resource', Session]);
+
+function Session($resource) {
+  console.log('*************session----------********************');
+  return $resource('/auth/login');
+}

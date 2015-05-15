@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('comments', ['$q', '$http', function($q, $http) {
+.factory('comments', ['$q', '$http', comments]);
+
+function comments($q, $http) {
 
   function postComment(comment, id) {
     var deferred = $q.defer();
@@ -38,4 +40,5 @@ angular.module('InTouch')
     deleteComment: deleteComment
   };
 
-}]);
+}
+

@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('notifications', ['$q', '$http', function($q, $http) {
+.factory('notifications', ['$q', '$http', notifications]);
+
+function notifications($q, $http) {
 
   function postNotification(notification) {
     var deferred = $q.defer();
@@ -48,4 +50,4 @@ angular.module('InTouch')
     updateNotification: updateNotification,
     deleteNotification: deleteNotification
   };
-}]);
+}
