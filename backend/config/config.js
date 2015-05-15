@@ -27,5 +27,5 @@ exports = module.exports = function(app, express, config) {
 
   app.use(bodyParser.json());
   app.use(methodOverride());
-  app.use(express.static(path.join(__dirname, '/../../frontend')));
+  app.use(express.static(path.join(__dirname, '/../../frontend'), {maxAge: 86400000}));
 };
