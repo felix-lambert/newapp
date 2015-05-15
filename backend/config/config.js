@@ -8,18 +8,18 @@ var methodOverride = require('method-override');
 var cookieParser   = require('cookie-parser');
 var expressSession = require('express-session');
 var mongoStore     = require('connect-mongo')(expressSession);
+var compress       = require('compression');
 
 /////////////////////////////////////////////////////////////////
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 exports = module.exports = function(app, express, config) {
 
-
   app.set('views', __dirname + '/../../frontend/views');
   app.engine('html', require('ejs').renderFile);
   app.set('view engine', 'html');
 
-
+  app.use(compress());
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({
       extended: true

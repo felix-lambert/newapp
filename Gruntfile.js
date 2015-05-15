@@ -50,44 +50,6 @@ module.exports = function(grunt) {
     uglify: {
       build: {
         src: [
-              // 'backend/authentification/passport/passportSocial.js',
-              // 'backend/authentification/auth.js',
-              // 'backend/authentification/passportStrategy.js',
-              // 'backend/socket.io/*',
-              // 'backend/config/config.js',
-              // 'backend/controllers/filesCtrl.js',
-              // 'backend/controllers/friendNotificationCtrl.js',
-              // 'backend/controllers/friendsCtrl.js',
-              // 'backend/controllers/notificationCtrl.js',
-              // 'backend/controllers/statusCtrl.js',
-              // 'backend/controllers/transactionCtrl.js',
-              // 'backend/db/*',
-              // 'backend/models/models.js',
-              // 'backend/models/schemas/announceSchemas/AnnounceCommentModel.js',
-              // 'backend/models/schemas/announceSchemas/AnnounceModel.js',
-              // 'backend/models/schemas/announceSchemas/CategoryModel.js',
-              // 'backend/models/schemas/chatSchemas/MessageModel.js',
-              // 'backend/models/schemas/chatSchemas/RoomModel.js',
-              // 'backend/models/schemas/userSchemas/FriendModel.js',
-              // 'backend/models/schemas/userSchemas/FriendNotificationModel.js',
-              // 'backend/models/schemas/userSchemas/ImageModel.js',
-              // 'backend/models/schemas/userSchemas/NotificationModel.js',
-              // 'backend/models/schemas/userSchemas/StatusModel.js',
-              // 'backend/models/schemas/userSchemas/TokenModel.js',
-              // 'backend/models/schemas/userSchemas/UserModel.js',
-              // 'backend/routes/announces/*',
-              // 'backend/routes/sessions/*',
-              // 'backend/routes/sockets/*',
-              // 'frontend/app.js',
-              // 'frontend/angularConstant/config.js',
-              // 'frontend/angularConstant/geolocation_msgs.js',
-              // 'frontend/angularConstant/useragentmsgs.js',
-              // 'frontend/angularControlers/AnnouncesAngCtrl.js',
-              // 'frontend/angularControlers/ForgotAngCtrl.js',
-              // 'frontend/angularControlers/MainAngCtrl.js',
-              // 'frontend/angularControlers/MainHeaderAngCtrl.js',
-              // 'frontend/angularControlers/NavbarAngCtrl.js',
-              // 'frontend/angularControlers/PaginationAngCtrl.js',
               'frontend/angularLib/angular.js',
               'frontend/angularLib/angular-animate.js',
               'frontend/angularLib/angular-messages.js',
@@ -151,9 +113,19 @@ module.exports = function(grunt) {
               'frontend/angularFilters/starsFltr.js',
               'frontend/angularFilters/cutFltr.js',
               'frontend/angularFilters/searchForFltr.js',
-              
         ],
         dest: 'frontend/minifiedProject.min.js'
+      }
+    },
+    compress: {
+      main: {
+        options: {
+          mode: 'gzip'
+        },
+        expand: true,
+        cwd: 'assets/',
+        src: ['frontend/minifiedProject.min.js'],
+        dest: 'frontend/'
       }
     }
   });
@@ -162,6 +134,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+
+  grunt.loadNpmTasks('grunt-contrib-compress');
 
   // Default task(s).
   grunt.registerTask('heroku', ['uglify']);
