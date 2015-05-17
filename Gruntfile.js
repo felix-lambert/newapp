@@ -20,6 +20,7 @@ module.exports = function(grunt) {
               'frontend/app.js',
               'frontend/angularConfig.js',
               'frontend/angularRun.js',
+              'frontend/angularFactories/appLoadingFctr.js',
               'frontend/angularConstant/useragentmsgs.js',
               'frontend/angularConstant/config.js',
               'frontend/angularControllers/MainHeaderAngCtrl.js',
