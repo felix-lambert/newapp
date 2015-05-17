@@ -91,28 +91,30 @@ var routeObject = {
   },
 };
 
-angular.module('InTouch').run(['$localStorage', '$rootScope', '$location', 'appLoading',
-    function($localStorage, $rootScope, $location, appLoading) {
-      $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        console.log('________ROUTE TEST_________________');
-        appLoading.loading();
-        var currentUser = $localStorage.currentUser;
-        $rootScope.currentUser = currentUser;
-        console.log($rootScope.currentUser);
-        for (var i in routeObject) {
-          if (next.originalPath == i) {
-            if (routeObject[i].requireLogin && !$rootScope.currentUser) {
-              console.log(i + ' require log in');
-              $location.path('/');
-            } else if (routeObject[i].requireAdmin &&
-              $rootScope.currentUser.role != 'admin') {
-              console.log(i + ' unauthorized');
-              $location.path('/');
-            } else {
-              console.log(i + ' authorized');
-            }
-          }
+angular.module('InTouch').run(appRun);
+
+appRun.$inject = ['$localStorage', '$rootScope', '$location', 'appLoading'];
+
+function appRun($localStorage, $rootScope, $location, appLoading) {
+  $rootScope.$on('$routeChangeStart', function(event, next, current) {
+    console.log('________ROUTE TEST_________________');
+    appLoading.loading();
+    var currentUser = $localStorage.currentUser;
+    $rootScope.currentUser = currentUser;
+    console.log($rootScope.currentUser);
+    for (var i in routeObject) {
+      if (next.originalPath == i) {
+        if (routeObject[i].requireLogin && !$rootScope.currentUser) {
+          console.log(i + ' require log in');
+          $location.path('/');
+        } else if (routeObject[i].requireAdmin &&
+          $rootScope.currentUser.role != 'admin') {
+          console.log(i + ' unauthorized');
+          $location.path('/');
+        } else {
+          console.log(i + ' authorized');
         }
-      });
+      }
     }
-]) ;
+  });
+}
