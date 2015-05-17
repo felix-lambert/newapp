@@ -1,6 +1,8 @@
 angular.module('InTouch')
 
-.factory('Username', ['$q', '$http', Username]);
+.factory('Username', Username);
+
+Username.$inject = ['$q', '$http'];
 
 function Username($q, $http) {
 

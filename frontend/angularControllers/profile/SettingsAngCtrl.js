@@ -1,6 +1,5 @@
 angular.module('InTouch')
-  .controller('SettingsAngCtrl', ['$scope', '$http', '$rootScope',
-      'Profile', SettingsAngCtrl]);
+  .controller('SettingsAngCtrl', SettingsAngCtrl);
 
 function SettingsAngCtrl($scope, $http, $rootScope, Profile) {
   $scope.editProfile = false;

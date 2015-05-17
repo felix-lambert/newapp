@@ -1,9 +1,18 @@
 angular.module('InTouch')
 
-.factory('friends', ['$q', '$http', friends]);
+.factory('friends', friends);
 
+friends.$inject = ['$q', '$http'];
 
 function friends($q, $http) {
+
+  var friendsFnct = {
+    postFriend: postFriend,
+    getFriendsFromUser: getFriendsFromUser,
+    deleteFriend: deleteFriend
+  };
+
+  return friendsFnct;
 
   function postFriend(friend) {
     var deferred = $q.defer();
@@ -35,17 +44,4 @@ function friends($q, $http) {
     return deferred.promise;
   }
 
-  return {
-    postFriend: postFriend,
-    getFriendsFromUser: getFriendsFromUser,
-    deleteFriend: deleteFriend
-  };
-
-    // return $resource('/api/friends/:userId', {
-    //     userId: '@_id'
-    // }, {
-    //     update: {
-    //         method: 'PUT'
-    //     }
-    // });
 }

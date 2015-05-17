@@ -22,7 +22,7 @@
       </ul>
     </form>
 
-        <div ng-controller="AnnouncesAngCtrl">
+        <div ng-controller="AnnouncesAngCtrl as announces">
       <section ng-init="findFromUser(currentUser._id)">
         <h2>Liste de vos services</h2>
         <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />

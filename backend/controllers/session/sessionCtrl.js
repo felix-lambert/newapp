@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var User     = mongoose.model('User');
 var Username = mongoose.model('Username');
 var passport = require('passport');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -22,6 +23,7 @@ module.exports = {
         User.invalidateUserToken(decodeUser,
           function(err, user) {
           if (err) {
+            ee.emit('error', err);
             res.status(400).json({error: 'Issue finding user.'});
           } else {
             console.log('redirect');
@@ -33,6 +35,7 @@ module.exports = {
         Username.invalidateUsernameToken(decodeUser,
           function(err, user) {
           if (err) {
+            ee.emit('error', err);
             res.status(400).json({error: 'Issue finding user.'});
           } else {
             console.log('redirect');
@@ -65,11 +68,12 @@ module.exports = {
     console.log('authenticate');
     User.createUserToken(req.user.email, function(err, usersToken) {
       if (err) {
+        ee.emit('error', err);
         res.status(400).json({error: 'Issue generating token'});
       } else {
         User.getUserToken(req.user.email, usersToken, function(err, usr) {
           if (err) {
-            console.log(err);
+            ee.emit('error', err);
             res.status(400).json({error: 'Issue finding user.'});
           } else {
             res.status(200).json({
@@ -100,17 +104,17 @@ module.exports = {
       });
       User.register(user, req.body.password, function(error) {
         if (error) {
-          console.log('error while user register!', error);
+          ee.emit('error', error);
           return res.status(400).json(error);
         }
         User.createUserToken(req.body.email, function(err, usersToken) {
           if (err) {
-            console.log('Issue generating token');
+            ee.emit('error', err);
             res.status(400).json({error: 'Issue generating token'});
           } else {
             User.getUserToken(req.body.email, usersToken, function(err, user) {
               if (err) {
-                console.log('Issue finding user');
+                ee.emit('error', err);
                 res.status(400).json({error: 'Issue finding user'});
               } else {
                 res.status(200).json({

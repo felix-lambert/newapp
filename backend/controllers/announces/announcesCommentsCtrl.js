@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Comment  = mongoose.model('AnnounceComment');
 var Announce = mongoose.model('Announce');
 var moment   = require('moment');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -18,6 +19,7 @@ module.exports = {
       _id: req.params.announceId
     }, function(err, result) {
       if (err) {
+        ee.emit('error', err);
         return res.status(501).json(err);
       }
       var comment             = new Comment();
@@ -26,6 +28,7 @@ module.exports = {
       comment.announce        = result;
       comment.save(function(err, comments) {
         if (err) {
+          ee.emit('error', err);
           res.status(400).json(err);
         } else {
           res.status(200).json({
@@ -56,6 +59,7 @@ module.exports = {
         _id: req.params.id
     }, function(err, result) {
         if (err) {
+          ee.emit('error', err);
           res.status(501).json('Comment not found.');
         } else {
           Announce.findOne({
@@ -64,16 +68,19 @@ module.exports = {
             if (checkRemove(announce)) {
               Comment.remove(result, function(err) {
                 if (err) {
+                  ee.emit('error', err);
                   res.status(400).json(null);
                 } else {
                   res.status(200).json(null);
                 }
               });
             } else if (err) {
+              ee.emit('error', err);
               res.status(400).json({
                 'message': 'Impossible to find announce'
               });
             } else {
+              ee.emit('error', err);
               res.status(400).json({
                   'message': 'error in remove comment'
               });
@@ -95,6 +102,7 @@ module.exports = {
     .populate('creator creatorUsername announce')
     .exec(function(err, comments) {
       if (err) {
+        ee.emit('error', err);
         return res.status(501).json(err);
       }
       console.log(comments);

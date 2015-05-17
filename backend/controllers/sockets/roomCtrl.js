@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var Room     = mongoose.model('Room');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -13,6 +14,7 @@ module.exports = {
     console.log('***************load announce room*********************');
     Room.load(id, function(err, room) {
       if (err) {
+        ee.emit('error', err);
         return next(err);
       }
       if (!room) {
@@ -48,8 +50,6 @@ module.exports = {
     usernames.sort(alphabetical);
 
     roomName = usernames.join('');
-
-    
     Room.find({name: roomName}, function(err, results) {
       var room = [];
       if (results && results.length > 0) {
@@ -66,7 +66,8 @@ module.exports = {
         });
         room.save(function(err, saveRoom) {
           if (err) {
-            res.status(201).json(err);
+            ee.emit('error', err);
+            res.status(400).json(err);
           } else {
             res.status(201).json({
               roomId: saveRoom._id,

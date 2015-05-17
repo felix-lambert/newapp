@@ -2,9 +2,9 @@
 // FOR CHAT (IS TYPING...) //////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 angular.module('InTouch')
-  .directive('onFocus', onFocus);
+  .directive('onFocus', Focus);
 
-function onFocus() {
+function Focus() {
   return {
     restrict: 'A',
     link: function(scope, el, attrs) {

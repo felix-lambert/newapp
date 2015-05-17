@@ -1,6 +1,8 @@
 angular.module('InTouch')
-    .controller('transactionModalCtrl', ['$scope', '$modalInstance', 'transac', transactionModalCtrl]);
-        
+  .controller('transactionModalCtrl', transactionModalCtrl);
+ 
+transactionModalCtrl.$inject = ['$scope', '$modalInstance', 'transac'];
+
 function transactionModalCtrl($scope, $modalInstance, transac) {
   $scope.announce = transac.announce;
   $scope.transac  = transac;

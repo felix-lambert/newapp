@@ -1,8 +1,19 @@
 angular.module('InTouch')
 
-.factory('messages', ['$q', '$http', messages]);
+.factory('messages', messages);
+
+messages.$inject = ['$q', '$http'];
 
 function messages($q, $http) {
+
+  var messagesFnct = {
+    postMessage: postMessage,
+    getMessagesFromRoom: getMessagesFromRoom,
+    deleteMessage: deleteMessage
+  };
+
+  return messagesFnct;
+
   function postMessage(message) {
     var deferred = $q.defer();
     $http.post('/api/messages/', message).success(function(data) {
@@ -33,13 +44,4 @@ function messages($q, $http) {
     return deferred.promise;
   }
 
-  return {
-    postMessage: postMessage,
-    getMessagesFromRoom: getMessagesFromRoom,
-    deleteMessage: deleteMessage
-  };
-
-  // return $resource('/api/messages/:messageId', {
-  //     messageId: '@_id'
-  // });
 }

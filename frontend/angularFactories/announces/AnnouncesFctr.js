@@ -1,8 +1,23 @@
 angular.module('InTouch')
 
-.factory('announces', ['$q', '$http', announces]);
+.factory('announces', announces);
+
+announces.$inject = ['$q', '$http'];
 
 function announces($q, $http) {
+
+  var announcesFnct = {
+    postAnnounce: postAnnounce,
+    getAnnouncesPerPage: getAnnouncesPerPage,
+    getAnnounces: getAnnounces,
+    getAnnouncesFromUser: getAnnouncesFromUser,
+    getAnnounceById: getAnnounceById,
+    deleteAnnounce: deleteAnnounce,
+    putAnnounce: putAnnounce
+
+  };
+
+  return announcesFnct;
 
   function postAnnounce(announce) {
     var deferred = $q.defer();
@@ -78,13 +93,4 @@ function announces($q, $http) {
     return deferred.promise;
   }
 
-  return {
-    postAnnounce: postAnnounce,
-    getAnnouncesPerPage: getAnnouncesPerPage,
-    getAnnounces: getAnnounces,
-    getAnnouncesFromUser: getAnnouncesFromUser,
-    getAnnounceById: getAnnounceById,
-    deleteAnnounce: deleteAnnounce,
-    putAnnounce: putAnnounce
-  };
 }

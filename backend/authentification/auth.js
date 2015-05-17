@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
 var Username = mongoose.model('Username');
+var ee       = require('../config/event');
 
 /////////////////////////////////////////////////////////////////
 // AUTH TOKEN Route middleware to ensure user is authenticated //
@@ -11,7 +12,6 @@ var Username = mongoose.model('Username');
 exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
   'use strict';
   console.log('_________________Ensure authentification__________________');
-  console.log('______________________________________________________________________');
   var incomingToken = req.headers['auth-token'];
   console.log(incomingToken);
   if (incomingToken) {
@@ -19,7 +19,7 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
     if (decoded && decoded.email) {
       User.getUserToken(decoded.email, incomingToken, function(err, user) {
         if (err) {
-          console.log(err);
+          ee.emit('error', err);
           res.status(400).json({error: 'Issue finding user.'});
         } else {
           req.user = user;
@@ -30,7 +30,7 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
       Username.getUsernameToken(decoded.username, incomingToken,
         function(err, user) {
         if (err) {
-          console.log(err);
+          ee.emit('error', err);
           res.status(400).json({error: 'Issue finding user.'});
         } else {
           req.user = user;

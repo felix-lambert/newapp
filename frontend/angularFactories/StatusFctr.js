@@ -1,8 +1,18 @@
 angular.module('InTouch')
 
-.factory('Status', ['$q', '$http', Status]);
+.factory('Status', Status);
+
+Status.$inject = ['$q', '$http'];
 
 function Status($q, $http) {
+
+  var statusFnct = {
+    postStatus: postStatus,
+    getStatus: getStatus,
+    removeStatus: removeStatus
+  };
+
+  return statusFnct;
 
   function postStatus(status, id) {
     var deferred = $q.defer();
@@ -33,11 +43,5 @@ function Status($q, $http) {
     });
     return deferred.promise;
   }
-
-  return {
-    postStatus: postStatus,
-    getStatus: getStatus,
-    removeStatus: removeStatus
-  };
 
 }

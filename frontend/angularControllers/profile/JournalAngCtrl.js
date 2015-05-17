@@ -1,7 +1,8 @@
 angular.module('InTouch')
-  .controller('JournalAngCtrl', ['$scope', '$rootScope', '$location',
-    JournalAngCtrl]);
+  .controller('JournalAngCtrl', JournalAngCtrl);
 
-function JournalAngCtrl($scope, $rootScope, $location) {
+JournalAngCtrl.$inject = ['$scope', '$rootScope', '$location', 'appLoading'];
 
+function JournalAngCtrl($scope, $rootScope, $location, appLoading) {
+  appLoading.ready();
 }

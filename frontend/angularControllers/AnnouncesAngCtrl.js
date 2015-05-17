@@ -1,12 +1,16 @@
 angular.module('InTouch')
-.controller('AnnouncesAngCtrl', ['notifications', '$timeout', '$localStorage', 'Announce', '$scope', '$http', 'announces',
-  'comments', '$location', '$routeParams', '$rootScope', 'toaster', '$modal',
-  'transactions', AnnouncesAngCtrl]);
+.controller('AnnouncesAngCtrl', AnnouncesAngCtrl);
 
-function AnnouncesAngCtrl(notifications, $timeout, $localStorage, Announce, $scope, $http, announces, comments,
-  $location, $routeParams, $rootScope, toaster, $modal, transactions) {
+AnnouncesAngCtrl.$inject = ['notifications', '$timeout', '$localStorage',
+  'Announce', '$scope', '$http', 'announces', 'comments', '$location',
+  '$routeParams', '$rootScope', 'toaster', '$modal', 'transactions', 'appLoading'];
+
+function AnnouncesAngCtrl(notifications, $timeout, $localStorage, Announce, $scope, 
+  $http, announces, comments, $location, $routeParams, $rootScope, toaster, $modal, 
+  transactions, appLoading) {
 
   console.log('*************AnnounceCtrl************************');
+  appLoading.ready();
   var userToken = null;
   $scope.selectedImages = null;
 

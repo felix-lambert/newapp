@@ -1,14 +1,16 @@
 angular.module('InTouch')
-    .controller('MainHeaderAngCtrl', ['$attrs', 'friends', 'toaster', '$timeout', '$localStorage', '$window', '$route', 'notifications', 'socket', '$modal', 
-      '$http', '$scope', '$rootScope', 'Auth', '$location', '$element', '$filter',
-      MainHeaderAngCtrl]);
-      
+  .controller('MainHeaderAngCtrl', MainHeaderAngCtrl);
+
+MainHeaderAngCtrl.$inject = ['$attrs', 'friends', 'toaster', '$timeout', '$localStorage', '$window', '$route', 'notifications', 'socket', '$modal', 
+      '$http', '$scope', '$rootScope', 'Auth', '$location', '$element', '$filter', 'appLoading'];
+
 function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $window, $route, notifications, socket, $modal, $http, $scope, $rootScope,
-      Auth, $location, $element, $filter) {
+      Auth, $location, $element, $filter, appLoading) {
 
   console.log('************ Main HEADER CTRL **********');
   $scope.suggestions = [];
   $scope.usernames = [];
+  
 
   if ($rootScope.currentUser) {
     var userToken = $rootScope.currentUser.token;

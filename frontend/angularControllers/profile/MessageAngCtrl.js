@@ -1,12 +1,14 @@
 angular.module('InTouch')
-  .controller('MessageAngCtrl', ['rooms', 'friends',
-    '$modal', '$scope', 'User', 'messages', '$rootScope',
-    'socket',
-    MessageAngCtrl]);
+  .controller('MessageAngCtrl', MessageAngCtrl);
+
+MessageAngCtrl.$inject = ['rooms', 'friends', '$modal',
+  '$scope', 'User', 'messages', '$rootScope', 'socket', 'appLoading'];
 
 function MessageAngCtrl(rooms, friends, $modal, $scope, User, messages,
-  $rootScope, socket) {
+  $rootScope, socket, appLoading) {
 
+
+  appLoading.ready();
   $scope.peopleCount  = 0;
   $scope.joined       = false;
   $scope.showChat     = false;

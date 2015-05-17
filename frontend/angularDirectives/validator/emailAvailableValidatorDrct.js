@@ -1,5 +1,7 @@
 angular.module('InTouch')
-  .directive('emailAvailableValidator', ['$http', emailAvailableValidator]);
+  .directive('emailAvailableValidator', emailAvailableValidator);
+
+emailAvailableValidator.$inject = ['http'];
 
 function emailAvailableValidator($http) {
   return {

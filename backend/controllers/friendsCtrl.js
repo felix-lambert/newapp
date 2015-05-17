@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Friend   = mongoose.model('Friend');
 var User     = mongoose.model('User');
 var Q        = require('q');
+var ee       = require('../config/event');
 
 module.exports = {
 
@@ -15,6 +16,7 @@ module.exports = {
     console.log('________________load friend__________________________');
     Friend.load(id, function(err, friend) {
       if (err) {
+        ee.emit('error', err);
         return next(err);
       }
       if (!friend) {
@@ -38,14 +40,6 @@ module.exports = {
       req.friend = friendPost;
       next();
     });
-  },
-
-  /////////////////////////////////////////////////////////////////
-  // SHOW A FRIEND ////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  show: function(req, res) {
-    console.log('show friend');
-    res.status(200).json(req.friend);
   },
 
   /////////////////////////////////////////////////////////////////
@@ -76,6 +70,7 @@ module.exports = {
         usernameAcceptedFriendRequest: user.username,
       }, {upsert: true}).exec(function(err, userOne) {
         if (err) {
+          ee.emit('error', err);
           return res.status(500).json(err);
         } else {
           Friend.findOneAndUpdate({
@@ -87,6 +82,7 @@ module.exports = {
             usernameAcceptedFriendRequest: friend.usernameAcceptedFriendRequest,
           }, {upsert: true}).exec(function(err, result) {
             if (err) {
+              ee.emit('error', err);
               return res.status(500).json(err);
             } else {
               return res.status(200).json(result);
@@ -103,12 +99,14 @@ module.exports = {
       firstFriend.creator = user._id;
       firstFriend.save(function(err, doc) {
         if (err) {
+          ee.emit('error', err);
           return res.status(500).json(err);
         } else {
           var secondFriend = new Friend();
           secondFriend.usernameWaitFriendRequest = user.username;
           secondFriend.save(function(err, doc) {
             if (err) {
+              ee.emit('error', err);
               return res.status(500).json(err);
             } else {
               return res.status(200).json(doc);
@@ -142,6 +140,7 @@ module.exports = {
       creator: req.params.friendId
     }).where('usernameWaitFriendRequest').equals(req.params.user)
     .remove(function(err, result) {
+
       console.log('result');
       res.status(200).json();
     });
@@ -158,7 +157,7 @@ module.exports = {
         .sort('-created')
         .exec(function(err, friends) {
           if (err) {
-            console.log('ERREUR');
+            ee.emit('error', err);
             res.status(501).json(err);
           } else {
             friends.forEach(function(item) {

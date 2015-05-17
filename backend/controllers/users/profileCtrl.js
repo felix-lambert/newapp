@@ -5,6 +5,7 @@ var mongoose     = require('mongoose');
 var path         = require('path');
 var User         = mongoose.model('User');
 var Notification = mongoose.model('Notification');
+var ee           = require('../../config/event');
 
 module.exports = {
 

@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var Message  = mongoose.model('Message');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -13,6 +14,7 @@ module.exports = {
     console.log('***************load message*********************');
     Message.load(id, function(err, message) {
       if (err) {
+        ee.emit('error', err);
         return next(err);
       }
       if (!announce) {
@@ -50,6 +52,7 @@ module.exports = {
     var message = new Message(req.body);
     message.save(function(err) {
       if (err) {
+        ee.emit('error', err);
         res.status(400).json(err);
       } else {
         res.status(201).json(message);
@@ -65,7 +68,7 @@ module.exports = {
     Message.find({roomCreator: req.params.messageId}).sort('created')
       .exec(function(err, messages) {
         if (err) {
-          console.log('ERREUR');
+          ee.emit('error', err);
           res.status(501).json(err);
         } else {
           res.status(200).json(messages);

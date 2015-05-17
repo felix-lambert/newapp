@@ -8,6 +8,7 @@ var crypto       = require('crypto');
 var User         = mongoose.model('User');
 var Notification = mongoose.model('Notification');
 var Status       = mongoose.model('Status');
+var ee           = require('../../config/event');
 
 module.exports = {
 
@@ -35,11 +36,13 @@ module.exports = {
       }
       fs.copy(writeStream.path, destPath + hashName, function(err) {
         if (err) {
+          ee.emit('error', err);
           return res.send(err);
         }
         fs.chmodSync(destPath + hashName, '755');
         fs.remove(writeStream.path, function(err) {
           if (err) {
+            ee.emit('error', err);
             return res.error(err);
           }
         });
@@ -52,7 +55,7 @@ module.exports = {
             images: user.images
           });
         } else {
-          console.log(err);
+          ee.emit('error', err);
           console.log('Error: could not save image');
         }
       });
@@ -64,6 +67,7 @@ module.exports = {
   getImages: function(req, res, next) {
     User.findById(req.user, function(err, user) {
       if (err) {
+        ee.emit('error', err);
         return next(new Error('Failed to load Images'));
       }
       console.log(user);
@@ -85,6 +89,7 @@ module.exports = {
     var userId = req.params.id;
     User.findById(userId, function(err, user) {
       if (err) {
+        ee.emit('error', err);
         return next(new Error('Failed to load User'));
       }
       if (user) {

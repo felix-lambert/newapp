@@ -9,7 +9,7 @@ var cookieParser   = require('cookie-parser');
 var expressSession = require('express-session');
 var mongoStore     = require('connect-mongo')(expressSession);
 var compress       = require('compression');
-
+var expiry = require('static-expiry');
 /////////////////////////////////////////////////////////////////
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 angular.module('InTouch')
-  .controller('ReputationAngCtrl', ['$scope', ReputationAngCtrl]);
+  .controller('ReputationAngCtrl', ReputationAngCtrl);
 
 
 function ReputationAngCtrl($scope) {

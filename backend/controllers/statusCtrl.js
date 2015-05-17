@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var Status   = mongoose.model('Status');
 var User     = mongoose.model('User');
+var ee       = require('../config/event');
 
 module.exports = {
 
@@ -18,6 +19,7 @@ module.exports = {
         .sort('-date')
         .exec(function(err, status) {
           if (err) {
+            ee.emit('error', err);
             return res.status(501).json(err);
           }
           console.log(status);
@@ -35,6 +37,7 @@ module.exports = {
       _id: req.params.statusId
     }, function(err, result) {
       if (err) {
+        ee.emit('error', err);
         return res.status(501).json(err);
       }
       var status = new Status();
@@ -43,6 +46,7 @@ module.exports = {
       status.user   = result;
       status.save(function(err) {
         if (err) {
+          ee.emit('error', err);
           res.status(400).json(err);
         } else {
           res.status(200).json();
@@ -68,18 +72,21 @@ module.exports = {
               if (req.user._id.equals(result.author)) {
                 Status.remove(result, function(err) {
                   if (err) {
+                    ee.emit('error', err);
                     res.status(400).json(null);
                   } else {
                     res.status(200).json(null);
                   }
                 });
               } else if (err) {
+                ee.emit('error', err);
                 res.status(400).json({
                   'message': 'Impossible to find status'
                 });
               } else if (req.user._id == status.creator) {
                 Status.remove(result, function(err) {
                   if (err) {
+                    ee.emit('error', err);
                     res.status(400).json(null);
                   } else {
                     res.status(200).json(null);

@@ -1,11 +1,13 @@
 angular.module('InTouch')
-    .controller('PictureAngCtrl', ['Images', '$scope', '$rootScope', 'FileUploader',
-        '$http', PictureAngCtrl]);
+    .controller('PictureAngCtrl', PictureAngCtrl);
 
-function PictureAngCtrl(Images, $scope, $rootScope, FileUploader, $http) {
+PictureAngCtrl.$inject = ['Images', '$scope', '$rootScope', 'FileUploader',
+        '$http', 'appLoading'];
+
+function PictureAngCtrl(Images, $scope, $rootScope, FileUploader, $http, appLoading) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
-
+  appLoading.ready();
   var userToken = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
 

@@ -1,5 +1,7 @@
 angular.module('InTouch')
-  .controller('AuthModalAngCtrl', ['Username', '$scope', '$modalInstance', AuthModalAngCtrl]);
+  .controller('AuthModalAngCtrl', AuthModalAngCtrl);
+
+AuthModalAngCtrl.$inject = ['Username', '$scope', '$modalInstance'];
 
 function AuthModalAngCtrl(Username, $scope, $modalInstance) {
 

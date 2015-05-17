@@ -1,8 +1,19 @@
 angular.module('InTouch')
 
-.factory('notifications', ['$q', '$http', notifications]);
+.factory('notifications', notifications);
+
+notifications.$inject = ['$q', '$http'];
 
 function notifications($q, $http) {
+
+  var notificationsFnct = {
+    postNotification: postNotification,
+    getNotifications: getNotifications,
+    updateNotification: updateNotification,
+    deleteNotification: deleteNotification
+  };
+
+  return notificationsFnct;
 
   function postNotification(notification) {
     var deferred = $q.defer();
@@ -13,7 +24,7 @@ function notifications($q, $http) {
     });
     return deferred.promise;
   }
-  
+
   function getNotifications() {
     var deferred = $q.defer();
     $http.get('/api/notifications/').success(function(data) {
@@ -44,10 +55,4 @@ function notifications($q, $http) {
     return deferred.promise;
   }
 
-  return {
-    postNotification: postNotification,
-    getNotifications: getNotifications,
-    updateNotification: updateNotification,
-    deleteNotification: deleteNotification
-  };
 }

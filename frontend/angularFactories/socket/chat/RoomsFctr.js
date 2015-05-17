@@ -1,8 +1,18 @@
 angular.module('InTouch')
 
-.factory('rooms', ['$q', '$http', rooms]);
+.factory('rooms', rooms);
+
+rooms.$inject = ['$q', '$http'];
 
 function rooms($q, $http) {
+
+  var roomsFnct = {
+    postRoom: postRoom,
+    getRooms: getRooms,
+    deleteRoom: deleteRoom
+  };
+
+  return roomsFnct;
 
   function postRoom(room) {
     var deferred = $q.defer();
@@ -33,12 +43,6 @@ function rooms($q, $http) {
     });
     return deferred.promise;
   }
-
-  return {
-    postRoom: postRoom,
-    getRooms: getRooms,
-    deleteRoom: deleteRoom
-  };
 
   // return $resource('/api/rooms/:roomId', {
   //   roomId: '@_id'

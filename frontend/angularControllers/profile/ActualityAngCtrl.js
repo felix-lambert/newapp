@@ -1,6 +1,8 @@
 angular.module('InTouch')
-  .controller('ActualityAngCtrl', ['$scope', '$rootScope', '$location', ActualityAngCtrl]);
+  .controller('ActualityAngCtrl', ActualityAngCtrl);
 
-function ActualityAngCtrl($scope, $rootScope, $location) {
+ActualityAngCtrl.$inject = ['$scope', '$rootScope', '$location', 'appLoading'];
 
+function ActualityAngCtrl($scope, $rootScope, $location, appLoading) {
+  appLoading.ready();
 }

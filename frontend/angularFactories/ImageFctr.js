@@ -1,9 +1,16 @@
 angular.module('InTouch')
 
-.factory('Images', ['$q', '$http', Images]);
+.factory('Images', Images);
+
+Images.$inject = ['$q', '$http'];
 
 function Images($q, $http) {
 
+  var imagesFnct = {
+    getImages: getImages
+  };
+
+  return imagesFnct;
 
   function getImages() {
     var deferred = $q.defer();
@@ -14,10 +21,4 @@ function Images($q, $http) {
     });
     return deferred.promise;
   }
-
-
-  return {
-    getImages: getImages
-  };
-
 }

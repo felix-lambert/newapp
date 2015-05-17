@@ -44,7 +44,7 @@ ul.dropdown-cart li .item-right button{
 </style>
 <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
     <!-- Second navbar for search -->
-    <nav class="navbar navbar-inverse" ng-controller="MainHeaderAngCtrl">
+    <nav class="navbar navbar-inverse" ng-controller="MainHeaderAngCtrl as header">
       <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -55,6 +55,9 @@ ul.dropdown-cart li .item-right button{
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#" ng-click="switch('index')"><img alt="Brand" src="/icons/logo.png"></a>
+          <span class="app-loading-container">
+            <span class="app-loading-animation" data-ng-class="status"></span>
+          </span>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-collapse-3">

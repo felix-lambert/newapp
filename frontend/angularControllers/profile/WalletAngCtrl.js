@@ -1,6 +1,5 @@
 angular.module('InTouch')
-  .controller('WalletAngCtrl', ['$scope',
-    WalletAngCtrl]);
+  .controller('WalletAngCtrl', WalletAngCtrl);
 
 function WalletAngCtrl($scope) {
 

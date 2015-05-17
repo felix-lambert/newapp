@@ -1,10 +1,13 @@
 angular.module('InTouch')
-  .controller('ProfileAngCtrl', ['$scope', '$rootScope', 'Status',
-    ProfileAngCtrl]);
+  .controller('ProfileAngCtrl', ProfileAngCtrl);
 
-function ProfileAngCtrl($scope, $rootScope, Status) {
+ProfileAngCtrl.$inject = ['$scope', '$rootScope', 'Status', 'appLoading'];
+
+function ProfileAngCtrl($scope, $rootScope, Status, appLoading) {
 
   $scope.status = [];
+
+  appLoading.ready();
 
   $scope.removeStatus = function(status) {
     console.log(status);

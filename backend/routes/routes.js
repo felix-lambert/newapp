@@ -71,7 +71,6 @@ module.exports = function(app) {
   .concat(announcesCommentsRoutes)
   .concat(indexRoutes);
 
-
   _.each(routes, function(route) {
     var args = _.flatten([route.path, route.middleware]);
     switch (route.httpMethod.toUpperCase()) {

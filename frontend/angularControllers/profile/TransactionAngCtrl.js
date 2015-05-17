@@ -1,6 +1,4 @@
-angular.module('InTouch').controller('TransactionAngCtrl', ['$scope',
-  '$rootScope', '$http', 'transactions', '$timeout', '$modal',
-  TransactionAngCtrl]);
+angular.module('InTouch').controller('TransactionAngCtrl', TransactionAngCtrl);
 
 function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $modal) {
   

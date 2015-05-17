@@ -1,9 +1,10 @@
 /////////////////////////////////////////////////////////////////
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var mongoose     = require('mongoose');
-var path         = require('path');
-var User         = mongoose.model('User');
+var mongoose = require('mongoose');
+var path     = require('path');
+var User     = mongoose.model('User');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -18,7 +19,7 @@ module.exports = {
       var search = req.query.term.toLowerCase();
       User.findUser(username, function(err, users) {
         if (err) {
-          console.log('ERREUR');
+          ee.emit('error', err);
           res.status(400).json(err);
         } else {
           res.status(200).json(users.filter(function(value) {

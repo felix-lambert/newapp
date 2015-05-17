@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var config   = require('./database');
+var ee       = require('../config/event');
 
 var mongoOptions = {
     db: {
@@ -15,6 +16,7 @@ var mongoOptions = {
 /////////////////////////////////////////////////////////////////
 module.exports = mongoose.connect(config.db, mongoOptions, function(err, res) {
   if (err) {
+    ee.emit('error', err);
     console.log('ERROR connecting to: ' + config.db + '. ' + err);
   } else {
     console.log('Successfully connected to: ' + config.db);

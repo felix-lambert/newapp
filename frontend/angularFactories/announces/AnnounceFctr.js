@@ -1,5 +1,7 @@
 angular.module('InTouch')
-.factory('Announce', ['$resource', Announce]);
+.factory('Announce', Announce);
+
+Announce.$inject = ['$resource'];
 
 function Announce($resource) {
   return $resource('api/announces/:id:page/:limit', {

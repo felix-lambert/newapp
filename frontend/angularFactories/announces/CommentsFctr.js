@@ -1,8 +1,18 @@
 angular.module('InTouch')
 
-.factory('comments', ['$q', '$http', comments]);
+.factory('comments', comments);
+
+comments.$inject = ['q', '$http'];
 
 function comments($q, $http) {
+
+  var commentsFnct = {
+    postComment: postComment,
+    getAnnounceComments: getAnnounceComments,
+    deleteComment: deleteComment
+  };
+
+  return commentsFnct;
 
   function postComment(comment, id) {
     var deferred = $q.defer();
@@ -34,11 +44,4 @@ function comments($q, $http) {
     return deferred.promise;
   }
 
-  return {
-    postComment: postComment,
-    getAnnounceComments: getAnnounceComments,
-    deleteComment: deleteComment
-  };
-
 }
-

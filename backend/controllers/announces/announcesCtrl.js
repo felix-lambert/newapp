@@ -9,7 +9,8 @@ var Q          = require('q');
 var User       = mongoose.model('User');
 var ImageModel = mongoose.model('Image');
 var async      = require('async');
-var moment   = require('moment');
+var moment     = require('moment');
+var ee         = require('../../config/event');
 
 module.exports = {
 
@@ -32,10 +33,10 @@ module.exports = {
     });
     announce.save(function(err, saveItem) {
       if (err) {
+        ee.emit('error', err);
         return res.status(400).json(err);
       } else {
-
-          return res.status(200).json();
+        return res.status(200).json();
       }
     });
   },
@@ -50,6 +51,7 @@ module.exports = {
         '_id': req.params.announceId
     }, function(err, result) {
       if (err || !result) {
+        ee.emit('error', err);
         return res.status(500).json(err);
       }
 
@@ -62,6 +64,7 @@ module.exports = {
         result.save(function(err) {
           if (err) {
             console.log('THERE IS THE ERROR');
+            ee.emit('error', err);
             res.status(400).json(err);
           } else {
             res.status(200).json(result);
@@ -80,6 +83,7 @@ module.exports = {
     console.log('***************load announce*********************');
     Announce.load(req.params.announceId, function(err, announce) {
       if (err) {
+        ee.emit('error', err);
         return next(err);
       }
       if (!announce) {
@@ -100,6 +104,7 @@ module.exports = {
     console.log('_____________________destroy announce____________');
     Announce.remove({'_id': req.params.announceId}, function(err, announce) {
       if (err) {
+        ee.emit('error', err);
         res.status(400).json(err);
       } else {
         res.status(200).json();
@@ -119,6 +124,7 @@ module.exports = {
     .populate('creator')
     .exec(function(err, announces) {
       if (err) {
+        ee.emit('error', err);
         return res.status(501).json(err);
       }
       res.status(200).json(announces);

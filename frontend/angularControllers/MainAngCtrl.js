@@ -1,8 +1,9 @@
 angular.module('InTouch')
-    .controller('MainAngCtrl', ['$scope', 'Auth', '$location', '$rootScope', 
-      MainAngCtrl]);
+  .controller('MainAngCtrl', MainAngCtrl);
 
-function MainAngCtrl($scope, Auth, $location, $rootScope) {
+MainAngCtrl.$inject = ['$timeout', '$scope', 'Auth', '$location', '$rootScope', 'appLoading'];
+
+function MainAngCtrl($timeout, $scope, Auth, $location, $rootScope, appLoading) {
 
   console.log('*****mainctrl******');
 
@@ -11,8 +12,9 @@ function MainAngCtrl($scope, Auth, $location, $rootScope) {
   //   console.log($rootScope.currentUser.token);
   //   $http.defaults.headers.common['auth-token'] = userToken;
   // }
-
+  appLoading.ready();
   $scope.Login = function() {
+    appLoading.loading();
     console.log('_______________LOG IN____________');
     Auth.login({
       'email': this.emailLog,
@@ -20,6 +22,7 @@ function MainAngCtrl($scope, Auth, $location, $rootScope) {
     }, function(err) {
       console.log(err);
       if (!err) {
+        appLoading.ready();
         $location.path('/');
       } else {
         $scope.error = err.err;
@@ -29,6 +32,7 @@ function MainAngCtrl($scope, Auth, $location, $rootScope) {
 
   $scope.register = function() {
     console.log('**************register*********************');
+    $scope.dataLoading = true;
     console.log(this);
     Auth.createUser({
       email: this.email,

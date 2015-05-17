@@ -1,13 +1,15 @@
 angular.module('InTouch')
-    .factory('Auth', ['$timeout', '$window', '$localStorage', '$rootScope',
-      'Session', 'User', '$http', 'notifications',
-        Auth]);
+  .factory('Auth', Auth);
+
+Auth.$inject = ['$timeout', '$window', '$localStorage', '$rootScope',
+      'Session', 'User', '$http', 'notifications'];
 
 function Auth($timeout, $window, $localStorage, $rootScope,
   Session, User, $http, notifications) {
 
   return {
     login: function(user, callback) {
+      
       var cb = callback || angular.noop;
       console.log('login');
       console.log(user);
@@ -31,6 +33,7 @@ function Auth($timeout, $window, $localStorage, $rootScope,
         console.log(err);
         return cb(err.data);
       });
+    
     },
 
     logout: function(callback) {
