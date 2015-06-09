@@ -1,49 +1,58 @@
 angular.module('InTouch')
   .controller('ProfileAngCtrl', ProfileAngCtrl);
 
-ProfileAngCtrl.$inject = ['$scope', '$rootScope', 'Status', 'appLoading'];
+ProfileAngCtrl.$inject = ['$rootScope', 'Status', 'appLoading'];
 
-function ProfileAngCtrl($scope, $rootScope, Status, appLoading) {
+function ProfileAngCtrl($rootScope, Status, appLoading) {
 
-  $scope.status = [];
+  var vm          = this;
+  
+  vm.removeStatus = removeStatus;
+  vm.getStatus    = getStatus;
+  vm.postStatus   = postStatus;
+  vm.initStatus   = initStatus;
+  
+  vm.status       = [];
 
   appLoading.ready();
 
-  $scope.removeStatus = function(status) {
+  //////////////////////////////////////////////////////////////////
+
+  function removeStatus(status) {
     console.log(status);
     Status.removeStatus(status._id).then(function(res) {
-      for (var i in $scope.status) {
-        if ($scope.status[i] == status) {
-          $scope.status.splice(i, 1);
+      for (var i in vm.status) {
+        if (vm.status[i] == status) {
+          vm.status.splice(i, 1);
         }
       }
     });
-  };
+  }
 
-  $scope.getStatus = function() {
+  function getStatus() {
     Status.getStatus($rootScope.currentUser._id)
     .then(function(res) {
       console.log('GET STATUS');
       console.log(res);
-      $scope.status = res;
+      vm.status = res;
     });
-  };
+  }
 
-  $scope.postStatus = function() {
-    if ($scope.txtcomment !== '') {
+  function postStatus() {
+    if (vm.txtcomment !== '') {
       Status.postStatus({
-        content: $scope.txtcomment
+        content: vm.txtcomment
       }, $rootScope.currentUser._id).then(function(res) {
-        $scope.getStatus();
-        $scope.txtcomment = '';
+        vm.getStatus();
+        vm.txtcomment = '';
       });
 
     }
-  };
+  }
 
-  $scope.initStatus = function() {
-    console.log('__STatusCtrl__');
-    $scope.getStatus();
-  };
+  function initStatus() {
+    console.log('__StatusCtrl__');
+    vm.getStatus();
+  }
 
 }

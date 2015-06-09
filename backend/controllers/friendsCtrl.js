@@ -4,7 +4,6 @@
 var mongoose = require('mongoose');
 var Friend   = mongoose.model('Friend');
 var User     = mongoose.model('User');
-var Q        = require('q');
 var ee       = require('../config/event');
 
 module.exports = {
@@ -132,7 +131,6 @@ module.exports = {
   ///////////////////////////////////////////////////////////////
   deleteFriend: function(req, res) {
     console.log('_________destroy friend_____________');
-    console.log('______ DELETE/api/friends (new friend) _____');
     
     console.log(req.params);
     console.log(req.user._id);
@@ -140,8 +138,6 @@ module.exports = {
       creator: req.params.friendId
     }).where('usernameWaitFriendRequest').equals(req.params.user)
     .remove(function(err, result) {
-
-      console.log('result');
       res.status(200).json();
     });
     

@@ -3,13 +3,13 @@
     margin: 80px 0px 80px 0px;
     }*/
 
-img {
+/*img {
     -webkit-transform: scale(1, 1);
     -ms-transform: scale(1, 1);
     transform: scale(1, 1);
     transition-duration: 0.3s;
     -webkit-transition-duration: 0.3s; /* Safari */
-    }
+/*    }
 
 img:hover {
   cursor: pointer;
@@ -18,90 +18,146 @@ img:hover {
     transform: scale(2, 2);
     transition-duration: 0.3s;
     -webkit-transition-duration: 0.3s; /* Safari */
-    box-shadow: 10px 10px 5px #888888;
+/*    box-shadow: 10px 10px 5px #888888;
     z-index: 1;
-    }
+    }*/
+
+.cuadro_intro_hover{
+      padding: 0px;
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+  }
+  .cuadro_intro_hover:hover .caption{
+    opacity: 1;
+    transform: translateY(-150px);
+    -webkit-transform:translateY(-150px);
+    -moz-transform:translateY(-150px);
+    -ms-transform:translateY(-150px);
+    -o-transform:translateY(-150px);
+  }
+  .cuadro_intro_hover img{
+    z-index: 4;
+  }
+  .cuadro_intro_hover .caption{
+    position: absolute;
+    top:150px;
+    -webkit-transition:all 0.3s ease-in-out;
+    -moz-transition:all 0.3s ease-in-out;
+    -o-transition:all 0.3s ease-in-out;
+    -ms-transition:all 0.3s ease-in-out;
+    transition:all 0.3s ease-in-out;
+    width: 100%;
+  }
+  .cuadro_intro_hover .blur{
+    background-color: rgba(0,0,0,0.7);
+    height: 300px;
+    z-index: 5;
+    position: absolute;
+    width: 100%;
+  }
+  .cuadro_intro_hover .caption-text{
+    z-index: 10;
+    color: #fff;
+    position: absolute;
+    height: 300px;
+    text-align: center;
+    top:-20px;
+    width: 100%;
+  }
+
 </style>
 
 <div ng-show="uploader.isHTML5">
-      <div class="row">
-        <img  ng-repeat="image in images track by $index" src="/images/{{image}}" alt="Short alt text">
-        </div>
-</div>
+  <div class="row">
+    <div ng-repeat="image in picture.images track by $index" class="col-lg-3">
+      <div class="cuadro_intro_hover ">
+        <p style="text-align:center; margin-top:20px;">
+          <img src="/images/{{image}}" width="150" height="150" alt="Short alt text" class="img-responsive" alt="">
+        </p>
+        <div class="caption">
+          <div class="blur"></div>
+          <div class="caption-text">
 
-    </div>
-    </div>
-    <div ng-show="noImages" class="container image-container">
-      <img class="list-img_" src="/images/default.png">
-    </div>
-    <div class="row">
-      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
-        <h3>Choisissez votre image</h3>
-        <div ng-show="uploader.isHTML5">
-          <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
-          <div nv-file-drop="" uploader="uploader" options="{ url: '/upload' }">
-            <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
-              Glissez votre image dans cette zone
-            </div>
+            <h3 ng-show='defaultImage' style="border-top:2px solid white; border-bottom:2px solid white; padding:10px;">Options</h3>
+            <a class=" btn btn-default" ng-click="picture.doDefaultImage(image)"><span class="glyphicon glyphicon-plus"> Image par défaut</span></a>
           </div>
         </div>
-        <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
-        <input type="file" nv-file-select="" uploader="uploader" multiple/>
-        <br/>
       </div>
-      <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9" style="margin-bottom: 40px">
-        <h2>Ajoutez votre liste de photos</h2>
-        <h3>Liste</h3>
-        <p>Nombre de photos : {{ uploader.queue.length }}</p>
-        <table class="table">
-          <thead>
-            <tr>
-              <th width="50%">Name</th>
-              <th ng-show="uploader.isHTML5">Progress</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="item in uploader.queue">
-              <td>
-                <strong>{{ item.file.name }}</strong>
-                <!-- Image preview -->
-                <!--auto height-->
-                <!--<div ng-thumb="{ file: item.file, width: 100 }"></div>-->
-                <!--auto width-->
-                <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
-                <!--fixed width and height -->
-                <!--<div ng-thumb="{ file: item.file, width: 100, height: 100 }"></div>-->
-              </td>
-              <td ng-show="uploader.isHTML5">
-                <div class="progress" style="margin-bottom: 0;">
-                  <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
-                </div>
-              </td>
-              <td class="text-center">
-                <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div>
-          <div>
-            Queue progress:
-            <div class="progress" style="">
-              <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
-          <span class="glyphicon glyphicon-upload"></span> Upload all
-          </button>
-          <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
-          <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
-          </button>
-          <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
-          <span class="glyphicon glyphicon-trash"></span> Remove all
-          </button>
+      
+    </div>
+  </div>
+</div>
+<div ng-show="picture.noImages" class="container image-container">
+  <img class="list-img_" src="/images/default.png">
+</div>
+<div class="row">
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
+    <h3>Choisissez votre image</h3>
+    <div ng-show="uploader.isHTML5">
+      <div nv-file-drop="" uploader="uploader" options="{ url: '/upload' }">
+        <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
+          Glissez votre image dans cette zone
         </div>
       </div>
     </div>
+    <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+    <input type="file" nv-file-select="" uploader="uploader" multiple/>
+    <br/>
+  </div>
+  <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9" style="margin-bottom: 40px">
+    <h2>Ajoutez votre liste de photos</h2>
+    <h3>Liste</h3>
+    <p>Nombre de photos : {{ uploader.queue.length }}</p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th width="50%">Name</th>
+          <th ng-show="uploader.isHTML5">Progress</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in uploader.queue">
+          <td>
+            <strong>{{ item.file.name }}</strong>
+            <!-- Image preview -->
+            <!--auto height-->
+            <!--<div ng-thumb="{ file: item.file, width: 100 }"></div>-->
+            <!--auto width-->
+            <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
+            <!--fixed width and height -->
+            <!--<div ng-thumb="{ file: item.file, width: 100, height: 100 }"></div>-->
+          </td>
+          <td ng-show="uploader.isHTML5">
+            <div class="progress" style="margin-bottom: 0;">
+              <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+            </div>
+          </td>
+          <td class="text-center">
+            <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+            <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+            <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div>
+      <div>
+        Queue progress:
+        <div class="progress" style="">
+          <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+      <span class="glyphicon glyphicon-upload"></span> Upload all
+      </button>
+      <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+      <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+      </button>
+      <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+      <span class="glyphicon glyphicon-trash"></span> Remove all
+      </button>
+    </div>
+  </div>
+</div>

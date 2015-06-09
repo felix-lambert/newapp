@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var ee = new EventEmitter();
+var ee           = new EventEmitter();
 
 ee.on('error', function(err) {
   if (!err) {

@@ -3,13 +3,12 @@
 /////////////////////////////////////////////////////////////////
 var path           = require('path');
 var morgan         = require('morgan');
-var bodyParser     = require('body-parser');
 var methodOverride = require('method-override');
-var cookieParser   = require('cookie-parser');
 var expressSession = require('express-session');
 var mongoStore     = require('connect-mongo')(expressSession);
 var compress       = require('compression');
-var expiry = require('static-expiry');
+var bodyParser     = require('body-parser');
+
 /////////////////////////////////////////////////////////////////
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

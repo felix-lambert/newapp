@@ -3,15 +3,15 @@ exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 
   var roomSchema = new Schema({
-      name: {
-          type: String,
-          index: true,
-          required: true,
-          unique: true
-      },
-      people: [String],
-      created: Date,
-      updated: [Date],
+    name: {
+        type: String,
+        index: true,
+        required: true,
+        unique: true
+    },
+    people: [String],
+    created: Date,
+    updated: [Date],
   });
 
   /////////////////////////////////////////////////////////////////
@@ -30,18 +30,18 @@ exports = module.exports = function(mongoose) {
    * Statics
    */
   roomSchema.statics = {
-      load: function(id, cb) {
-        console.log('*****************load room******************');
-        this.findOne({
-            _id: id
-        }).populate('creator').exec(cb);
-      },
-      findByTitle: function(title, callback) {
-        console.log('find room by title');
-        return this.find({
-            title: title
-        }, callback);
-      },
+    load: function(id, cb) {
+      console.log('*****************load room******************');
+      this.findOne({
+          _id: id
+      }).populate('creator').exec(cb);
+    },
+    findByTitle: function(title, callback) {
+      console.log('find room by title');
+      return this.find({
+          title: title
+      }, callback);
+    },
   };
 
   /**

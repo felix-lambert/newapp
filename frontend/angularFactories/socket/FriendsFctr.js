@@ -1,6 +1,6 @@
 angular.module('InTouch')
 
-.factory('friends', friends);
+.factory('Friends', friends);
 
 friends.$inject = ['$q', '$http'];
 

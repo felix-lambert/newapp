@@ -1,32 +1,37 @@
 angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
-PictureAngCtrl.$inject = ['Images', '$scope', '$rootScope', 'FileUploader',
-        '$http', 'appLoading'];
+PictureAngCtrl.$inject = ['$scope', 'Images', '$rootScope',
+'FileUploader', '$http', 'appLoading'];
 
-function PictureAngCtrl(Images, $scope, $rootScope, FileUploader, $http, appLoading) {
+function PictureAngCtrl($scope, Images, $rootScope, FileUploader, $http, appLoading) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
+
+  var vm = this;
+
   appLoading.ready();
+
+  vm.doDefaultImage = doDefaultImage;
+
   var userToken = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
 
-  $scope.noImages = false;
+  vm.noImages = false;
   if ($rootScope.currentUser) {
     Images.getImages().then(function(response) {
       console.log(response);
       $rootScope.currentUser.images = response;
-      $scope.images = $rootScope.currentUser.images;
+      vm.images = $rootScope.currentUser.images;
     });
   }
 
-
-  if ($rootScope.currentUser.images && $rootScope.currentUser.images.length === 0) {
-    $scope.noImages = true;
+  if ($rootScope.currentUser.images &&
+    $rootScope.currentUser.images.length === 0) {
+    vm.noImages = true;
   } else {
-    $scope.images = $rootScope.currentUser.images;
+    vm.images = $rootScope.currentUser.images;
   }
-
 
   var uploader = $scope.uploader = new FileUploader({
       headers: {
@@ -43,6 +48,10 @@ function PictureAngCtrl(Images, $scope, $rootScope, FileUploader, $http, appLoad
         return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
       }
   });
+
+  function doDefaultImage(image) {
+    console.log(image);
+  }
 
   /////////////////////////////////////////////////////////////////
   // CALLBACKS ////////////////////////////////////////////////////
@@ -75,12 +84,9 @@ function PictureAngCtrl(Images, $scope, $rootScope, FileUploader, $http, appLoad
     $rootScope.currentUser.images = response.images;
 
     console.log($rootScope.currentUser);
-    $scope.noImages = false;
-    $scope.images   = $rootScope.currentUser.images;
+    vm.noImages = false;
+    vm.images   = $rootScope.currentUser.images;
     console.log('_____ON SUCCESS_____');
-    console.log(response.images);
-    console.log(response);
-    console.log($rootScope.currentUser);
     console.info('onSuccessItem', fileItem, response, status, headers);
   };
 

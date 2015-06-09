@@ -17,7 +17,6 @@ module.exports = {
     var incomingToken = req.params.id;
     if (incomingToken) {
       var decoded = User.decode(incomingToken);
-      console.log(decoded);
       if (decoded.email) {
         var decodeUser = decoded.email;
         User.invalidateUserToken(decodeUser,
@@ -26,7 +25,6 @@ module.exports = {
             ee.emit('error', err);
             res.status(400).json({error: 'Issue finding user.'});
           } else {
-            console.log('redirect');
             res.redirect('/');
           }
         });
@@ -38,7 +36,6 @@ module.exports = {
             ee.emit('error', err);
             res.status(400).json({error: 'Issue finding user.'});
           } else {
-            console.log('redirect');
             res.redirect('/');
           }
         });
@@ -95,8 +92,6 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   register: function(req, res, next) {
     console.log('**********************Register***********************');
-    console.log(req.body.password);
-    console.log(req.body.confPassword);
     if (req.body.password === req.body.confPassword) {
       var user = new User({
         username: req.body.username,
@@ -132,7 +127,6 @@ module.exports = {
         });
       });
     } else {
-      console.log('The confirm password don\'t match');
       res.status(400).json('The confirm password don\'t match');
     }
   }

@@ -50,7 +50,6 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   saveNotification: function(req, res, next) {
     console.log('saveNotification');
-    console.log(req.body.type);
     Notification.findOneAndUpdate({
       'creator': req.body.userDesId
     }, {
@@ -65,7 +64,6 @@ module.exports = {
         ee.emit('error', err);
         res.status(400).json(err);
       } else {
-        console.log('NOTICATION SAVED');
         res.status(201).json('save succeeded');
       }
     });

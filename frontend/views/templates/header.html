@@ -54,7 +54,7 @@ ul.dropdown-cart li .item-right button{
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#" ng-click="switch('index')"><img alt="Brand" src="/icons/logo.png"></a>
+          <a class="navbar-brand" href="#" ng-click="header.changePage('index')"><img alt="Brand" src="/icons/logo.png"></a>
           <span class="app-loading-container">
             <span class="app-loading-animation" data-ng-class="status"></span>
           </span>
@@ -63,17 +63,17 @@ ul.dropdown-cart li .item-right button{
         <div class="collapse navbar-collapse" id="navbar-collapse-3">
           <form class="navbar-form navbar-left" role="search">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Rechercher ..." id="searchInput" ng-keydown="checkKeyDown($event)" class="" ng-model="searchText" ng-change="search()" />
-                <ul class="list-group" ng-init="initListFriend()">
-                    <li ng-repeat="suggestion in suggestions" class="list-group-item"
+                <input type="text" class="form-control" placeholder="Rechercher ..." id="searchInput" ng-keydown="checkKeyDown($event)" class="" ng-model="searchText" ng-change="header.search()" />
+                <ul class="list-group" ng-init="header.initListFriend()">
+                    <li ng-repeat="suggestion in header.suggestions" class="list-group-item"
                         ng-class="{active : isSelected(suggestion)}"
                         ng-click="setSelected(suggestion)">
                         <h4 class="list-group-item-heading">{{suggestion.follow[0] || suggestion.notFollow[0]}}</h4> <span
                         class="list-group-item-text" ng-show="suggestion.follow[0]">
                           <div ng-show="suggestion " class="btn-group">
-                            <p class="btn btn-warning" ng-click="follow(suggestion.follow)"> Suivre</p>
+                            <p class="btn btn-warning" ng-click="header.follow(suggestion.follow)"> Suivre</p>
                           </div>
-                        </span><span ng-show="suggestion.notFollow[0]"><div ng-repeat="username in usernames track by $index" class="btn-group" ng-if="username.wait === suggestion.notFollow[0]">
+                        </span><span ng-show="suggestion.notFollow[0]"><div ng-repeat="username in header.usernames track by $index" class="btn-group" ng-if="username.wait === suggestion.notFollow[0]">
                           <p>En attente de confirmation</p>
                         </div>
                         <div class=" btn-group"  ng-repeat="username in usernames track by $index" ng-if="username.accepted === suggestion.notFollow[0]">
@@ -84,8 +84,8 @@ ul.dropdown-cart li .item-right button{
               </div>
             </form>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href='/' ng-click="switch('index')">Accueil</a></li>
-            <li><a href='/' ng-click="open('lg')">A propos</a></li>
+            <li><a href='/' ng-click="header.changePage('index')">Accueil</a></li>
+            <li><a href='/' ng-click="header.open('lg')">A propos</a></li>
             <li ng-show="currentUser" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-pencil"></span> {{currentUser.notificationsCount}} - Notifications<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-cart" role="menu">
@@ -101,8 +101,8 @@ ul.dropdown-cart li .item-right button{
                         </span>
                     </span>
                     <span class="item-right">
-                      <button type="button" ng-if="notification.type !== 'accept'" class="btn btn-xs btn btn-success" data-ng-click="acceptFriendRequest(notification)">Accepter</button>
-                      <button data-ng-click="refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
+                      <button type="button" ng-if="notification.type !== 'accept'" class="btn btn-xs btn btn-success" data-ng-click="header.acceptFriendRequest(notification)">Accepter</button>
+                      <button data-ng-click="header.refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
                     </span>
                 </span>
               </li>
@@ -111,18 +111,18 @@ ul.dropdown-cart li .item-right button{
           </ul>
           </li>
           <li class="dropdown" ng-show='currentUser'><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
-                    class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary">42</span>
+                    class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary">{{nbMessages}}</span>
                 </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#"><span class="label label-warning">7:00 AM</span>Hi :)</a></li>
-                        <li><a href="#"><span class="label label-warning">8:00 AM</span>How are you?</a></li>
-                        <li><a href="#"><span class="label label-warning">9:00 AM</span>What are you doing?</a></li>
+
+                    <ul class="dropdown-menu" >
+
+                        <li ng-repeat="message in header.messages"><a href="#"><span class="label label-warning">{{message.name}}</span>{{message.message}}</a></li>
                         <li class="divider"></li>
                         <li><a href="#" class="text-center">View All</a></li>
                     </ul>
                 </li>
-                <li ng-show="!currentUser"><a href='/' ng-click="switch('login')">Se connecter</a></li>
-              <li ng-show="currentUser"><a href='/' ng-click="logout()">Déconnexion</a></li>
+                <li ng-show="!currentUser"><a href='/' ng-click="header.changePage('login')">Se connecter</a></li>
+              <li ng-show="currentUser"><a href='/' ng-click="header.logout()">Déconnexion</a></li>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container -->
     </nav><!-- /.navbar -->

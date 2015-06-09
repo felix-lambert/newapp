@@ -1,6 +1,6 @@
 angular.module('InTouch')
 
-.factory('rooms', rooms);
+.factory('Rooms', rooms);
 
 rooms.$inject = ['$q', '$http'];
 

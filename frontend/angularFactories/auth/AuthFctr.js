@@ -1,18 +1,13 @@
 angular.module('InTouch')
   .factory('Auth', Auth);
 
-Auth.$inject = ['$timeout', '$window', '$localStorage', '$rootScope',
-      'Session', 'User', '$http', 'notifications'];
+Auth.$inject = ['$rootScope', 'Session', 'User', '$http', 'Notifications', '$localStorage'];
 
-function Auth($timeout, $window, $localStorage, $rootScope,
-  Session, User, $http, notifications) {
+function Auth($rootScope, Session, User, $http, Notifications, $localStorage) {
 
   return {
     login: function(user, callback) {
-      
       var cb = callback || angular.noop;
-      console.log('login');
-      console.log(user);
       Session.save({
           email: user.email,
           password: user.password
@@ -22,9 +17,7 @@ function Auth($timeout, $window, $localStorage, $rootScope,
         $rootScope.currentUser = $localStorage.currentUser;
         var userToken = $rootScope.currentUser.token;
         $http.defaults.headers.common['auth-token'] = userToken;
-        notifications.getNotifications().then(function(response) {
-          console.log(response);
-          console.log(response.length);
+        Notifications.getNotifications().then(function(response) {
           $rootScope.currentUser.notifications = response;
           $rootScope.currentUser.notificationsCount = response.length;
         });

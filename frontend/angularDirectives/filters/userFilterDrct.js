@@ -1,9 +1,7 @@
 angular.module('InTouch')
   .directive('autoComplete', autoComplete);
 
-autoComplete.$inject = ['$http', 'socket'];
-
-function autoComplete($http) {
+function autoComplete() {
   return {
       restrict: 'AE',
       scope: {

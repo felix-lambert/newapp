@@ -1,16 +1,20 @@
 angular.module('InTouch').controller('TransactionAngCtrl', TransactionAngCtrl);
 
-function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $modal) {
+TransactionAngCtrl.$inject = ['$rootScope', '$http', 'transactions', '$timeout', '$modal'];
+
+function TransactionAngCtrl($rootScope, $http, transactions, $timeout, $modal) {
   
+  var vm = this;
+
   if ($rootScope.currentUser) {
     var userToken = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
-  $scope.tab          = 1;
-  $scope.currentMoney = 0;
-  $scope.errorRequest = null;
+  vm.tab          = 1;
+  vm.currentMoney = 0;
+  vm.errorRequest = null;
 
-  $scope.rejectTransac = function(transac) {
+  vm.rejectTransac = function(transac) {
     var id = transac._id;
     $http({
       method:'GET',
@@ -20,14 +24,14 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
       transac.rejected = data.rejected;
       transac.statusInformation = data.statusInformation;
     }).error(function(data) {
-      $scope.errorRequest = data.message;
+      vm.errorRequest = data.message;
       $timeout(function() {
-        $scope.errorRequest = null;
+        vm.errorRequest = null;
       }, 3000);
     });
   };
 
-  $scope.acceptTransac = function(transac) {
+  vm.acceptTransac = function(transac) {
     $http({
       method:'GET',
       url:'/api/transaction/' + transac._id + '/accept'
@@ -44,9 +48,9 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
         transac.showAcceptLink = true;
       }
     }).error(function(data) {
-      $scope.errorRequest = data.message;
+      vm.errorRequest = data.message;
       $timeout(function() {
-        $scope.errorRequest = null;
+        vm.errorRequest = null;
       }, 5000);
     });
   };
@@ -58,20 +62,20 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
     }).success(function(data) {
       transac.status = data.transac.status;
       transac.statusInformation = data.transac.statusInformation;
-      $scope.currentMoney = data.money;
+      vm.currentMoney = data.money;
     }).error(function(data) {
-      $scope.errorRequest = data.message;
+      vm.errorRequest = data.message;
       $timeout(function() {
-        $scope.errorRequest = null;
+        vm.errorRequest = null;
       }, 3000);
     });
   };
 
-  $scope.signalTransacAsReceived = function(transac) {
+  vm.signalTransacAsReceived = function(transac) {
     var modalInstance = $modal.open({
         templateUrl: 'views/partials/transaction/receivedModal.html',
         controller: 'transactionModalCtrl',
-        scope:$scope,
+        scope:vm,
         resolve: {
           transac: function() {
             return transac;
@@ -87,9 +91,9 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
       }).success(function(data) {
         requestReceived(transac);
       }).error(function(data) {
-        $scope.errorRequest = data.message;
+        vm.errorRequest = data.message;
         $timeout(function() {
-          $scope.errorRequest = null;
+          vm.errorRequest = null;
         }, 5000);
       });
     }, function() {
@@ -97,14 +101,14 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
     });
   };
 
-  $scope.signalTransacAsNotReceived = function(transac) {
+  vm.signalTransacAsNotReceived = function(transac) {
     console.log('2');
   };
 
-  $scope.init = function() {
+  vm.init = function() {
     transactions.get(function(data) {
 
-      $scope.currentMoney = data.money ? data.money : 0;
+      vm.currentMoney = data.money ? data.money : 0;
       var trclient = data.client;
       var trowner = data.owner;
       for (var i = 0; l = trclient.length, i < l; i++) {
@@ -131,11 +135,10 @@ function TransactionAngCtrl($scope, $rootScope, $http, transactions, $timeout, $
           }
         }
       }
-      $scope.transactionClient = trclient;
-      $scope.transactionOwner = trowner;
+      vm.transactionClient = trclient;
+      vm.transactionOwner = trowner;
     }, function(error) {
       console.log(error);
     });
   };
 }
-

@@ -14,17 +14,16 @@ module.exports = {
   getStatus: function(req, res) {
     console.log('_____GET /api/status/' + req.params.statusId);
     Status.find({
-          author: req.params.statusId
-        })
-        .sort('-date')
-        .exec(function(err, status) {
-          if (err) {
-            ee.emit('error', err);
-            return res.status(501).json(err);
-          }
-          console.log(status);
-          res.status(200).json(status);
-        });
+      author: req.params.statusId
+    })
+    .sort('-date')
+    .exec(function(err, status) {
+      if (err) {
+        ee.emit('error', err);
+        return res.status(501).json(err);
+      }
+      res.status(200).json(status);
+    });
   },
 
   /////////////////////////////////////////////////////////////////

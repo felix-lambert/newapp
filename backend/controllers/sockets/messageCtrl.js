@@ -50,6 +50,7 @@ module.exports = {
   create: function(req, res) {
     console.log('*******************create message***************************');
     var message = new Message(req.body);
+
     message.save(function(err) {
       if (err) {
         ee.emit('error', err);
@@ -74,5 +75,21 @@ module.exports = {
           res.status(200).json(messages);
         }
       });
+  },
+
+  /////////////////////////////////////////////////////////////////
+  // LIST USER MESSAGES ///////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  userMessage: function(req, res) {
+    console.log('_______________________all messages______________________');
+    Message.find({userRec: req.params.messageUsername})
+      .sort('created').exec(function(err, messages) {
+        if (err) {
+          ee.emit('error', err);
+          res.status(501).json(err);
+        } else {
+          res.status(200).json(messages);
+        }
+    });
   }
 };

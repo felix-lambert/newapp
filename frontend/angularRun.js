@@ -2,7 +2,7 @@ var routeObject = {
   '/': {
     templateUrl: '/partials/main.html',
     controller: 'MainAngCtrl',
-    controllerAs: 'form'
+    controllerAs: 'auth'
   },
   '/journal': {
     templateUrl: '/partials/profile/journalPrfl.html',
@@ -11,7 +11,7 @@ var routeObject = {
   },
   '/settings': {
       templateUrl: '/partials/profile/settingsPrfl.html',
-      controller: 'SettingsAngCtrl as settings',
+      controller: 'SettingsAngCtrl',
       controllerAs: 'settings'
   },
   '/about' : {
@@ -41,23 +41,23 @@ var routeObject = {
   },
   '/announces': {
     templateUrl: '/partials/announces/listAnnc.html',
-    controller: 'AnnouncesAngCtrl as announces',
-    controllerAs: 'announces'
+    controller: 'ListAnnouncesAngCtrl',
+    controllerAs: 'listAnnounces'
   },
   '/announces/create': {
     templateUrl: '/partials/announces/createAnnc.html',
-    controller: 'AnnouncesAngCtrl',
-    controllerAs: 'announces'
+    controller: 'CreateAnnounceAngCtrl',
+    controllerAs: 'createAnnounce',
   },
   '/announces/:announceId/edit': {
     templateUrl: '/partials/announces/editAnnc.html',
-    controller: 'AnnouncesAngCtrl',
-    controllerAs: 'announces'
+    controller: 'EditAnnounceAngCtrl',
+    controllerAs: 'editAnnounce'
   },
   '/announces/:announceId': {
     templateUrl: '/partials/announces/viewAnnc.html',
-    controller: 'AnnouncesAngCtrl',
-    controllerAs: 'announces'
+    controller: 'ShowAnnounceAngCtrl',
+    controllerAs: 'showAnnounce'
   },
   '/forgot': {
     templateUrl: '/partials/threads/forgot.html',

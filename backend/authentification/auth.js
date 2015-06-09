@@ -13,7 +13,6 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
   'use strict';
   console.log('_________________Ensure authentification__________________');
   var incomingToken = req.headers['auth-token'];
-  console.log(incomingToken);
   if (incomingToken) {
     var decoded = User.decode(incomingToken);
     if (decoded && decoded.email) {

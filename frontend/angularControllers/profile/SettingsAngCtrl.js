@@ -1,15 +1,20 @@
 angular.module('InTouch')
   .controller('SettingsAngCtrl', SettingsAngCtrl);
 
-function SettingsAngCtrl($scope, $http, $rootScope, Profile) {
-  $scope.editProfile = false;
-  $scope.errorEmail  = false;
+SettingsAngCtrl.$inject = ['$http', '$rootScope', 'appLoading', 'Profile'];
+
+function SettingsAngCtrl($http, $rootScope, Profile) {
+
+  var vm = this;
+
+  vm.editProfile = false;
+  vm.errorEmail  = false;
   var initUser       = null;
   var userToken = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
 
   Profile.query(function(data) {
-    $scope.profile = data;
+    vm.profile = data;
   });
 
   $http({
@@ -17,39 +22,39 @@ function SettingsAngCtrl($scope, $http, $rootScope, Profile) {
     url: '/getReputation'
       })
       .success(function(data, status, headers, config) {
-        $scope.reputation = data.reputation;
-        $scope.rated      = data.rated;
-        $scope.total      = data.total;
+        vm.reputation = data.reputation;
+        vm.rated      = data.rated;
+        vm.total      = data.total;
       })
       .error(function(data, status, headers, config) {
           // erreur de récupération :(
       });
 
-  $scope.toggleEditProfile = function() {
-    if ($scope.editProfile) {
-      $scope.editProfile = false;
-      $scope.profile     = initUser;
+  vm.toggleEditProfile = function() {
+    if (vm.editProfile) {
+      vm.editProfile = false;
+      vm.profile     = initUser;
     } else {
       initUser = {
-          email: $scope.profile.email,
-          firstName: $scope.profile.firstName,
-          lastName: $scope.profile.lastName,
-          age: $scope.profile.age,
+          email: vm.profile.email,
+          firstName: vm.profile.firstName,
+          lastName: vm.profile.lastName,
+          age: vm.profile.age,
       };
-      $scope.editProfile = true;
+      vm.editProfile = true;
     }
   };
 
-  $scope.editProfileSubmit = function(form) {
+  vm.editProfileSubmit = function(form) {
     Profile.save({
-        email: $scope.profile.email,
-        firstName: $scope.profile.firstName,
-        lastName: $scope.profile.lastName,
-        age: $scope.profile.age
+        email: vm.profile.email,
+        firstName: vm.profile.firstName,
+        lastName: vm.profile.lastName,
+        age: vm.profile.age
     }, function(res) {
-      $scope.editProfile   = false;
-      $scope.profile.email = res.email;
-      $scope.errorEmail    = res.errorEmail;
+      vm.editProfile   = false;
+      vm.profile.email = res.email;
+      vm.errorEmail    = res.errorEmail;
     });
   };
 }

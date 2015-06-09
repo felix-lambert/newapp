@@ -28,7 +28,11 @@ exports = module.exports = function(mongoose) {
           type: Schema.ObjectId,
           ref: 'Room'
       },
+      userRec: {
+          type: String
+      },
   });
+
   /////////////////////////////////////////////////////////////////
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
@@ -53,7 +57,6 @@ exports = module.exports = function(mongoose) {
     },
 
     findByContent: function(content, callback) {
-      console.log('find threannounce by title');
       return this.find({
           content: content
       }, callback);

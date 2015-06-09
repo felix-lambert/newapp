@@ -3,11 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose   = require('mongoose');
 var Announce   = mongoose.model('Announce');
-var validator  = require('validator');
 var Comment    = mongoose.model('AnnounceComment');
-var Q          = require('q');
-var User       = mongoose.model('User');
-var ImageModel = mongoose.model('Image');
 var async      = require('async');
 var moment     = require('moment');
 var ee         = require('../../config/event');
@@ -90,7 +86,6 @@ module.exports = {
         return next(new Error('Failed to load announce '));
       } else {
         var announcePost = Announce.addAnnouncePost(announce);
-        console.log("/////////////////////");
         res.status(200).json(announcePost);
       }
     });
@@ -157,7 +152,6 @@ module.exports = {
           item.FORMATTED_DATE = m.fromNow();
         }
         Comment.count({announce: item._id}).exec(function(err, result) {
-          console.log(result);
           item.nbComment = result;
           doneCallback(null, item);
         });
@@ -173,7 +167,7 @@ module.exports = {
 
   listUserPagination: function(req, res) {
     var findAnnounces = function(next) {
-      console.log('req.params.user');
+      console.log('list user pagination');
 
       Announce
           .find({creator: req.params.user})
@@ -187,12 +181,10 @@ module.exports = {
     var countAnnounces = function(next) {
       Announce.count({creator: req.params.user}).exec(next);
     };
-
     async.parallel({
         find: findAnnounces,
         count: countAnnounces
     }, function done(err, results) {
-     
       return res.status(200).json({
         total: Math.ceil(results.count / req.params.limit),
         announces: results.find

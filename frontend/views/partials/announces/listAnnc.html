@@ -1,46 +1,47 @@
 
-    <!-- Initialize a new AngularJS app and associate it with a module named "instantSearch"-->
-    <section ng-init="initListAnnounce()">
-
-        <div ng-repeat="announce in announces">
-  <div class="well">
+<!-- Initialize a new AngularJS app and associate it with a module named "instantSearch"-->
+<section ng-init="listAnnounces.initListAnnounce()">
+  <div ng-repeat="announce in listAnnounces.announces">
+    <div class="well">
       <div class="media">
-        <a class="pull-left" href="#">
-        <img class="media-object" src="/images/default.png" width="150" height="150">
-      </a>
-      <div class="media-body">
-        <h4 class="media-heading">                            <a href="announces/{{announce._id}}">
-                              <b>{{announce.title}}</b>
-                            </a></h4>
+        <a ng-show='announce.creator.images[0]' class="pull-left" href="#">
+          <img class="media-object" src="/images/{{announce.creator.images[0]}}" width="150" height="150">
+        </a>
+        <a ng-if='!announce.creator.images[0]' class="pull-left" href="#">
+          <img class="media-object" src="/images/default.jpeg" width="150" height="150">
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading">
+          <a href="announces/{{announce._id}}">
+            <b>{{announce.title}}</b>
+          </a></h4>
           <p class="text-right">{{announce.creator.username}}</p>
           <p>{{announce.content | cutFilter }}</p>
           <ul class="list-inline list-unstyled">
-        <li><span><i class="glyphicon glyphicon-calendar"></i> 
-        {{announce.FORMATTED_DATE}} </span></li>
+            <li><span><i class="glyphicon glyphicon-calendar"></i>
+            {{announce.FORMATTED_DATE}} </span></li>
             <li>|</li>
             <span><i class="glyphicon glyphicon-comment"></i>{{announce.nbComment}}</span>
             <li>|</li>
             <li>
-               <span class="glyphicon glyphicon-star"></span>
-                <span class="glyphicon glyphicon-star"></span>
-                <span class="glyphicon glyphicon-star"></span>
-                <span class="glyphicon glyphicon-star"></span>
-                <span class="glyphicon glyphicon-star-empty"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star-empty"></span>
             </li>
             <li>|</li>
             <li>{{announce.price}} crédit(s)</li>
-      </ul>
-       </div>
-
+          </ul>
+        </div>
+      </div>
     </div>
-
   </div>
-  </div>
-                   <ul class="pager" ng-show="total > 1">
-        <li><a href="" ng-click="previous()">Previous</a></li>
-        <li ng-repeat="pageNumber in pageNumbers">
-          <a href="" id="bt{{pageNumber}}" ng-click="paginate(pageNumber)">{{pageNumber}}</a>
-        </li>
-        <li><a href="" ng-click="next()">Next</a></li>
-      </ul>
-            </section>
+  <ul class="pager" ng-show="listAnnounces.total > 1">
+    <li><a href="" ng-click="listAnnounces.previous()">Previous</a></li>
+    <li ng-repeat="pageNumber in listAnnounces.pageNumbers">
+      <a href="" id="bt{{pageNumber}}" ng-click="listAnnounces.paginate(pageNumber)">{{pageNumber}}</a>
+    </li>
+    <li><a href="" ng-click="listAnnounces.next()">Next</a></li>
+  </ul>
+</section>

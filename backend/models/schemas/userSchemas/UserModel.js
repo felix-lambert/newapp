@@ -26,10 +26,6 @@ exports = module.exports = function(mongoose) {
       sparse: true
     },
     password: String,
-    profileImage: {
-      type: Schema.ObjectId,
-      ref: 'Image'
-    },
     DATE_CREATE: {
       type: Date,
       default: Date.now
@@ -92,7 +88,7 @@ exports = module.exports = function(mongoose) {
     getUserToken: function(email, token, cb) {
       var self = this;
       this.findOne({email: email})
-      .populate('profileImage').exec(function(err, usr) {
+      .exec(function(err, usr) {
         if (err || !usr) {
           console.log('ERROR');
           cb(err, null);

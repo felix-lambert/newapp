@@ -2,7 +2,6 @@
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
-var path     = require('path');
 var User     = mongoose.model('User');
 var ee       = require('../../config/event');
 

@@ -105,13 +105,11 @@ module.exports = {
         ee.emit('error', err);
         return res.status(501).json(err);
       }
-      console.log(comments);
       var sendComments = [];
       comments.forEach(function(item) {
         if (item.FORMATTED_DATE) {
           var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
           item.FORMATTED_DATE = m.fromNow();
-          console.log(m.fromNow());
         }
         sendComments.push(item);
       });

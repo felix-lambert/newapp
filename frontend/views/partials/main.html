@@ -300,7 +300,7 @@ body .no-padding {
 </style>
 
 <div ng-show="!currentUser">
-  <div class="container" ng-hide="page === 'login'">
+<!--   <div class="container" ng-hide="page === 'login'">
     <div class="row">
       <div class="col-md-9">
         <div class="embed-responsive embed-responsive-16by9">
@@ -309,9 +309,9 @@ body .no-padding {
         
       </div>
     </div>
-  </div>
+  </div> -->
   <br/>
-  <div class="row" ng-if="page === 'login'">
+  <div class="row">
     <div class="container">
       <div <div class="col-md-7 col-md-offset-1">
         <div class="panel panel-login">
@@ -329,12 +329,12 @@ body .no-padding {
           <div class="panel-body">
             <div class="row">
               <div class="col-lg-12">
-                <form id="login-form" class="form" style="display: block;" name="form" ng-submit="Login(form)" autocomplete="off" novalidate>
+                <form id="login-form" class="form" style="display: block;" name="form" ng-submit="auth.Login()" autocomplete="off" novalidate>
                   <div class="form-group">
-                    <input type="email" class="form-control" tabindex="1" placeholder="Email" name="email" ng-model="emailLog" required mongoose-error/>
+                    <input type="email" class="form-control" tabindex="1" placeholder="Email" name="email" ng-model="auth.emailLog" required mongoose-error/>
                   </div>
                   <div class="form-group">
-                    <input id="password" tabindex="2" class="form-control" placeholder="Mot de passe" type="password" name="password" ng-model="passwordLog" ng-minlength="4" required mongoose-error/>
+                    <input id="password" tabindex="2" class="form-control" placeholder="Mot de passe" type="password" name="password" ng-model="auth.passwordLog" ng-minlength="4" required mongoose-error/>
                   </div>
                   <span class="bl text-danger">{{error}}</span>
                   <div class="form-group">
@@ -348,9 +348,9 @@ body .no-padding {
                     </div>
                   </div>
                 </form>
-                <form id="register-form" class="form" name="form" style="display: none;" novalidate ng-submit="register(form)">
+                <form id="register-form" class="form" name="form" style="display: none;" novalidate ng-submit="form.register()">
                   <div class="form-group">
-                    <input class="form-control" type="text" name="usernameReg" minlength="5" maxlength="30" ng-model="username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
+                    <input class="form-control" type="text" name="usernameReg" minlength="5" maxlength="30" ng-model="form.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
                     <p class="form-help" ng-show="form.usernameReg && form.usernameReg.$error.unique">
                       That username is already taken.
                     </p>
@@ -363,7 +363,7 @@ body .no-padding {
                     </div>
                   </div>
                   <div class="form-group">
-                    <input type="email" class="form-control" name="emailReg" ng-model="email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
+                    <input type="email" class="form-control" name="emailReg" ng-model="form.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
                     <p class="text-danger">
                       {{ error.registeredMail }}
                     </p>
@@ -374,7 +374,7 @@ body .no-padding {
                     </div>
                   </div>
                   <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
+                    <input class="form-control" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="form.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
                     <div ng-if="form.$submitted || form.passwordReg.$touched" ng-messages="form.passwordReg.$error" class="errors">
                       <div class="text-danger" ng-message="required">Vous n'avez pas entré votre mot de passe</div>
                       <div class="text-danger" ng-message="minlength">Votre mot de passe est trop court</div>
@@ -384,7 +384,7 @@ body .no-padding {
                   </div>
                   <div class="pwstrength_viewport_progress"></div>
                   <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordRegRepeat" required ng-model="passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="user.password" autocomplete="off" />
+                    <input class="form-control" type="password" class="input" name="passwordRegRepeat" required ng-model="form.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="user.password" autocomplete="off" />
                     <div ng-if="form.$submitted || form.passwordRegRepeat.$touched || form.passwordReg.$touched" ng-messages="form.passwordRegRepeat.$error" class="errors">
                       <div class="text-danger" ng-message="required">Vous devez entrer un mot de passe de confirmation</div>
                       <div class="text-danger" ng-message="compareTo">Les mots de passe sont différents</div>
@@ -394,7 +394,7 @@ body .no-padding {
                     <div class="row">
                       <div class="col-sm-6 col-sm-offset-3">
                         <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Valider">
-                        <img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                        <img ng-if="form.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                       </div>
                     </div>
                   </div>

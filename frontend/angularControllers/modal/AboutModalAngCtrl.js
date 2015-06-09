@@ -1,10 +1,17 @@
 angular.module('InTouch')
     .controller('AboutModalAngCtrl', AboutModalAngCtrl);
 
-AboutModalAngCtrl.$inject = ['$scope', '$modalInstance'];
+AboutModalAngCtrl.$inject = ['$modalInstance'];
 
-function AboutModalAngCtrl($scope, $modalInstance) {
-  $scope.cancel = function() {
+function AboutModalAngCtrl($modalInstance) {
+
+  var vm = this;
+
+  vm.cancel = cancel;
+
+  //////////////////////////////////////////////////////////
+
+  function cancel() {
     $modalInstance.dismiss('cancel');
-  };
+  }
 }

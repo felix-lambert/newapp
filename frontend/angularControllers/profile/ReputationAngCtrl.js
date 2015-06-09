@@ -1,7 +1,8 @@
 angular.module('InTouch')
   .controller('ReputationAngCtrl', ReputationAngCtrl);
 
+ReputationAngCtrl.$inject = ['$rootScope', 'appLoading'];
 
-function ReputationAngCtrl($scope) {
+function ReputationAngCtrl($rootScope, appLoading) {
 
 }

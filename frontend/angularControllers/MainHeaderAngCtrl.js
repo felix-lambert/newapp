@@ -1,26 +1,73 @@
 angular.module('InTouch')
   .controller('MainHeaderAngCtrl', MainHeaderAngCtrl);
 
-MainHeaderAngCtrl.$inject = ['$attrs', 'friends', 'toaster', '$timeout', '$localStorage', '$window', '$route', 'notifications', 'socket', '$modal', 
-      '$http', '$scope', '$rootScope', 'Auth', '$location', '$element', '$filter', 'appLoading'];
+MainHeaderAngCtrl.$inject = ['Messages', 'Friends', 'toaster', '$localStorage', '$window', '$route', 'Notifications', 'socket', '$modal', 
+      '$http', '$rootScope', 'Auth', '$location', 'appLoading'];
 
-function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $window, $route, notifications, socket, $modal, $http, $scope, $rootScope,
-      Auth, $location, $element, $filter, appLoading) {
+function arrayIndexOf(myArray, searchTerm) {
+  for (var i = 0, len = myArray.length; i < len; i++) {
+    if (myArray[i] === searchTerm[0]) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $route, Notifications, socket, $modal, $http, $rootScope,
+      Auth, $location, appLoading) {
 
   console.log('************ Main HEADER CTRL **********');
-  $scope.suggestions = [];
-  $scope.usernames = [];
   
+  var vm                 = this;
+  
+  vm.search              = search;
+  vm.see                 = see;
+  vm.follow              = follow;
+  vm.refuseFriendRequest = refuseFriendRequest;
+  vm.acceptFriendRequest = acceptFriendRequest;
+  vm.open                = open;
+  vm.changePage          = changePage;
+  vm.about               = about;
+  vm.logout              = logout;
+  
+  vm.suggestions         = [];
+  vm.usernames           = [];
+  vm.messages            = [];
 
   if ($rootScope.currentUser) {
     var userToken = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
-    console.log($scope.currentUser.notifications);
+  }
+  if ($rootScope.currentUser) {
+    Messages.getMessagesFromUser($rootScope.currentUser.username)
+    .then(function(response) {
+      vm.nbMessages = response.length;
+      for (var i = 0; i < response.length; i++) {
+        vm.messages.push({
+          message: response[i].content,
+          name: response[i].user
+        });
+      }
+    });
+
+    socket.on('sendChatMessage', function(message) {
+      console.log('_______________ send in header_____________________');
+      toaster.pop('success', 'Un nouveau message a été envoyé');
+      Messages.getMessagesFromUser($rootScope.currentUser.username).then(function(response) {
+        vm.nbMessages = response.length;
+        for (var i = 0; i < response.length; i++) {
+          vm.messages.push({
+            message: response[i].content,
+            name: response[i].user
+          });
+        }
+      });
+    });
+
   }
 
   var reset = null;
-  $scope.notifications = [];
-
+  vm.notifications = [];
   socket.on('receiveFriendRequest', function(user) {
     console.log('______receive fiend request__________');
     if ($rootScope.currentUser) {
@@ -28,7 +75,7 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
       $http.defaults.headers.common['auth-token'] = userToken;
     }
 
-    notifications.postNotification({
+    Notifications.postNotification({
       userDes: user.userDes,
       user: user.user,
       userId: user.id,
@@ -37,9 +84,10 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     }).then(function(response) {
       console.log('notifications success');
     });
+
     if ($rootScope.currentUser) {
-      notifications.getNotifications().then(function(response) {
-        $scope.currentUser.notifications = response;
+      Notifications.getNotifications().then(function(response) {
+        $rootScope.currentUser.notifications = response;
         console.log('________________RESPONSE____________');
         console.log(response);
         $rootScope.currentUser.notificationsCount = response.length;
@@ -57,7 +105,7 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     console.log('_________receive friend request___________');
     console.log(user);
     if ($rootScope.currentUser.username === user.userRec) {
-      notifications.postNotification({
+      Notifications.postNotification({
         userDes: user.userDes,
         user: user.userRec,
         userId: user.id,
@@ -66,8 +114,8 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
       }).then(function(response) {
         console.log('notifications success');
       });
-      notifications.getNotifications().then(function(response) {
-        $scope.currentUser.notifications = response;
+      Notifications.getNotifications().then(function(response) {
+        $rootScope.currentUser.notifications = response;
         console.log('________________RESPONSE____________');
         console.log(response);
         $rootScope.currentUser.notificationsCount = response.length;
@@ -78,63 +126,64 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     }
   });
 
-  $scope.search = function() {
+  function search() {
     console.log('rechercher');
-    console.log($scope.searchText);
+    appLoading.loading();
     if ($rootScope.currentUser) {
       var userToken = $rootScope.currentUser.token;
       $http.defaults.headers.common['auth-token'] = userToken;
     }
-    $http.get('/search/' + '?term=' + $scope.searchText)
+    $http.get('/search/' + '?term=' + vm.searchText)
       .success(function(data) {
         if ($rootScope.currentUser) {
           $rootScope.currentUser = $rootScope.currentUser;
-          $scope.currentUser = $rootScope.currentUser;
-          friends.getFriendsFromUser($rootScope.currentUser._id)
+          $rootScope.currentUser = $rootScope.currentUser;
+          Friends.getFriendsFromUser($rootScope.currentUser._id)
           .then(function(usernames) {
-            for ($scope.i = 0; $scope.i < usernames.length; $scope.i++) {
-              if (usernames[$scope.i].wait !== undefined) {
-                $scope.usernames[$scope.i] = usernames[$scope.i].wait;
-              } else if (usernames[$scope.i].accepted !== undefined) {
-                $scope.usernames[$scope.i] = usernames[$scope.i].accepted;
+            for (vm.i = 0; vm.i < usernames.length; vm.i++) {
+              if (usernames[vm.i].wait !== undefined) {
+                vm.usernames[vm.i] = usernames[vm.i].wait;
+              } else if (usernames[vm.i].accepted !== undefined) {
+                vm.usernames[vm.i] = usernames[vm.i].accepted;
               }
             }
-            for ($scope.j = 0; $scope.j < data.length; $scope.j++) {
-              var search = data[$scope.j];
-              var indexOfArray = arrayIndexOf($scope.usernames, search);
+            for (vm.j = 0; vm.j < data.length; vm.j++) {
+              var search = data[vm.j];
+              var indexOfArray = arrayIndexOf(vm.usernames, search);
               if (indexOfArray < 0) {
-                data[$scope.j] = {
-                    'follow': data[$scope.j]
+                data[vm.j] = {
+                    'follow': data[vm.j]
                 };
               } else {
-                data[$scope.j] = {
-                    'notFollow': data[$scope.j]
+                data[vm.j] = {
+                    'notFollow': data[vm.j]
                 };
               }
             }
-            $scope.suggestions = data;
-            $scope.usernames = usernames;
+            vm.suggestions = data;
+            vm.usernames = usernames;
           });
         } else {
-          for ($scope.j = 0; $scope.j < data.length; $scope.j++) {
-            var search = data[$scope.j];
-            data[$scope.j] = {
-                'notFollow': data[$scope.j]
+          for (vm.j = 0; vm.j < data.length; vm.j++) {
+            var search = data[vm.j];
+            data[vm.j] = {
+                'notFollow': data[vm.j]
             };
           }
-          $scope.suggestions = data;
+          vm.suggestions = data;
         }
+        appLoading.ready();
       });
-    };
+  }
 
-  $scope.see = function() {
-    $scope.suggestions = '';
-  };
+  function see() {
+    vm.suggestions = '';
+  }
 
-  $scope.follow = function(userDes) {
+  function follow(userDes) {
     console.log('_____follow_____');
-    $scope.suggestions = '';
-    friends.postFriend({
+    vm.suggestions = '';
+    Friends.postFriend({
       usernameWaitFriendRequest: userDes[0],
       idUser: userDes[1]
     }).then(function(response) {
@@ -148,18 +197,9 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
         userDesId: userDes[1],
         id: $rootScope.currentUser._id
     });
-  };
-
-  function arrayIndexOf(myArray, searchTerm) {
-    for (var i = 0, len = myArray.length; i < len; i++) {
-      if (myArray[i] === searchTerm[0]) {
-        return i;
-      }
-    }
-    return -1;
   }
 
-  $scope.refuseFriendRequest = function(user) {
+  function refuseFriendRequest(user) {
     console.log('_____refuse friends request_____________________');
     console.log(user.userDes);
 
@@ -169,29 +209,29 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     $http.defaults.headers.common['auth-token'] = userToken;
     console.log('save');
 
-    friends.deleteFriend(user.userId, user.userDes).then(function(response) {
+    Friends.deleteFriend(user.userId, user.userDes).then(function(response) {
       console.log('delete friend request done');
     });
 
-    notifications.updateNotification({
+    Notifications.updateNotification({
       userToDelete: user.id
     }).then(function(response) {
       console.log('remove');
     });
 
-    notifications.getNotifications().then(function(response) {
-      $scope.currentUser.notifications = response;
+    Notifications.getNotifications().then(function(response) {
+      $rootScope.currentUser.notifications = response;
       $rootScope.currentUser.notificationsCount = response.length;
 
     });
     toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + user.userRec);
-  };
+  }
 
-  $scope.acceptFriendRequest = function(user) {
+  function acceptFriendRequest(user) {
     console.log('_____accept friends request_____________________');
     console.log(user);
 
-    notifications.updateNotification({
+    Notifications.updateNotification({
       userToDelete: user.id,
     }).then(function(res) {
       console.log('remove');
@@ -205,31 +245,23 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     });
     var userToken = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
-    friends.postFriend({
+    Friends.postFriend({
         usernameAcceptedFriendRequest: user.userRec,
         idUser: user.userId,
     }).then(function(response) {
       console.log('friend posted');
     });
-    notifications.getNotifications().then(function(response) {
+    Notifications.getNotifications().then(function(response) {
       console.log('________________RESPONSE____________');
       console.log(response);
-      $scope.currentUser.notifications = response;
+      $rootScope.currentUser.notifications = response;
       $rootScope.currentUser.notificationsCount = response.length;
     });
     toaster.pop('success', 'Vous êtes désormais ami avec : ' +
       user.userRec);
-  };
+  }
 
-  // if ($rootScope.currentUser) {
-  //   notifications.getNotifications(function(response) {
-  //     console.log('________________RESPONSE GET NOTIFICATION____________');
-  //     console.log(response);
-  //     $scope.currentUser.notifications = response;
-  //     $rootScope.currentUser.i = response.length;
-  //   });
-  // }
-  $scope.open = function(size) {
+  function open(size) {
     var modalInstance = $modal.open({
         templateUrl: 'views/modals/aboutModal.html',
         controller: 'AboutModalAngCtrl',
@@ -237,50 +269,36 @@ function MainHeaderAngCtrl($attrs, friends, toaster, $timeout, $localStorage, $w
     });
 
     modalInstance.result.then(function(selectedItem) {
-      $scope.selected = selectedItem;
+      vm.selected = selectedItem;
     }, function() {
       console.log('Modal dismissed at: ' + new Date());
     });
-  };
+  }
 
-  $scope.switch = function(page) {
+  function changePage(page) {
     console.log(page);
     $rootScope.page = page;
-  };
+  }
 
-  $scope.about = function() {
+  function about() {
     var modalInstance = $modal.open({
       templateUrl: 'aboutModal',
       controller: aboutModalCtrl
     });
-  };
+  }
 
-  var aboutModalCtrl = function($scope, $modalInstance) {
-    $scope.cancel = function() {
+  var aboutModalCtrl = function(vm, $modalInstance) {
+    vm.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
   };
 
-  $scope.Login = function() {
-    console.log('_______________LOG IN____________');
-    Auth.login({
-      'email': $scope.user.emailLog,
-      'password': $scope.user.passwordLog
-    }, function(err) {
-      if (!err) {
-        $location.path('/');
-      }
-    }
-    );
-  };
-
-  $scope.logout = function() {
-    var userToken = $rootScope.currentUser.token;
+  function logout() {
     console.log('logout');
+    var userToken             = $rootScope.currentUser.token;
     $localStorage.currentUser = null;
-
-    $rootScope.currentUser = null;
-    $window.location.href = '/auth/logout/' + userToken;
+    $rootScope.currentUser    = null;
+    $window.location.href     = '/auth/logout/' + userToken;
     console.log('logout');
-  };
+  }
 }

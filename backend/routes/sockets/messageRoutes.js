@@ -17,6 +17,11 @@ var routes = [{
         path: '/api/messages/:messageId',
         httpMethod: 'GET',
         middleware: [MessagesCtrl.all]
+    },
+    {
+        path: '/api/messages/user/:messageUsername',
+        httpMethod: 'GET',
+        middleware: [MessagesCtrl.userMessage]
     }
 ];
 

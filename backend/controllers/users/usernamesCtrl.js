@@ -74,7 +74,6 @@ module.exports = {
                   ee.emit('error', err);
                   res.status(400).json({error: 'Issue finding user.'});
                 } else {
-                  console.log(user.username);
                   res.status(200).json({
                     _id: user._id,
                     username: user.username,

@@ -26,9 +26,6 @@ module.exports = {
           creator: {
               _id: room.creator._id,
               username: room.creator.username,
-              usernameFacebook: room.creator.facebook.username,
-              usernameGoogle: room.creator.google.username,
-              usernameLinkedIn: room.creator.linkedIn.username,
           },
           title: room.title,
           slug: announce.slug,
@@ -53,14 +50,12 @@ module.exports = {
     Room.find({name: roomName}, function(err, results) {
       var room = [];
       if (results && results.length > 0) {
-        console.log('room already created');
         res.status(201).json({
           roomName : results[0].name,
           roomId : results[0]._id,
           status: 'join'
         });
       } else {
-        console.log('create room');
         room = new Room({
             name: roomName
         });
@@ -122,7 +117,6 @@ module.exports = {
     Room.find().sort('-created')
       .populate('creator').exec(function(err, rooms) {
         if (err) {
-          console.log('ERREUR');
           res.status(400).json(err);
         } else {
           res.status(200).json(rooms);

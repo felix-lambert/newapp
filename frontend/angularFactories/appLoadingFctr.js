@@ -1,8 +1,6 @@
 angular.module('InTouch')
   .factory('appLoading', appLoading);
 
-appLoading.$inject = ['$rootScope'];
-
 function appLoading($rootScope) {
   var timer;
   return {

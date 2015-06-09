@@ -1,6 +1,6 @@
 angular.module('InTouch')
 
-.factory('messages', messages);
+.factory('Messages', messages);
 
 messages.$inject = ['$q', '$http'];
 
@@ -9,7 +9,8 @@ function messages($q, $http) {
   var messagesFnct = {
     postMessage: postMessage,
     getMessagesFromRoom: getMessagesFromRoom,
-    deleteMessage: deleteMessage
+    deleteMessage: deleteMessage,
+    getMessagesFromUser: getMessagesFromUser
   };
 
   return messagesFnct;
@@ -17,6 +18,16 @@ function messages($q, $http) {
   function postMessage(message) {
     var deferred = $q.defer();
     $http.post('/api/messages/', message).success(function(data) {
+      deferred.resolve(data);
+    }).error(function() {
+      deferred.reject();
+    });
+    return deferred.promise;
+  }
+
+  function getMessagesFromUser(username) {
+    var deferred = $q.defer();
+    $http.get('/api/messages/user/' + username).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();

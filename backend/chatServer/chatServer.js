@@ -1,14 +1,11 @@
 /////////////////////////////////////////////////////////////////
 // HOOK SOCKET.IO INTO EXPRESS //////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var uuid        = require('node-uuid');
 var rooms       = {};
 var people      = {};
 var _           = require('underscore')._;
 var sockets     = [];
 var Room        = require('./room');
-var chatHistory = {};
-var users       = {};
 
 module.exports = function(server) {
 
@@ -103,7 +100,6 @@ module.exports = function(server) {
         io.sockets.emit('listAvailableChatRooms', rooms);
         io.sockets.emit('updateUserDetail', people);
         sendToSelf(socket, 'sendUserDetail', people[socket.id]);
-        chatHistory[socket.room] = [];
       }
     });
 

@@ -6,7 +6,6 @@ var fs           = require('fs-extra');
 var path         = require('path');
 var crypto       = require('crypto');
 var User         = mongoose.model('User');
-var Notification = mongoose.model('Notification');
 var Status       = mongoose.model('Status');
 var ee           = require('../../config/event');
 
