@@ -6,6 +6,5 @@ angular.module('InTouch', [
   'ngStorage',
   'toaster',
   'door3.css',
-  'angularFileUpload',
-  'angular-wurfl-image-tailor'
+  'angularFileUpload'
 ]);
