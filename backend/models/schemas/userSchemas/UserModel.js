@@ -20,6 +20,9 @@ exports = module.exports = function(mongoose) {
         unique: true
       }
     },
+    token: {
+      type: Object
+    },
     username: {
       type: String,
       unique: true,
@@ -34,10 +37,7 @@ exports = module.exports = function(mongoose) {
       type: Number,
       max: 5
     },
-    token: {
-      type: Object
-    },
-    images: [String],
+    profileImage: String,
     salt: String,
     guest: Boolean,
     provider: String,
@@ -68,10 +68,44 @@ exports = module.exports = function(mongoose) {
       });
     },
 
+    createImage: function(email, name, cb) {
+      var self = this;
+      this.findOne({email: email}, function(err, user) {
+        if (err || !user) {
+          console.log('err');
+        } else {
+          console.log('_______________add image___________');
+          user.images.push({name: name});
+          console.log('___________________________________');
+          user.save(function(err, result) {
+            if (err) {
+              cb(err, null);
+            } else {
+              cb(false, user.images);
+            }
+          });
+        }
+      });
+    },
+
+    getUserImages: function(email, cb) {
+      var self = this;
+      this.findOne({email: email}).exec(function(err, user) {
+        if (err || !user) {
+          cb(err, null);
+        } else if (user.images) {
+          FORMATTED_DATE      = moment(user.DATE_CREATED).format('DD/MM/YYYY');
+          user.FORMATTED_DATE = FORMATTED_DATE;
+          cb(false, user.images);
+        } else {
+          cb(false, user.images);
+        }
+      });
+    },
+
     findUser: function(username, cb) {
       this.find().exec(function(err, user) {
         if (err) {
-          console.log('erreur : ' + err);
           cb(err, null);
         } else {
           var filter = [];
@@ -93,7 +127,7 @@ exports = module.exports = function(mongoose) {
           console.log('ERROR');
           cb(err, null);
         } else if (usr.token && usr.token.token && token === usr.token.token) {
-          FORMATTED_DATE = moment(usr.DATE_CREATED).format('DD/MM/YYYY');
+          FORMATTED_DATE     = moment(usr.DATE_CREATED).format('DD/MM/YYYY');
           usr.FORMATTED_DATE = FORMATTED_DATE;
           cb(false, usr);
         } else {

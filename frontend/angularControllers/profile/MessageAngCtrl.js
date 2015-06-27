@@ -6,6 +6,9 @@ MessageAngCtrl.$inject = ['Rooms', 'Friends', 'Messages', '$rootScope', 'socket'
 function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading) {
 
   var vm               = this;
+  var Typing           = false;
+  var timeout          = undefined;
+  
   
   vm.focus             = focus;
   vm.typing            = typing;
@@ -17,9 +20,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   vm.disconnect        = disconnect;
   vm.pageChangeHandler = pageChangeHandler;
   vm.send              = send;
-  
-  var typing           = false;
-  var timeout          = undefined;
   vm.peopleCount       = 0;
   vm.joined            = false;
   vm.showChat          = false;
@@ -38,12 +38,10 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     vm.rooms = response[0];
   });
 
-
-
   /////////////////////////////////////////////////////////////
 
   function timeoutFunction() {
-    typing = false;
+    Typing = false;
     socket.emit('typing', false);
   }
 
@@ -52,9 +50,13 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   }
 
   function typing(event, user) {
+    console.log('test typing');
+    console.log(event);
+    console.log(user);
+    console.log(vm.focussed);
     if (event.which !== 13) {
-      if (typing === false && vm.focussed) {
-        typing = true;
+      if (Typing === false && vm.focussed) {
+        Typing = true;
         console.log(event);
         console.log(user);
         socket.emit('typing', {
@@ -77,26 +79,26 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
       vm.typingPeople.push(data.person);
     } else {
       vm.isTyping = data.isTyping;
-      var index = vm.typingPeople.indexOf(data.person);
+      var index   = vm.typingPeople.indexOf(data.person);
       vm.typingPeople.splice(index, 1);
       vm.typingMessage = '';
     }
   });
 
   function startChat(user) {
-    vm.messages    = [];
-    vm.showChat = true;
     console.log('_______________joinROOM______________');
+    console.log(user);
+    vm.messages     = [];
+    vm.showChat     = true;
     vm.error.create = '';
     vm.message      = '';
-    vm.userRec = user;
+    vm.userRec      = user;
     Rooms.postRoom({
       nameRec: user,
       name: $rootScope.currentUser.username
     }).then(function(response) {
       console.log('get messages from room');
-      console.log(response.roomId);
-      vm.room = response.roomName;
+      vm.room   = response.roomName;
       vm.roomId = response.roomId;
       console.log('___________________ROOMS_____________________');
       if (response.status === 'create') {
@@ -131,7 +133,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     for (i = 0; i < data.length; i++) {
       html += data[i];
     }
-    console.log($user.html(html));
   });
 
   socket.on('updateUserDetail', function(data) {
@@ -146,15 +147,16 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     vm.roomCount = data.count;
   });
 
-  vm.chat      = [];
-  vm.usernames = [];
+  vm.chat        = [];
+  vm.usernames   = [];
+  vm.pageSize    = 10;
+  vm.currentPage = 1;
+  vm.user        = '';
+
   var filter = vm.filter = {
     category: [],
     rating: null
   };
-  vm.pageSize    = 10;
-  vm.currentPage = 1;
-  vm.user        = '';
 
   function createRoom() {
     var roomExists = false;
@@ -167,7 +169,7 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
       Rooms.postRoom({
         name: this.roomname
       }).then(function(response) {
-        vm.room = response.roomName;
+        vm.room   = response.roomName;
         vm.roomId = response.roomId;
       });
       socket.emit('checkUniqueRoomName', room, function(data) {
@@ -187,9 +189,9 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   }
 
   function joinRoom(room) {
-    vm.messages = [];
+    vm.messages     = [];
     vm.error.create = '';
-    vm.message = '';
+    vm.message      = '';
     socket.emit('joinRoom', room.id);
   }
 
@@ -206,8 +208,8 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   function disconnect() {
 
     socket.on('disconnect', function() {
-      vm.status = 'offline';
-      vm.users = 0;
+      vm.status      = 'offline';
+      vm.users       = 0;
       vm.peopleCount = 0;
     });
   }
@@ -258,36 +260,41 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   Friends.getFriendsFromUser($rootScope.currentUser._id)
   .then(function(usernames) {
     console.log(usernames);
-    for (vm.i = 0; vm.i < usernames.length; vm.i++) {
-      if (usernames[vm.i].accepted) {
-        console.log(usernames[vm.i]);
-        vm.usernames.push(usernames[vm.i].accepted);
+    for (var i = 0; i < usernames.length; i++) {
+      if (usernames[i].accepted) {
+        vm.usernames.push(usernames[i].accepted);
       }
+      console.log(vm.usernames);
     }
-    console.log(vm.usernames);
+    vm.nbFriends = vm.usernames.length;
   });
 
   function send(username, userRec) {
-    console.log('send');
-    if (typeof this.message === 'undefined' ||
-      (typeof this.message === 'string' &&
-        this.message.length === 0)) {
+    console.log('__________send__________');
+    console.log(username);
+    console.log(userRec);
+    console.log('____________**********______________________');
+    if (typeof vm.message === 'undefined' ||
+      (typeof vm.message === 'string' &&
+        vm.message.length === 0)) {
       vm.error.send = 'Please enter a message';
     } else {
-      console.log(vm.roomId);
-      console.log(username);
       Messages.postMessage({
-        content: this.message,
+        content: vm.message,
         user: username,
         userRec: userRec,
         roomCreator: vm.roomId
       }).then(function(usernames) {
         console.log('save success');
       });
-
+      console.log('____________~~~~~~~~~~~~~~~~~~~~~~______________________');
+      console.log(username);
+      console.log(vm.message);
+      console.log(vm.roomId);
+      console.log('____________~~~~~~~~~~~~~~~~~~~~~~______________________');
       socket.emit('sendMessage', {
         name: username,
-        message: this.message,
+        message: vm.message,
         roomId: vm.roomId
       });
       vm.message    = '';
@@ -296,7 +303,8 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   }
 
   socket.on('sendChatMessage', function(message) {
-    console.log('_______________ send _____________________');
+    console.log('_______________ sendChatMessage _____________________');
+    console.log(message);
     vm.messages.push(message);
   });
 

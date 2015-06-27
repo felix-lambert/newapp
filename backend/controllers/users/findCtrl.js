@@ -14,7 +14,7 @@ module.exports = {
     console.log('////////////////SEARCH////////////////////');
     var username;
     if (req.query.term) {
-      username = req.user ? req.user.username : '';
+      username   = req.user ? req.user.username : '';
       var search = req.query.term.toLowerCase();
       User.findUser(username, function(err, users) {
         if (err) {

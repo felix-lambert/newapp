@@ -6,12 +6,10 @@ ProfileAngCtrl.$inject = ['$rootScope', 'Status', 'appLoading'];
 function ProfileAngCtrl($rootScope, Status, appLoading) {
 
   var vm          = this;
-  
   vm.removeStatus = removeStatus;
   vm.getStatus    = getStatus;
   vm.postStatus   = postStatus;
   vm.initStatus   = initStatus;
-  
   vm.status       = [];
 
   appLoading.ready();

@@ -14,7 +14,7 @@ exports = module.exports = function(mongoose) {
   });
 
   TokenSchema.statics.hasExpired = function(created) {
-    var now = new Date();
+    var now  = new Date();
     var diff = (now.getTime() - created);
     return diff > config.ttl;
   };

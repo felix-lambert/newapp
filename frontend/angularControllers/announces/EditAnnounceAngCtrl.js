@@ -1,29 +1,28 @@
 angular.module('InTouch')
 .controller('EditAnnounceAngCtrl', EditAnnounceAngCtrl);
 
-EditAnnounceAngCtrl.$inject = ['$location', '$routeParams', 'announces', '$rootScope', '$http', 'appLoading'];
+EditAnnounceAngCtrl.$inject = ['$location', '$routeParams', 'Announce', '$rootScope', '$http', 'appLoading'];
 
-function EditAnnounceAngCtrl($location, $routeParams, announces, $rootScope, $http, appLoading) {
-
-  var vm = this;
+function EditAnnounceAngCtrl($location, $routeParams, Announce, $rootScope, $http, appLoading) {
 
   console.log('*************AnnounceCtrl************************');
 
+  var vm     = this;
   vm.findOne = findOne;
-  vm.update = update;
+  vm.update  = update;
 
   appLoading.ready();
 
   if ($rootScope.currentUser) {
-    var userToken = $rootScope.currentUser.token;
+    var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
 
   function findOne() {
-    announces.getAnnounceById($routeParams.announceId).then(function(res) {
+    Announce.getAnnounceById($routeParams.announceId).then(function(res) {
       console.log('announce found________');
       console.log(res);
-      vm.announce = res;
+      vm.announce       = res;
       vm.announceRating = res.rating;
       vm.selectedImages = res.images;
     });
@@ -32,7 +31,7 @@ function EditAnnounceAngCtrl($location, $routeParams, announces, $rootScope, $ht
   function update() {
     var vm = this;
     console.log('____________________update_____________________');
-    announces.putAnnounce({
+    Announce.putAnnounce({
       _id: vm.announce._id,
       content: vm.announce.content,
       created: vm.announce.created,

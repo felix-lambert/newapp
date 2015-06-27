@@ -1,10 +1,11 @@
 angular.module('InTouch')
 
-.factory('announces', announces);
+.factory('Announce', Announce);
 
-announces.$inject = ['$q', '$http'];
+Announce.$inject = ['$q', '$http'];
 
-function announces($q, $http) {
+function Announce($q, $http) {
+
 
   var announcesFnct = {
     postAnnounce: postAnnounce,
@@ -13,15 +14,14 @@ function announces($q, $http) {
     getAnnouncesFromUser: getAnnouncesFromUser,
     getAnnounceById: getAnnounceById,
     deleteAnnounce: deleteAnnounce,
-    putAnnounce: putAnnounce
-
+    putAnnounce: putAnnounce,
+    statusAnnounce: statusAnnounce,
   };
 
   return announcesFnct;
 
   function postAnnounce(announce) {
     var deferred = $q.defer();
-    console.log('post annonce');
     $http.post('/api/announces/', announce).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
@@ -41,9 +41,9 @@ function announces($q, $http) {
     return deferred.promise;
   }
 
-  function getAnnounces() {
+  function getAnnounces(announce) {
     var deferred = $q.defer();
-    $http.get('/api/announces/').success(function(data) {
+    $http.get('/api/announces/' + announce.page + '/' + announce.limit).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();
@@ -84,7 +84,7 @@ function announces($q, $http) {
 
   function putAnnounce(announce) {
     var deferred = $q.defer();
-    $http.put('/api/announces/' + announce._id, announce)
+    $http.put('/api/announces/' + announce._id + '/' + announce.content + '/' + announce.title)
     .success(function(data) {
       deferred.resolve(data);
     }).error(function() {
@@ -93,4 +93,14 @@ function announces($q, $http) {
     return deferred.promise;
   }
 
+  function statusAnnounce(announce) {
+    var deferred = $q.defer();
+    $http.put('/api/announces/status/' + announce._id + '/' +
+      announce.activated).success(function(data) {
+        deferred.resolve(data);
+      }).error(function() {
+        deferred.reject();
+      });
+    return deferred.promise;
+  }
 }

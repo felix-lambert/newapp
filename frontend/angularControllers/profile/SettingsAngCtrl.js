@@ -5,11 +5,11 @@ SettingsAngCtrl.$inject = ['$http', '$rootScope', 'appLoading', 'Profile'];
 
 function SettingsAngCtrl($http, $rootScope, Profile) {
 
-  var vm = this;
-
+  var vm         = this;
+  
   vm.editProfile = false;
   vm.errorEmail  = false;
-  var initUser       = null;
+  var initUser   = null;
   var userToken = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
 

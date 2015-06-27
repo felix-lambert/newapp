@@ -5,8 +5,7 @@ AboutModalAngCtrl.$inject = ['$modalInstance'];
 
 function AboutModalAngCtrl($modalInstance) {
 
-  var vm = this;
-
+  var vm    = this;
   vm.cancel = cancel;
 
   //////////////////////////////////////////////////////////

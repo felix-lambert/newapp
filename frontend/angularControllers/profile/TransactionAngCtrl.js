@@ -5,14 +5,14 @@ TransactionAngCtrl.$inject = ['$rootScope', '$http', 'transactions', '$timeout',
 function TransactionAngCtrl($rootScope, $http, transactions, $timeout, $modal) {
   
   var vm = this;
+  vm.tab          = 1;
+  vm.currentMoney = 0;
+  vm.errorRequest = null;
 
   if ($rootScope.currentUser) {
     var userToken = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
-  vm.tab          = 1;
-  vm.currentMoney = 0;
-  vm.errorRequest = null;
 
   vm.rejectTransac = function(transac) {
     var id = transac._id;

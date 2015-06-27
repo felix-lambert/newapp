@@ -19,7 +19,7 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
       User.getUserToken(decoded.email, incomingToken, function(err, user) {
         if (err) {
           ee.emit('error', err);
-          res.status(400).json({error: 'Issue finding user.'});
+          return res.status(400).json({error: 'Issue finding user.'});
         } else {
           req.user = user;
           next();

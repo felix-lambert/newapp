@@ -34,16 +34,16 @@ function ngThumb($window) {
           return;
         }
 
-        var canvas = element.find('canvas');
-        var reader = new FileReader();
-
+        var canvas    = element.find('canvas');
+        var reader    = new FileReader();
+        
         reader.onload = onLoadFile;
         reader.readAsDataURL(params.file);
 
         function onLoadFile(event) {
-          var img = new Image();
+          var img    = new Image();
           img.onload = onLoadImage;
-          img.src = event.target.result;
+          img.src    = event.target.result;
         }
 
         function onLoadImage() {

@@ -9,10 +9,34 @@ function friends($q, $http) {
   var friendsFnct = {
     postFriend: postFriend,
     getFriendsFromUser: getFriendsFromUser,
-    deleteFriend: deleteFriend
+    deleteFriend: deleteFriend,
+    testIfFriend:testIfFriend,
+    countFriends: countFriends
   };
 
   return friendsFnct;
+
+  function testIfFriend(friend) {
+    var deferred = $q.defer();
+    $http.get('/api/friends/' + friend.username)
+    .success(function(data) {
+      deferred.resolve(data);
+    }).error(function() {
+      deferred.reject();
+    });
+    return deferred.promise;
+  }
+
+  function countFriends(friend) {
+    var deferred = $q.defer();
+    $http.get('/api/countfriends/' + friend.idUser)
+    .success(function(data) {
+      deferred.resolve(data);
+    }).error(function() {
+      deferred.reject();
+    });
+    return deferred.promise;
+  }
 
   function postFriend(friend) {
     var deferred = $q.defer();
@@ -26,7 +50,7 @@ function friends($q, $http) {
 
   function getFriendsFromUser(id) {
     var deferred = $q.defer();
-    $http.get('/api/friends/' + id).success(function(data) {
+    $http.get('/api/getfriends/' + id).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();

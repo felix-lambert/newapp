@@ -29,8 +29,8 @@ module.exports = {
           }
         });
       } else if (decoded.username) {
-        var decodeUser = decoded.username;
-        Username.invalidateUsernameToken(decodeUser,
+        var decodeUsername = decoded.username;
+        Username.invalidateUsernameToken(decodeUsername,
           function(err, user) {
           if (err) {
             ee.emit('error', err);
@@ -51,6 +51,7 @@ module.exports = {
   passportAuthenticate: function(req, res, next) {
     passport.authenticate('local', {session: false}, function(err, user, info) {
       if (user === false) {
+        console.log(info);
         return res.status(400).json({
           err: info.message
         });
@@ -87,6 +88,7 @@ module.exports = {
       }
     });
   },
+  
   /////////////////////////////////////////////////////////////////
   // REGISTER /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
@@ -127,7 +129,7 @@ module.exports = {
         });
       });
     } else {
-      res.status(400).json('The confirm password don\'t match');
+      res.status(400).json('The confirm password does not match');
     }
   }
 };

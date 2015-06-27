@@ -12,20 +12,21 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   getNotification: function(req, res, next) {
     console.log('___________get Notification________________________');
+    console.log(req.user._id);
     if (req.user) {
       Notification.findUserNotifications({
-        creator: req.user
+        creator: req.user._id
       }, function(err, notifications) {
         if (err) {
           ee.emit('error', err);
           return res.status(501).json(err);
         } else {
           console.log(notifications);
-          res.status(200).json(notifications);
+          return res.status(200).json(notifications);
         }
       });
     } else {
-      res.status(400).json('User is not recognized');
+      return res.status(400).json('User is not recognized');
     }
   },
 
@@ -40,7 +41,7 @@ module.exports = {
         ee.emit('error', err);
         return res.status(501).json(err);
       } else {
-        res.status(200).json('remove notif');
+        return res.status(200).json('remove notif');
       }
     });
   },
@@ -53,9 +54,9 @@ module.exports = {
     Notification.findOneAndUpdate({
       'creator': req.body.userDesId
     }, {
-      userRec: req.body.user,
+      userRec: req.user.username,
       userDes: req.body.userDes,
-      userId: req.body.userId,
+      userId: req.user._id,
       creator: req.body.userDesId,
       type: req.body.type
     }, {upsert: true})

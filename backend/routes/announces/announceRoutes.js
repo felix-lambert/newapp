@@ -17,7 +17,7 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.show]
 }, {
-    path: '/api/announces/:announceId',
+    path: '/api/announces/:announceId/:content/:title',
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.updateAnnounce]
 }, {
@@ -28,12 +28,15 @@ var routes = [{
     path: '/api/announces/:page/:limit/',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listPagination]
-}, 
-{
+}, {
     path: '/api/announces/:page/:limit/:user',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listUserPagination]
-},
+}, {
+    path: '/api/announces/status/:announceId/:status',
+    httpMethod: 'PUT',
+    middleware: [auth.ensureAuthenticated, AnnouncesCtrl.changeStatusAnnounce]
+}
 
 ];
 

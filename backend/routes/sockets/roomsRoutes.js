@@ -1,9 +1,9 @@
 /*
  * Module dependencies
  */
-var path         = require('path');
-var RoomsCtrl    = require('../../controllers/sockets/roomCtrl');
-var auth         = require('../../authentification/auth');
+var path      = require('path');
+var RoomsCtrl = require('../../controllers/sockets/roomCtrl');
+var auth      = require('../../authentification/auth');
 
 /**
  * Defines routes for application

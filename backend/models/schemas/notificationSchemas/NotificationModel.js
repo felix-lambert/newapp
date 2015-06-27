@@ -55,18 +55,19 @@ exports = module.exports = function(mongoose) {
         .exec(function(err, notifications) {
           if (err) {
             cb(err, null);
-          }
-          notifications.forEach(function(item) {
-            sendNotifications.push({
-              userDes: item.userDes,
-              userRec : item.userRec,
-              userId: item.userId,
-              reset: item.reset,
-              id: item._id,
-              type: item.type
+          } else {
+            notifications.forEach(function(item) {
+              sendNotifications.push({
+                userDes: item.userDes,
+                userRec : item.userRec,
+                userId: item.userId,
+                reset: item.reset,
+                id: item._id,
+                type: item.type
+              });
             });
-          });
-          cb(false, sendNotifications);
+            cb(false, sendNotifications);
+          }
         });
     }
   };

@@ -13,8 +13,19 @@ var routes = [
     path: '/api/friends/:friendId/:user',
     httpMethod: 'DELETE',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.deleteFriend]
-}, {
-    path: '/api/friends/:friendId',
+}, 
+{
+    path: '/api/friends/:user',
+    httpMethod: 'GET',
+    middleware: [auth.ensureAuthenticated, FriendsCtrl.testIfFriend]
+},
+{
+    path: '/api/countfriends/:idUser',
+    httpMethod: 'GET',
+    middleware: [auth.ensureAuthenticated, FriendsCtrl.countFriends]
+},
+{
+    path: '/api/getfriends/:friendId',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.getFriendsFromUser]
 }, {

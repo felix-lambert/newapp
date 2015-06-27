@@ -93,7 +93,7 @@ exports = module.exports = function(mongoose) {
         if (req.user.username == usernameAccepted) {
           this.statusInformation = 'Vous avez accepté la transaction';
         } else {
-          this.status = 0;
+          this.status            = 0;
           this.statusInformation = usernameAccepted +
           ' a accepté la transaction';
         }

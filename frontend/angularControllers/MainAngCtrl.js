@@ -9,7 +9,6 @@ function MainAngCtrl($scope, Auth, $location, $rootScope, appLoading) {
   console.log('*****mainctrl******');
   
   var vm      = this;
-  
   vm.Login    = Login;
   vm.register = register;
 
@@ -21,9 +20,8 @@ function MainAngCtrl($scope, Auth, $location, $rootScope, appLoading) {
     console.log('_______________LOG IN____________');
     appLoading.loading();
     var vm = this;
-    console.log(vm);
     Auth.login({
-      'email': vm.emailLog,
+      'email_username': vm.email_username,
       'password': vm.passwordLog
     }, function(err) {
       console.log(err);
@@ -38,17 +36,19 @@ function MainAngCtrl($scope, Auth, $location, $rootScope, appLoading) {
 
   function register() {
     console.log('**************register*********************');
-    vm.dataLoading = true;
     console.log(this);
+    var vm = this;
+    vm.dataLoading = true;
     Auth.createUser({
-      email: this.email,
-      username: this.username,
-      password: this.password,
-      confPassword: this.passwordConfirmation
+      email: vm.email,
+      username: vm.username,
+      password: vm.password,
+      confPassword: vm.passwordConfirmation
     },
     function(err) {
       vm.errors = {};
       if (!err) {
+        console.log('works');
         $rootScope.currentUser.notificationsCount = 0;
         $location.path('/');
       }

@@ -6,6 +6,7 @@ var Comment  = mongoose.model('AnnounceComment');
 var Announce = mongoose.model('Announce');
 var moment   = require('moment');
 var ee       = require('../../config/event');
+var async    = require('async');
 
 module.exports = {
 
@@ -17,22 +18,22 @@ module.exports = {
 
     Announce.findOne({
       _id: req.params.announceId
-    }, function(err, result) {
+    }).exec(function(err, result) {
       if (err) {
         ee.emit('error', err);
         return res.status(501).json(err);
       }
-      var comment             = new Comment();
-      comment.content         = req.body.content;
-      comment.creator         = req.user._id;
-      comment.announce        = result;
+      var comment      = new Comment();
+      comment.content  = req.body.content;
+      comment.creator  = req.user._id;
+      comment.announce = result;
       comment.save(function(err, comments) {
         if (err) {
           ee.emit('error', err);
           res.status(400).json(err);
         } else {
           res.status(200).json({
-              newRating: req.newRating
+            newRating: req.newRating
           });
         }
       });
@@ -54,40 +55,44 @@ module.exports = {
         return false;
       }
     }
-    // Faire une promise
-    Comment.findOne({
-        _id: req.params.id
-    }, function(err, result) {
-        if (err) {
-          ee.emit('error', err);
-          res.status(501).json('Comment not found.');
+
+    function findAnnounce(findAnnounceCallback) {
+      Comment.findOne({
+          _id: req.params.id
+      }, function(error, result) {
+        if (error) {
+          findAnnounceCallback(error);
         } else {
-          Announce.findOne({
-              _id: result.announce
-          }, function(err, announce) {
-            if (checkRemove(announce)) {
-              Comment.remove(result, function(err) {
-                if (err) {
-                  ee.emit('error', err);
-                  res.status(400).json(null);
-                } else {
-                  res.status(200).json(null);
-                }
-              });
-            } else if (err) {
-              ee.emit('error', err);
-              res.status(400).json({
-                'message': 'Impossible to find announce'
-              });
-            } else {
-              ee.emit('error', err);
-              res.status(400).json({
-                  'message': 'error in remove comment'
-              });
-            }
-          });
+          findAnnounceCallback(null, result);
         }
       });
+    }
+
+    function removeComment(comment, removeCommentCallback) {
+      if (checkRemove(comment)) {
+        Comment.remove(comment, function(err) {
+          if (err) {
+            removeCommentCallback(err);
+            //handle readFile error or processFile error here
+          } else {
+            removeCommentCallback(null);
+          }
+        });
+      } else {
+        removeCommentCallback('you can\'t remove this announce');
+      }
+    }
+
+    // Faire une promise
+    async.waterfall([findAnnounce, removeComment], function(error) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(null);
+      } else {
+        res.status(200).json(null);
+      }
+    });
   },
 
   /////////////////////////////////////////////////////////////////
@@ -95,6 +100,19 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   getComments: function(req, res) {
     console.log('_____GET /api/announceComment/' + req.params.announceId);
+
+    function getComments(comments) {
+      var retComments = [];
+      comments.forEach(function(item) {
+        if (item.FORMATTED_DATE) {
+          var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
+          item.FORMATTED_DATE = m.fromNow();
+        }
+        retComments.push(item);
+      });
+      return retComments;
+    }
+
     Comment.find({
       announce: req.params.announceId
     })
@@ -105,15 +123,7 @@ module.exports = {
         ee.emit('error', err);
         return res.status(501).json(err);
       }
-      var sendComments = [];
-      comments.forEach(function(item) {
-        if (item.FORMATTED_DATE) {
-          var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
-          item.FORMATTED_DATE = m.fromNow();
-        }
-        sendComments.push(item);
-      });
-      res.status(200).json(sendComments);
+      res.status(200).json(getComments(comments));
     });
   }
 };

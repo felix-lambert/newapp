@@ -31,12 +31,12 @@ exports = module.exports = function(mongoose) {
   announceCommentSchema.pre('save', function(next, req, callback) {
     console.log('***************presave announce*****************');
     if (this.isNew) {
-      this.created = Date.now();
-      FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+      this.created        = Date.now();
+      FORMATTED_DATE      = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
       this.FORMATTED_DATE = FORMATTED_DATE;
     }
     this.updated.push(Date.now());
-    FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+    FORMATTED_DATE      = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
     this.FORMATTED_DATE = FORMATTED_DATE;
     next();
   });

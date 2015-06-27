@@ -10,10 +10,8 @@ function autoComplete() {
       templateUrl: 'views/templates/userFilterTemplate.html',
       link:function(scope, elem, attrs) {
 
-        scope.suggestions = [];
-
-        scope.selectedTags = [];
-
+        scope.suggestions   = [];
+        scope.selectedTags  = [];
         scope.selectedIndex = -1;
 
         scope.removeTag = function(index) {
@@ -51,7 +49,7 @@ function autoComplete() {
         scope.addToSelectedTags = function(index) {
           if (scope.selectedTags.indexOf(scope.suggestions[index]) === -1) {
             scope.selectedTags.push(scope.suggestions[index]);
-            scope.searchText = '';
+            scope.searchText  = '';
             scope.suggestions = [];
           }
         };

@@ -8,31 +8,59 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
   var vm = this;
 
   console.log('*************AnnounceCtrl************************');
- 
   vm.decorateNumberPage = decorateNumberPage;
   vm.paginate           = paginate;
   vm.previous           = previous;
   vm.next               = next;
   vm.initListAnnounce   = initListAnnounce;
-
+  vm.like               = like;
 
   appLoading.ready();
 
   if ($rootScope.currentUser) {
-    var userToken = $rootScope.currentUser.token;
+    var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
-    console.log($rootScope.currentUser.images);
   }
 
   var allAnnounces = [];
-  vm.tags = [];
-
-  vm.page = 1;
-  vm.limit = 10;
-  vm.total = 0;
-  vm.pageNumbers = [];
+  vm.tags          = [];
+  vm.page          = 1;
+  vm.limit         = 10;
+  vm.total         = 0;
+  vm.pageNumbers   = [];
 
   /////////////////////////////////////////////////////////////
+
+  function like(announceId, usernameDes, userDesId) {
+    console.log('like');
+    vm.suggestions = '';
+    Notifications.postNotification({
+      userDes: usernameDes,
+      userDesId: userDesId,
+      type: 'like'
+    }).then(function(response) {
+      console.log('notifications success');
+    });
+
+    Like.postLike({
+      id: announceId,
+      userDes: usernameDes,
+      userDesId: userDesId,
+      likeType: 'announce'
+    }).then(function(response) {
+      console.log('notifications success');
+    });
+
+    vm.paginate(vm.page);
+    console.log('toaster');
+    toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
+    socket.emit('sendLike', {
+      user: $rootScope.currentUser.username,
+      userDes: usernameDes,
+      userDesId: userDesId,
+      id: $rootScope.currentUser._id
+    });
+  }
 
   function decorateNumberPage(page, decoration, weight) {
     $('#bt' + page).css('text-decoration', decoration);
@@ -42,13 +70,23 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
   function paginate(page) {
 
     vm.page = page;
-    Announce.paginate({
+    Announce.getAnnounces({
       page : vm.page,
       limit : vm.limit
-    }, function(data) {
+    }).then(function(data) {
+      console.log('paginate');
       console.log(data);
-      vm.announces = data.announces;
-      vm.total = data.total;
+      vm.announces   = data.announces;
+      for (var i = 0; i < vm.announces.length; i++) {
+        if (vm.announces[i].title.length > 34) {
+          vm.announces[i].title = vm.announces[i].title.substring(0, 35) + '...';
+        }
+        if (vm.announces[i].content.length > 34) {
+          console.log(vm.announces[i].content.length);
+          vm.announces[i].content = vm.announces[i].content.substring(0, 35) + '...';
+        }
+      }
+      vm.total       = data.total;
       vm.pageNumbers = [];
       for (var i = 0; i < vm.total; i++) {
         vm.pageNumbers.push(i + 1);
@@ -69,8 +107,6 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
   }
 
   function next() {
-    console.log(vm.page);
-    console.log(vm.total);
     if (vm.page < vm.total) {
       vm.page++;
     }
@@ -81,5 +117,4 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
     vm.paginate(vm.page);
   }
-
 }

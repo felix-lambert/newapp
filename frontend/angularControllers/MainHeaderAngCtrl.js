@@ -13,13 +13,13 @@ function arrayIndexOf(myArray, searchTerm) {
   return -1;
 }
 
-function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $route, Notifications, socket, $modal, $http, $rootScope,
-      Auth, $location, appLoading) {
+function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
+  $window, $route, Notifications, socket, $modal, $http,
+  $rootScope, Auth, $location, appLoading) {
 
   console.log('************ Main HEADER CTRL **********');
-  
   var vm                 = this;
-  
+
   vm.search              = search;
   vm.see                 = see;
   vm.follow              = follow;
@@ -29,13 +29,13 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
   vm.changePage          = changePage;
   vm.about               = about;
   vm.logout              = logout;
-  
+
   vm.suggestions         = [];
   vm.usernames           = [];
   vm.messages            = [];
 
   if ($rootScope.currentUser) {
-    var userToken = $rootScope.currentUser.token;
+    var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
   if ($rootScope.currentUser) {
@@ -53,7 +53,8 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
     socket.on('sendChatMessage', function(message) {
       console.log('_______________ send in header_____________________');
       toaster.pop('success', 'Un nouveau message a été envoyé');
-      Messages.getMessagesFromUser($rootScope.currentUser.username).then(function(response) {
+      Messages.getMessagesFromUser($rootScope.currentUser.username)
+      .then(function(response) {
         vm.nbMessages = response.length;
         for (var i = 0; i < response.length; i++) {
           vm.messages.push({
@@ -71,7 +72,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
   socket.on('receiveFriendRequest', function(user) {
     console.log('______receive fiend request__________');
     if ($rootScope.currentUser) {
-      var userToken = $rootScope.currentUser.token;
+      var userToken                               = $rootScope.currentUser.token;
       $http.defaults.headers.common['auth-token'] = userToken;
     }
 
@@ -101,9 +102,31 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
     }
   });
 
+  socket.on('receiveLike', function(user) {
+    console.log('______receive fiend request__________');
+    if ($rootScope.currentUser) {
+      var userToken                               = $rootScope.currentUser.token;
+      $http.defaults.headers.common['auth-token'] = userToken;
+    }
+
+    if ($rootScope.currentUser) {
+      Notifications.getNotifications().then(function(response) {
+        $rootScope.currentUser.notifications = response;
+        console.log('________________RESPONSE____________');
+        console.log(response);
+        $rootScope.currentUser.notificationsCount = response.length;
+      });
+    }
+    if ($rootScope.currentUser &&
+      $rootScope.currentUser.username === user.userDes) {
+      console.log('toaster');
+      toaster.pop('success', 'Vous avez reçu un like');
+      console.log('define currentUser ! ');
+    }
+  });
+
   socket.on('receiveAcceptFriendRequest', function(user) {
     console.log('_________receive friend request___________');
-    console.log(user);
     if ($rootScope.currentUser.username === user.userRec) {
       Notifications.postNotification({
         userDes: user.userDes,
@@ -130,46 +153,45 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
     console.log('rechercher');
     appLoading.loading();
     if ($rootScope.currentUser) {
-      var userToken = $rootScope.currentUser.token;
+      var userToken                               = $rootScope.currentUser.token;
       $http.defaults.headers.common['auth-token'] = userToken;
     }
     $http.get('/search/' + '?term=' + vm.searchText)
       .success(function(data) {
+        console.log(data);
         if ($rootScope.currentUser) {
-          $rootScope.currentUser = $rootScope.currentUser;
-          $rootScope.currentUser = $rootScope.currentUser;
+          console.log('inside currentuser');
           Friends.getFriendsFromUser($rootScope.currentUser._id)
           .then(function(usernames) {
-            for (vm.i = 0; vm.i < usernames.length; vm.i++) {
-              if (usernames[vm.i].wait !== undefined) {
-                vm.usernames[vm.i] = usernames[vm.i].wait;
-              } else if (usernames[vm.i].accepted !== undefined) {
-                vm.usernames[vm.i] = usernames[vm.i].accepted;
-              }
+            console.log(usernames);
+            for (var i = 0; i < usernames.length; i++) {
+              vm.usernames[i] = usernames[i].accepted ? 
+              usernames[i].accepted : usernames[i].wait;
+              console.log('test');
+              console.log(vm.usernames[i]);
             }
-            for (vm.j = 0; vm.j < data.length; vm.j++) {
-              var search = data[vm.j];
+            for (var j = 0; j < data.length; j++) {
+              // Enlever le search de la boucle
+              var search = data[j];
               var indexOfArray = arrayIndexOf(vm.usernames, search);
-              if (indexOfArray < 0) {
-                data[vm.j] = {
-                    'follow': data[vm.j]
-                };
-              } else {
-                data[vm.j] = {
-                    'notFollow': data[vm.j]
-                };
-              }
+              data[j] = indexOfArray < 0 ? {
+                  'follow': data[j]
+              } : {
+                  'notFollow': data[j]
+              };
             }
+
             vm.suggestions = data;
-            vm.usernames = usernames;
+            vm.usernames   = usernames;
           });
         } else {
-          for (vm.j = 0; vm.j < data.length; vm.j++) {
-            var search = data[vm.j];
-            data[vm.j] = {
-                'notFollow': data[vm.j]
+          for (var j = 0; j < data.length; j++) {
+            var search = data[j];
+            data[j] = {
+                'notFollow': data[j]
             };
           }
+          console.log(vm.suggestions);
           vm.suggestions = data;
         }
         appLoading.ready();
@@ -202,16 +224,15 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
   function refuseFriendRequest(user) {
     console.log('_____refuse friends request_____________________');
     console.log(user.userDes);
-
     console.log($rootScope.currentUser._id);
-
-    var userToken = $rootScope.currentUser.token;
+    var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
-    console.log('save');
-
-    Friends.deleteFriend(user.userId, user.userDes).then(function(response) {
-      console.log('delete friend request done');
-    });
+    if (user.type === 'friendRequest') {
+      Friends.deleteFriend(user.userId, user.userDes).then(function(response) {
+        console.log('delete friend request done');
+      });
+      toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + user.userRec);
+    }
 
     Notifications.updateNotification({
       userToDelete: user.id
@@ -220,11 +241,10 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
     });
 
     Notifications.getNotifications().then(function(response) {
-      $rootScope.currentUser.notifications = response;
+      $rootScope.currentUser.notifications      = response;
       $rootScope.currentUser.notificationsCount = response.length;
-
     });
-    toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + user.userRec);
+    
   }
 
   function acceptFriendRequest(user) {
@@ -243,7 +263,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
       userDesId: user.userId,
       id: $rootScope.currentUser._id
     });
-    var userToken = $rootScope.currentUser.token;
+    var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
     Friends.postFriend({
         usernameAcceptedFriendRequest: user.userRec,
@@ -254,7 +274,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage, $window, $
     Notifications.getNotifications().then(function(response) {
       console.log('________________RESPONSE____________');
       console.log(response);
-      $rootScope.currentUser.notifications = response;
+      $rootScope.currentUser.notifications      = response;
       $rootScope.currentUser.notificationsCount = response.length;
     });
     toaster.pop('success', 'Vous êtes désormais ami avec : ' +

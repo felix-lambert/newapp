@@ -1,10 +1,9 @@
 /*
  * Module dependencies
  */
-var path        = require('path');
-var UserCtrl    = require('../../controllers/users/usersCtrl');
-var FriendsCtrl = require('../../controllers/friendsCtrl');
-var auth        = require('../../authentification/auth');
+var path     = require('path');
+var UserCtrl = require('../../controllers/users/usersCtrl');
+var auth     = require('../../authentification/auth');
 
 /**
  * Defines routes for application
@@ -14,15 +13,9 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, UserCtrl.show]
 }, {
-    path: '/upload',
-    httpMethod: 'POST',
-    middleware: [auth.ensureAuthenticated, UserCtrl.upload]
-},
-{
-    path: '/api/images',
+    path: '/api/profile/:userId',
     httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, UserCtrl.getImages]
-},
-];
+    middleware: [auth.ensureAuthenticated, UserCtrl.show]
+}];
 
 module.exports = routes;

@@ -49,21 +49,22 @@ module.exports = {
     .populate('creator')
     .exec(function(err, usernames) {
       var notification;
-      usernames.forEach(function(item) { 
+      usernames.forEach(function(item) {
         if (item.username === req.body.username) {
           console.log('Username already exist');
           return res.status(400).json('Username already exist');
         }
       });
       username = new Username({
-          username: req.body.username
+        username: req.body.username
       });
       username.save(function(err, saveUsernames) {
         if (err) {
           ee.emit('error', err);
           res.status(400).json(err);
         } else {
-          Username.createUsernameToken(req.body.username, function(err, usersToken) {
+          Username.createUsernameToken(req.body.username,
+            function(err, usersToken) {
             if (err) {
               ee.emit('error', err);
               res.status(400).json({error: 'Issue generating token'});

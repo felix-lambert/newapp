@@ -5,8 +5,7 @@ AuthModalAngCtrl.$inject = ['Username', '$modalInstance'];
 
 function AuthModalAngCtrl(Username, $modalInstance) {
 
-  var vm = this;
-  
+  var vm      = this;
   vm.saveUser = saveUser;
   vm.cancel   = cancel;
 

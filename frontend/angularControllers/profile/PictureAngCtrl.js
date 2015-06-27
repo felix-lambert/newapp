@@ -1,28 +1,27 @@
 angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
-PictureAngCtrl.$inject = ['$scope', 'Images', '$rootScope',
-'FileUploader', '$http', 'appLoading'];
+PictureAngCtrl.$inject = ['Actuality', '$scope', 'Images', '$rootScope',
+'FileUploader', '$http', 'appLoading', 'toaster'];
 
-function PictureAngCtrl($scope, Images, $rootScope, FileUploader, $http, appLoading) {
+function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
+  FileUploader, $http, appLoading, toaster) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
-
-  var vm = this;
+  
+  var vm                                      = this;
+  var userToken                               = $rootScope.currentUser.token;
+  $http.defaults.headers.common['auth-token'] = userToken;
+  vm.profileImages                            = [];
+  vm.doDefaultImage                           = doDefaultImage;
+  vm.erase                                    = erase;
+  vm.noImages                                 = false;
 
   appLoading.ready();
-
-  vm.doDefaultImage = doDefaultImage;
-
-  var userToken = $rootScope.currentUser.token;
-  $http.defaults.headers.common['auth-token'] = userToken;
-
-  vm.noImages = false;
   if ($rootScope.currentUser) {
     Images.getImages().then(function(response) {
       console.log(response);
-      $rootScope.currentUser.images = response;
-      vm.images = $rootScope.currentUser.images;
+      vm.profileImages = response;
     });
   }
 
@@ -35,7 +34,7 @@ function PictureAngCtrl($scope, Images, $rootScope, FileUploader, $http, appLoad
 
   var uploader = $scope.uploader = new FileUploader({
       headers: {
-          'auth-token': $rootScope.currentUser.token
+        'auth-token': $rootScope.currentUser.token
       },
       url: '/upload'
   });
@@ -51,6 +50,33 @@ function PictureAngCtrl($scope, Images, $rootScope, FileUploader, $http, appLoad
 
   function doDefaultImage(image) {
     console.log(image);
+    Images.changeImageStatus({
+      name: image.name,
+      _id: image._id,
+      defaultImage: true
+    }).then(function() {});
+
+    toaster.pop('success', 'L\'image de profil a bien été modifié');
+    console.log('__AnnouncesCtrl $scope.initListAnnounce__');
+    Images.getImages().then(function(response) {
+      console.log(response);
+      vm.profileImages = response;
+      Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
+        console.log(res);
+      });
+    });
+  }
+
+  function erase(image) {
+    console.log(image);
+    Images.erase(image._id).then(function() {});
+
+    toaster.pop('danger', 'L\'image a bien été supprimé');
+    console.log('__AnnouncesCtrl $scope.initListAnnounce__');
+    Images.getImages().then(function(response) {
+      console.log(response);
+      vm.profileImages = response;
+    });
   }
 
   /////////////////////////////////////////////////////////////////
@@ -81,12 +107,9 @@ function PictureAngCtrl($scope, Images, $rootScope, FileUploader, $http, appLoad
   };
 
   uploader.onSuccessItem = function(fileItem, response, status, headers) {
-    $rootScope.currentUser.images = response.images;
-
-    console.log($rootScope.currentUser);
+    console.log('results');
     vm.noImages = false;
-    vm.images   = $rootScope.currentUser.images;
-    console.log('_____ON SUCCESS_____');
+    vm.profileImages.push(response.images);
     console.info('onSuccessItem', fileItem, response, status, headers);
   };
 

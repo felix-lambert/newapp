@@ -47,6 +47,7 @@ module.exports = function(app) {
   var announceRoutes          = require('./announces/announceRoutes');
   var messageRoutes           = require('./sockets/messageRoutes');
   var roomsRoutes             = require('./sockets/roomsRoutes');
+  var imageRoutes             = require('./imageRoutes');
   var userRoutes              = require('./users/userRoutes');
   var usernameRoutes          = require('./users/usernameRoutes');
   var findRoutes              = require('./users/findRoutes');
@@ -54,17 +55,22 @@ module.exports = function(app) {
   var sessionRoutes           = require('./sessions/sessionRoutes');
   var announcesCommentsRoutes = require('./announces/announcesCommentsRoutes');
   var notificationRoutes      = require('./sockets/notificationRoutes');
+  var likeRoutes              = require('./sockets/likeRoutes');
   var statusRoutes            = require('./statusRoutes');
+  var actualityRoutes         = require('./actualityRoutes');
   var friendsRoutes           = require('./sockets/friendsRoutes');
 
   var routes = announceRoutes
   .concat(friendsRoutes)
+  .concat(imageRoutes)
   .concat(userRoutes)
   .concat(usernameRoutes)
   .concat(profileRoutes)
   .concat(findRoutes)
   .concat(notificationRoutes)
+  .concat(likeRoutes)
   .concat(statusRoutes)
+  .concat(actualityRoutes)
   .concat(messageRoutes)
   .concat(roomsRoutes)
   .concat(sessionRoutes)

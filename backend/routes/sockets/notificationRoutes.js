@@ -1,9 +1,9 @@
 /*
  * Module dependencies
  */
-var path              = require('path');
+var path             = require('path');
 var NotificationCtrl = require('../../controllers/sockets/notificationCtrl');
-var auth              = require('../../authentification/auth');
+var auth             = require('../../authentification/auth');
 
 /**
  * Defines routes for application

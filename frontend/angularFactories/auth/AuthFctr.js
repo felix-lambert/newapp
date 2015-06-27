@@ -4,12 +4,13 @@ angular.module('InTouch')
 Auth.$inject = ['$rootScope', 'Session', 'User', '$http', 'Notifications', '$localStorage'];
 
 function Auth($rootScope, Session, User, $http, Notifications, $localStorage) {
-
   return {
     login: function(user, callback) {
       var cb = callback || angular.noop;
+      console.log(user);
+
       Session.save({
-          email: user.email,
+          email: user.email_username,
           password: user.password
       }, function(user) {
         console.log('________________RESPONSE LOGIN____________');
@@ -54,6 +55,7 @@ function Auth($rootScope, Session, User, $http, Notifications, $localStorage) {
       console.log('************createUser********************');
       var cb = callback || angular.noop;
       User.save(userinfo, function(user) {
+        console.log('Create user');
         console.log(user);
         $localStorage.currentUser = user;
         $rootScope.currentUser = $localStorage.currentUser;

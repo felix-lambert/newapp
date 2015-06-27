@@ -39,10 +39,10 @@ module.exports = {
         ee.emit('error', err);
         return res.status(501).json(err);
       }
-      var status = new Status();
+      var status     = new Status();
       status.content = req.body.content;
-      status.author = req.user._id;
-      status.user   = result;
+      status.author  = req.user._id;
+      status.user    = result;
       status.save(function(err) {
         if (err) {
           ee.emit('error', err);

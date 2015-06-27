@@ -1,9 +1,9 @@
 /*
  * Module dependencies
  */
-var path        = require('path');
-var FindCtrl    = require('../../controllers/users/findCtrl');
-var auth        = require('../../authentification/auth');
+var path     = require('path');
+var FindCtrl = require('../../controllers/users/findCtrl');
+var auth     = require('../../authentification/auth');
 
 /**
  * Defines routes for application
@@ -20,7 +20,7 @@ var routes = [{
     path: '/auth/email-exists',
     httpMethod: 'GET',
     middleware: [FindCtrl.emailExist]
-}, 
+},
 ];
 
 module.exports = routes;

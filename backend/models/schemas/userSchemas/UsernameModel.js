@@ -69,23 +69,23 @@ exports = module.exports = function(mongoose) {
         this.findOne({username: username}, function(err, user) {
           if (err || !user) {
             console.log('err');
+          } else {
+            var token  = self.encode({username: username});
+            user.token = new Token({token:token});
+            user.save(function(err, user) {
+              if (err) {
+                cb(err, null);
+              } else {
+                cb(false, user.token.token);
+              }
+            });
           }
-          var token = self.encode({username: username});
-          user.token = new Token({token:token});
-          user.save(function(err, user) {
-            if (err) {
-              cb(err, null);
-            } else {
-              cb(false, user.token.token);
-            }
-          });
         });
       },
 
       findUsername: function(username, cb) {
         this.find().exec(function(err, user) {
           if (err) {
-            console.log('erreur : ' + err);
             cb(err, null);
           } else {
             var filter = [];
@@ -109,7 +109,7 @@ exports = module.exports = function(mongoose) {
           } else if (user.token &&
             user.token.token &&
             token === user.token.token) {
-            FORMATTED_DATE = moment(user.DATE_CREATED).format('DD/MM/YYYY');
+            FORMATTED_DATE      = moment(user.DATE_CREATED).format('DD/MM/YYYY');
             user.FORMATTED_DATE = FORMATTED_DATE;
             cb(false, user);
           } else {
@@ -131,15 +131,16 @@ exports = module.exports = function(mongoose) {
         this.findOne({username: username}, function(err, user) {
           if (err || !user) {
             console.log('err');
+          } else {
+            user.token = null;
+            user.save(function(err, user) {
+              if (err) {
+                cb(err, null);
+              } else {
+                cb(false, 'removed');
+              }
+            });
           }
-          user.token = null;
-          user.save(function(err, user) {
-            if (err) {
-              cb(err, null);
-            } else {
-              cb(false, 'removed');
-            }
-          });
         });
       }
   };

@@ -1,305 +1,5 @@
-<script>
-$(function() {
-  $('#login-form-link').click(function(e) {
-    $('#login-form').delay(100).fadeIn(100);
-    $('#register-form').fadeOut(100);
-    $('#register-form-link').removeClass('active');
-    $(this).addClass('active');
-    e.preventDefault();
-  });
-
-  $('#register-form-link').click(function(e) {
-    $('#register-form').delay(100).fadeIn(100);
-    $('#login-form').fadeOut(100);
-    $('#login-form-link').removeClass('active');
-    $(this).addClass('active');
-    e.preventDefault();
-  });
-});
-
-$(document).ready(function() {
-  $('[data-toggle=tooltip]').tooltip();
-});
-</script>
-<style>
-/*body {
-padding-top: 90px;
-}*/
-.panel-login {
-  border-color: #ccc;
-  -webkit-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
-  box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
-}
-
-.panel-login>.panel-heading {
-  color: #00415d;
-  background-color: #fff;
-  border-color: #fff;
-  text-align:center;
-}
-
-.panel-login>.panel-heading a{
-  text-decoration: none;
-  color: #666;
-  font-weight: bold;
-  font-size: 15px;
-  -webkit-transition: all 0.1s linear;
-  -moz-transition: all 0.1s linear;
-  transition: all 0.1s linear;
-}
-
-.panel-login>.panel-heading a.active{
-  color: #029f5b;
-  font-size: 18px;
-}
-
-.panel-login>.panel-heading hr{
-  margin-top: 10px;
-  margin-bottom: 0px;
-  clear: both;
-  border: 0;
-  height: 1px;
-  background-image: -webkit-linear-gradient(left,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15),rgba(0, 0, 0, 0));
-  background-image: -moz-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
-  background-image: -ms-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
-  background-image: -o-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
-}
-
-.panel-login input[type="text"],.panel-login input[type="email"],.panel-login input[type="password"] {
-  height: 45px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-  -webkit-transition: all 0.1s linear;
-  -moz-transition: all 0.1s linear;
-  transition: all 0.1s linear;
-}
-
-.panel-login input:hover,
-.panel-login input:focus {
-  outline:none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  border-color: #ccc;
-}
-
-.btn-login {
-  background-color: #59B2E0;
-  outline: none;
-  color: #fff;
-  font-size: 14px;
-  height: auto;
-  font-weight: normal;
-  padding: 14px 0;
-  text-transform: uppercase;
-  border-color: #59B2E6;
-}
-.btn-login:hover,
-.btn-login:focus {
-  color: #fff;
-  background-color: #53A3CD;
-  border-color: #53A3CD;
-}
-
-.forgot-password {
-  text-decoration: underline;
-  color: #888;
-}
-.forgot-password:hover,
-.forgot-password:focus {
-  text-decoration: underline;
-  color: #666;
-}
-.btn-register {
-  background-color: #1CB94E;
-  outline: none;
-  color: #fff;
-  font-size: 14px;
-  height: auto;
-  font-weight: normal;
-  padding: 14px 0;
-  text-transform: uppercase;
-  border-color: #1CB94A;
-}
-.btn-register:hover,
-.btn-register:focus {
-  color: #fff;
-  background-color: #1CA347;
-  border-color: #1CA347;
-}
-
-@CHARSET "UTF-8";
-/*
-over-ride "Weak" message, show font in dark grey
-*/
-.progress-bar {
-  color: #333;
-}
-/*
-Reference:
-http://www.bootstrapzen.com/item/135/simple-login-form-logo/
-*/
-* {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  outline: none;
-}
-
-.form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 10px;
-  @include box-sizing(border-box);
-  &:focus {
-    z-index: 2;
-  }
-}
-
-.center-block {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-body{ background: #fafafa;}
-.widget-area.blank {
-  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  -ms-box-shadow: none;
-  -o-box-shadow: none;
-  box-shadow: none;
-}
-
-body .no-padding {
-  padding: 0;
-}
-
-.widget-area {
-  background-color: #fff;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  -webkit-box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
-  -ms-box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
-  -o-box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
-  box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
-  float: left;
-  margin-top: 30px;
-  padding: 25px 30px;
-  position: relative;
-  width: 100%;
-}
-
-.status-upload {
-  background: none repeat scroll 0 0 #f5f5f5;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  float: left;
-  width: 100%;
-}
-
-.status-upload form {
-  float: left;
-  width: 100%;
-}
-
-.status-upload form textarea {
-  background: none repeat scroll 0 0 #fff;
-  border: medium none;
-  -webkit-border-radius: 4px 4px 0 0;
-  -moz-border-radius: 4px 4px 0 0;
-  -ms-border-radius: 4px 4px 0 0;
-  -o-border-radius: 4px 4px 0 0;
-  border-radius: 4px 4px 0 0;
-  color: #777777;
-  float: left;
-  font-family: Lato;
-  font-size: 14px;
-  height: 142px;
-  letter-spacing: 0.3px;
-  padding: 20px;
-  width: 100%;
-  resize:vertical;
-  outline:none;
-  border: 1px solid #F2F2F2;
-}
-
-.status-upload ul {
-  float: left;
-  list-style: none outside none;
-  margin: 0;
-  padding: 0 0 0 15px;
-  width: auto;
-}
-
-.status-upload ul > li {
-  float: left;
-}
-
-.status-upload ul > li > a {
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  color: #777777;
-  float: left;
-  font-size: 14px;
-  height: 30px;
-  line-height: 30px;
-  margin: 10px 0 10px 10px;
-  text-align: center;
-  -webkit-transition: all 0.4s ease 0s;
-  -moz-transition: all 0.4s ease 0s;
-  -ms-transition: all 0.4s ease 0s;
-  -o-transition: all 0.4s ease 0s;
-  transition: all 0.4s ease 0s;
-  width: 30px;
-  cursor: pointer;
-}
-
-.status-upload ul > li > a:hover {
-  background: none repeat scroll 0 0 #606060;
-  color: #fff;
-}
-
-.status-upload form button {
-  border: medium none;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  color: #fff;
-  float: right;
-  font-family: Lato;
-  font-size: 14px;
-  letter-spacing: 0.3px;
-  margin-right: 9px;
-  margin-top: 9px;
-  padding: 6px 15px;
-}
-
-.dropdown > a > span.green:before {
-  border-left-color: #2dcb73;
-}
-
-.status-upload form button > i {
-  margin-right: 7px;
-}
-</style>
-
 <div ng-show="!currentUser">
+
 <!--   <div class="container" ng-hide="page === 'login'">
     <div class="row">
       <div class="col-md-9">
@@ -331,12 +31,12 @@ body .no-padding {
               <div class="col-lg-12">
                 <form id="login-form" class="form" style="display: block;" name="form" ng-submit="auth.Login()" autocomplete="off" novalidate>
                   <div class="form-group">
-                    <input type="email" class="form-control" tabindex="1" placeholder="Email" name="email" ng-model="auth.emailLog" required mongoose-error/>
+                    <input type="text" class="form-control" tabindex="1" placeholder="Email ou pseudo" name="email_username" ng-model="auth.email_username" required mongoose-error/>
                   </div>
                   <div class="form-group">
                     <input id="password" tabindex="2" class="form-control" placeholder="Mot de passe" type="password" name="password" ng-model="auth.passwordLog" ng-minlength="4" required mongoose-error/>
                   </div>
-                  <span class="bl text-danger">{{error}}</span>
+                  <span class="bl text-danger">{{auth.error}}</span>
                   <div class="form-group">
                     <div class="row">
                       <div class="col-sm-6 col-sm-offset-3">
@@ -348,10 +48,10 @@ body .no-padding {
                     </div>
                   </div>
                 </form>
-                <form id="register-form" class="form" name="form" style="display: none;" novalidate ng-submit="form.register()">
+                <form id="register-form" class="form" name="form" style="display: none;" novalidate ng-submit="auth.register()">
                   <div class="form-group">
-                    <input class="form-control" type="text" name="usernameReg" minlength="5" maxlength="30" ng-model="form.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
-                    <p class="form-help" ng-show="form.usernameReg && form.usernameReg.$error.unique">
+                    <input class="form-control" type="text" name="usernameReg" minlength="5" maxlength="30" ng-model="auth.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
+                    <p class="form-help" ng-show="auth.usernameReg && form.usernameReg.$error.unique">
                       That username is already taken.
                     </p>
                     <div ng-if="form.$submitted || form.usernameReg.$dirty" ng-messages="form.usernameReg.$error" class="errors">
@@ -363,9 +63,9 @@ body .no-padding {
                     </div>
                   </div>
                   <div class="form-group">
-                    <input type="email" class="form-control" name="emailReg" ng-model="form.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
+                    <input type="email" class="form-control" name="emailReg" ng-model="auth.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
                     <p class="text-danger">
-                      {{ error.registeredMail }}
+                      {{ auth.error.registeredMail }}
                     </p>
                     <div ng-if="form.$submitted || form.emailReg.$touched" ng-messages="form.emailReg.$error" class="errors">
                       <div class="text-danger" ng-message="required">Vous n'avez pas entré votre email</div>
@@ -374,7 +74,7 @@ body .no-padding {
                     </div>
                   </div>
                   <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="form.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
+                    <input class="form-control" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="auth.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
                     <div ng-if="form.$submitted || form.passwordReg.$touched" ng-messages="form.passwordReg.$error" class="errors">
                       <div class="text-danger" ng-message="required">Vous n'avez pas entré votre mot de passe</div>
                       <div class="text-danger" ng-message="minlength">Votre mot de passe est trop court</div>
@@ -384,7 +84,7 @@ body .no-padding {
                   </div>
                   <div class="pwstrength_viewport_progress"></div>
                   <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordRegRepeat" required ng-model="form.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="user.password" autocomplete="off" />
+                    <input class="form-control" type="password" class="input" name="passwordRegRepeat" required ng-model="auth.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="auth.password" autocomplete="off" />
                     <div ng-if="form.$submitted || form.passwordRegRepeat.$touched || form.passwordReg.$touched" ng-messages="form.passwordRegRepeat.$error" class="errors">
                       <div class="text-danger" ng-message="required">Vous devez entrer un mot de passe de confirmation</div>
                       <div class="text-danger" ng-message="compareTo">Les mots de passe sont différents</div>
@@ -409,6 +109,7 @@ body .no-padding {
   </div>
 </div>
 <div ng-show="currentUser">
+
   <div class="container">
     <div class="row">
       <h3>Bonjour {{currentUser.username}}</h3>
@@ -436,3 +137,5 @@ body .no-padding {
     </div>
   </div>
 </div>
+
+<script type="text/javascript" src="javascript/main.js"></script>

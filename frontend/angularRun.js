@@ -24,11 +24,6 @@ var routeObject = {
     controller: 'ProfileAngCtrl',
     controllerAs: 'profile'
   },
-  '/profile/:id': {
-    templateUrl: 'partials/profile/profilePrfl.html',
-    controller: 'ProfileAngCtrl',
-    controllerAs: 'profile'
-  },
   '/profile/show': {
     templateUrl: '/partials/profile/profilePrfl.html',
     controller: 'ProfileAngCtrl',
@@ -48,6 +43,7 @@ var routeObject = {
     templateUrl: '/partials/announces/createAnnc.html',
     controller: 'CreateAnnounceAngCtrl',
     controllerAs: 'createAnnounce',
+    css: '../stylesheets/createAnnc.css'
   },
   '/announces/:announceId/edit': {
     templateUrl: '/partials/announces/editAnnc.html',
@@ -57,7 +53,14 @@ var routeObject = {
   '/announces/:announceId': {
     templateUrl: '/partials/announces/viewAnnc.html',
     controller: 'ShowAnnounceAngCtrl',
-    controllerAs: 'showAnnounce'
+    controllerAs: 'showAnnounce',
+    css: '../stylesheets/showAnnc.css'
+  },
+  '/profile/:userId': {
+    templateUrl: '/partials/profile/profileView.html',
+    controller: 'ProfileViewAngCtrl',
+    controllerAs: 'showViewProfile',
+    css: '../stylesheets/profileView.css'
   },
   '/forgot': {
     templateUrl: '/partials/threads/forgot.html',
@@ -67,12 +70,14 @@ var routeObject = {
   '/actuality': {
     templateUrl: '/partials/profile/actualityPrfl.html',
     controller: 'ActualityAngCtrl',
-    controllerAs: 'actuality'
+    controllerAs: 'actuality',
+    css: '../stylesheets/actualityPrfl.css'
   },
   '/pictures': {
     templateUrl: '/partials/profile/picturePrfl.html',
     controller: 'PictureAngCtrl',
-    controllerAs: 'picture'
+    controllerAs: 'picture',
+    css: '../stylesheets/picturePrfl.css'
   },
   '/transaction': {
     templateUrl: '/partials/transaction/transaction.html',
@@ -99,7 +104,7 @@ function appRun($localStorage, $rootScope, $location, appLoading) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {
     console.log('________ROUTE TEST_________________');
     appLoading.loading();
-    var currentUser = $localStorage.currentUser;
+    var currentUser        = $localStorage.currentUser;
     $rootScope.currentUser = currentUser;
     console.log($rootScope.currentUser);
     for (var i in routeObject) {

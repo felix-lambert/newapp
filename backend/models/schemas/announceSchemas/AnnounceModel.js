@@ -7,47 +7,51 @@ exports = module.exports = function(mongoose) {
 
   announceSchema = new Schema({
     title: {
-        type: String,
-        index: true,
-        required: true
+      type: String,
+      index: true,
+      required: true
     },
     nbComment: Number,
     tags: [String],
     type: {
-        type: String,
-        required: false
+      type: String,
+      required: false
+    },
+    likeCreator: {
+      type: Schema.ObjectId,
+      ref: 'Like'
     },
     activated: Boolean,
     category: String,
     rating: {
-        type: Number,
-        max: 5,
+      type: Number,
+      max: 5,
     },
     content: {
-        type: String,
-        default: '',
-        trim: true
+      type: String,
+      default: '',
+      trim: true
     },
     slug: {
-        type: String,
-        lowercase: true,
-        trim: true
+      type: String,
+      lowercase: true,
+      trim: true
     },
     status: {
-        type: Number,
-        default: 1,
+      type: Number,
+      default: 1,
     },
     FORMATTED_DATE: String,
     created: Date,
     updated: [Date],
     timeSave: String,
     creator: {
-        type: Schema.ObjectId,
-        ref: 'User'
+      type: Schema.ObjectId,
+      ref: 'User'
     },
     creatorUsername: {
-        type: Schema.ObjectId,
-        ref: 'Username'
+      type: Schema.ObjectId,
+      ref: 'Username'
     },
     creatorAnnounce: {
       type: Schema.ObjectId,
@@ -56,7 +60,7 @@ exports = module.exports = function(mongoose) {
     price: {
       type: Number,
       min : 1,
-    },
+    }
   });
 
   announceSchema.plugin(autopopulate);
@@ -67,12 +71,12 @@ exports = module.exports = function(mongoose) {
     console.log('***************presave announce*****************');
     var FORMATTED_DATE;
     if (this.isNew) {
-      this.created = Date.now();
-      FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+      this.created        = Date.now();
+      FORMATTED_DATE      = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
       this.FORMATTED_DATE = FORMATTED_DATE;
     }
     this.updated.push(Date.now());
-    FORMATTED_DATE = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
+    FORMATTED_DATE      = moment(this.DATE_CREATED).format('DD/MM/YYYY, hA:mm');
     this.FORMATTED_DATE = FORMATTED_DATE;
     next();
   });
@@ -143,10 +147,10 @@ exports = module.exports = function(mongoose) {
   announceSchema.statics = {
 
     addAnnouncePost: function(announce) {
-      var username = announce.creator ?
+      var username     = announce.creator ?
       announce.creator.username :
       announce.creatorUsername.username;
-      var creatorId = announce.creator ?
+      var creatorId    = announce.creator ?
       announce.creator :
       announce.creatorUsername;
       var profileImage = announce.creator ?
@@ -178,7 +182,6 @@ exports = module.exports = function(mongoose) {
 
     load: function(id, cb) {
       console.log('*****************load announce******************');
-      console.log(id);
       this.findOne({
           _id: id
       }).populate('creator creatorUsername').exec(cb);
@@ -187,7 +190,7 @@ exports = module.exports = function(mongoose) {
     findByTitle: function(title, callback) {
       console.log('find annonce by title');
       return this.find({
-          title: title
+        title: title
       }, callback);
     },
   };

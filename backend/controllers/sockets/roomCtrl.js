@@ -81,17 +81,17 @@ module.exports = {
   update: function(req, res) {
     console.log('*****************Update room*******************');
     Room.findOne({
-        '_id': req.room._id
+      '_id': req.room._id
     }, function(err, result) {
-        result.title = req.body.title;
-        result.save(function(err) {
-          if (err) {
-            res.status(400).json(err);
-          } else {
-            res.status(200).json(result);
-          }
-        });
+      result.title = req.body.title;
+      result.save(function(err) {
+        if (err) {
+          res.status(400).json(err);
+        } else {
+          res.status(200).json(result);
+        }
       });
+    });
   },
 
   /////////////////////////////////////////////////////////////////

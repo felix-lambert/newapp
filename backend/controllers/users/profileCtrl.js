@@ -18,11 +18,11 @@ module.exports = {
           'email': req.body.email
       }, function(err, docs) {
         if (!docs) {
-          user.email = req.body.email;
-          obj.email = req.body.email;
+          user.email     = req.body.email;
+          obj.email      = req.body.email;
           obj.errorEmail = false;
         } else {
-          obj.email = user.email;
+          obj.email      = user.email;
           obj.errorEmail = true;
         }
         user.save(function(err) {

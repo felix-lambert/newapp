@@ -131,16 +131,12 @@ module.exports = {
   ///////////////////////////////////////////////////////////////
   deleteFriend: function(req, res) {
     console.log('_________destroy friend_____________');
-    
-    console.log(req.params);
-    console.log(req.user._id);
     Friend.findOne({
       creator: req.params.friendId
     }).where('usernameWaitFriendRequest').equals(req.params.user)
     .remove(function(err, result) {
       res.status(200).json();
     });
-    
   },
 
   /////////////////////////////////////////////////////////////////
@@ -150,25 +146,87 @@ module.exports = {
     console.log('************** Get All Friends **********');
     var sendFriends = [];
     Friend.find({creator: req.params.friendId})
+    .sort('-created')
+    .exec(function(err, friends) {
+      if (err) {
+        ee.emit('error', err);
+        res.status(501).json(err);
+      } else {
+        friends.forEach(function(item) {
+          if (item.usernameAcceptedFriendRequest) {
+            sendFriends.push({
+                accepted: item.usernameAcceptedFriendRequest
+            });
+          } else if (item.usernameWaitFriendRequest) {
+            sendFriends.push({
+                wait: item.usernameWaitFriendRequest
+            });
+          }
+        });
+        res.status(200).json(sendFriends);
+      }
+    });
+  },
+
+  testIfFriend: function(req, res) {
+    console.log('************** Test if Friends **********');
+    var testFriend = [];
+    var testWait   = [];
+    Friend.find({creator: req.user._id})
+    .sort('-created')
+    .exec(function(err, friends) {
+      if (err) {
+        ee.emit('error', err);
+        res.status(501).json(err);
+      } else {
+        console.log(friends);
+        friends.forEach(function(item) {
+          if (item.usernameAcceptedFriendRequest) {
+            testFriend.push(item.usernameAcceptedFriendRequest);
+          }
+        });
+        if (testFriend.indexOf(req.params.user) === 0) {
+          res.status(200).json(3);
+        } else {
+          friends.forEach(function(item) {
+            if (item.usernameWaitFriendRequest) {
+              testWait.push(item.usernameWaitFriendRequest);
+            }
+          });
+          if (testWait.indexOf(req.params.user) === 0) {
+            res.status(200).json(2);
+          } else {
+            res.status(200).json(1);
+          }
+        }
+      }
+    });
+  },
+
+    /////////////////////////////////////////////////////////////////
+  // LIST ALL FRIENDS FROM USER////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  countFriends: function(req, res) {
+    console.log('************** Count Friends **********');
+    var sendFriends = [];
+    console.log(req.params.idUser);
+    Friend.find({creator: req.params.idUser})
         .sort('-created')
         .exec(function(err, friends) {
           if (err) {
             ee.emit('error', err);
             res.status(501).json(err);
           } else {
+            console.log(friends);
             friends.forEach(function(item) {
               if (item.usernameAcceptedFriendRequest) {
                 sendFriends.push({
-                    accepted: item.usernameAcceptedFriendRequest
-                });
-              } else if (item.usernameWaitFriendRequest) {
-                sendFriends.push({
-                    wait: item.usernameWaitFriendRequest
+                  accepted: item.usernameAcceptedFriendRequest
                 });
               }
             });
-            res.status(200).json(sendFriends);
+            res.status(200).json(sendFriends.length);
           }
         });
-  }
+  },
 };

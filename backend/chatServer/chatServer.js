@@ -1,11 +1,11 @@
 /////////////////////////////////////////////////////////////////
 // HOOK SOCKET.IO INTO EXPRESS //////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var rooms       = {};
-var people      = {};
-var _           = require('underscore')._;
-var sockets     = [];
-var Room        = require('./room');
+var rooms   = {};
+var people  = {};
+var _       = require('underscore')._;
+var sockets = [];
+var Room    = require('./room');
 
 module.exports = function(server) {
 
@@ -26,6 +26,12 @@ module.exports = function(server) {
 
     socket.on('sendFriendRequest', function(user) {
       io.sockets.emit('receiveFriendRequest', user);
+    });
+
+    socket.on('sendLike', function(user) {
+      console.log('__________SEND LIKE___________');
+      console.log(user);
+      io.sockets.emit('receiveLike', user);
     });
 
     socket.on('sendAcceptFriendRequest', function(user) {
@@ -53,11 +59,11 @@ module.exports = function(server) {
       });
 
       if (!exists) {
-        people[socket.id] = {name: data.name};
+        people[socket.id]        = {name: data.name};
         people[socket.id].inroom = null;
-        people[socket.id].owns = null;
-        totalPeopleOnline = _.size(people);
-        totalRooms = _.size(rooms);
+        people[socket.id].owns   = null;
+        totalPeopleOnline        = _.size(people);
+        totalRooms               = _.size(rooms);
         io.sockets.emit('updateRoomsCount', {count: totalRooms});
         io.sockets.emit('updateUserDetail', people);
         io.sockets.emit('updatePeopleCount', {count: totalPeopleOnline});
@@ -69,38 +75,34 @@ module.exports = function(server) {
 
     socket.on('joinRoom', function(username) {
       console.log('________________JOIN ROOM_______________');
-      var flag = false;
+      console.log(username);
       var room = rooms[username.roomId];
-      if (!flag) {
-        socket.room = username.roomName;
-        socket.join(socket.room);
-        io.sockets.emit('updateUserDetail', people);
-        sendToSelf(socket, 'sendUserDetail', people[socket.id]);
-      }
+      socket.room = username.roomName;
+      socket.join(socket.room);
+      io.sockets.emit('updateUserDetail', people);
+      sendToSelf(socket, 'sendUserDetail', people[socket.id]);
     });
 
     socket.on('createRoom', function(data) {
       console.log('NEW ROOM_________ CRETA ROOOM');
-      var flag = false;
-      if (!flag) {
-        console.log('createRoom');
-        var roomName = data.roomName;
-        var uniqueRoomID = data.roomId;
+      console.log('createRoom');
+      console.log(data);
+      var roomName     = data.roomName;
+      var uniqueRoomID = data.roomId;
 
-        var room = new Room(roomName, uniqueRoomID, socket.id);
+      var room = new Room(roomName, uniqueRoomID, socket.id);
 
-        people[socket.id].roomname = roomName;
-        room.addPerson(socket.id);
-        rooms[uniqueRoomID] = room;
-        socket.room = roomName;
-        socket.join(socket.room);
-        totalRooms = _.size(rooms);
-        io.sockets.emit('updateRoomsCount', {count: totalRooms});
-        io.sockets.emit('updateRoomsCount', {count: totalRooms});
-        io.sockets.emit('listAvailableChatRooms', rooms);
-        io.sockets.emit('updateUserDetail', people);
-        sendToSelf(socket, 'sendUserDetail', people[socket.id]);
-      }
+      people[socket.id].roomname = roomName;
+      room.addPerson(socket.id);
+      rooms[uniqueRoomID] = room;
+      socket.room         = roomName;
+      socket.join(socket.room);
+      totalRooms = _.size(rooms);
+      io.sockets.emit('updateRoomsCount', {count: totalRooms});
+      io.sockets.emit('updateRoomsCount', {count: totalRooms});
+      io.sockets.emit('listAvailableChatRooms', rooms);
+      io.sockets.emit('updateUserDetail', people);
+      sendToSelf(socket, 'sendUserDetail', people[socket.id]);
     });
 
   });

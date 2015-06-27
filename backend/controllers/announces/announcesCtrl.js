@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var mongoose   = require('mongoose');
-var Announce   = mongoose.model('Announce');
-var Comment    = mongoose.model('AnnounceComment');
-var async      = require('async');
-var moment     = require('moment');
-var ee         = require('../../config/event');
+var mongoose = require('mongoose');
+var Announce = mongoose.model('Announce');
+var Comment  = mongoose.model('AnnounceComment');
+var async    = require('async');
+var moment   = require('moment');
+var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -16,16 +16,16 @@ module.exports = {
   postAnnounce: function(req, res) {
     console.log('_____________POST /api/announces_____');
     var announce = new Announce({
-        title: req.body.title,
-        content: req.body.content,
-        type: req.body.type,
-        price: req.body.price,
-        creator : req.user._id,
-        creatorUsername: req.user._id,
-        activated: req.body.activated,
-        category: req.body.category,
-        tags: req.body.tags,
-        nbComment: 0
+      title: req.body.title,
+      content: req.body.content,
+      type: req.body.type,
+      price: req.body.price,
+      creator : req.user._id,
+      creatorUsername: req.user._id,
+      activated: req.body.activated,
+      category: req.body.category,
+      tags: req.body.tags,
+      nbComment: 0,
     });
     announce.save(function(err, saveItem) {
       if (err) {
@@ -43,6 +43,7 @@ module.exports = {
   updateAnnounce: function(req, res) {
 
     console.log('*****************Update announce*******************');
+    console.log(req.params);
     Announce.findOne({
         '_id': req.params.announceId
     }, function(err, result) {
@@ -50,13 +51,9 @@ module.exports = {
         ee.emit('error', err);
         return res.status(500).json(err);
       }
-
       if (result.creator.equals(req.user._id)) {
-        result.title = req.body.title;
-        result.content = req.body.content;
-        if (req.body.activated === false || req.body.activated === true) {
-          result.activated = req.body.activated;
-        }
+        result.title   = req.params.title;
+        result.content = req.params.content;
         result.save(function(err) {
           if (err) {
             console.log('THERE IS THE ERROR');
@@ -89,7 +86,37 @@ module.exports = {
         res.status(200).json(announcePost);
       }
     });
+  },
 
+  /////////////////////////////////////////////////////////////////
+  // CHANGE STATUS OF ANNOUNCE /////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  changeStatusAnnounce: function(req, res) {
+    console.log('***************status announce*********************');
+    console.log(req.params);
+    Announce.findOne({
+        '_id': req.params.announceId
+    }, function(err, result) {
+      if (err || !result) {
+        ee.emit('error', err);
+        return res.status(500).json(err);
+      }
+      if (result.creator.equals(req.user._id)) {
+        result.activated = req.params.status;
+        result.save(function(err) {
+          if (err) {
+            console.log('THERE IS THE ERROR');
+            ee.emit('error', err);
+            res.status(400).json(err);
+          } else {
+            console.log(result);
+            res.status(200).json(result);
+          }
+        });
+      } else {
+        return res.status(500).send('You can only update your own announce.');
+      }
+    });
   },
 
   /////////////////////////////////////////////////////////////////
@@ -108,25 +135,6 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////
-  // GET ANNOUNCE FROM USER ///////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  getAnnouncesFromUser: function(req, res) {
-    console.log('____________get announce from user__________');
-    Announce.find({
-      creator: req.user._id
-    })
-    .sort('-created')
-    .populate('creator')
-    .exec(function(err, announces) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      }
-      res.status(200).json(announces);
-    });
-  },
-
-  /////////////////////////////////////////////////////////////////
   // ANNOUNCE PAGINATION //////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   listPagination: function(req, res) {
@@ -134,7 +142,8 @@ module.exports = {
       Announce
         .find()
         .sort('-created')
-        .populate('creator')
+        .where('activated').equals(true)
+        .populate('creator creatorImage')
         .skip((req.params.limit * req.params.page) - req.params.limit)
         .limit(req.params.limit)
         .exec(next);
@@ -143,9 +152,10 @@ module.exports = {
       Announce.count().exec(next);
     };
     async.parallel({
-        find: findAnnounces,
-        count: countAnnounces
+      find: findAnnounces,
+      count: countAnnounces
     }, function done(err, results) {
+
       var countComments = function(item, doneCallback) {
         if (item.FORMATTED_DATE) {
           var m               = moment(item.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
@@ -157,6 +167,7 @@ module.exports = {
         });
       };
       async.map(results.find, countComments, function(err, result) {
+        console.log(result);
         return res.json({
           total: Math.ceil(results.count / req.params.limit),
           announces: result
@@ -185,11 +196,11 @@ module.exports = {
         find: findAnnounces,
         count: countAnnounces
     }, function done(err, results) {
+      console.log(results.count / req.params.limit);
       return res.status(200).json({
         total: Math.ceil(results.count / req.params.limit),
         announces: results.find
       });
     });
-  },
-
+  }
 };
