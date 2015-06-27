@@ -17,6 +17,7 @@ module.exports = function(grunt) {
               'frontend/angularLib/ngStorage.js',
               'frontend/angularLib/toaster.js',
               'frontend/angularLib/angular-file-upload.js',
+              'angularLib/ui-bootstrap-tpls.js',
               'frontend/app.js',
               'frontend/angularConfig.js',
               'frontend/angularFactories/appLoadingFctr.js',
