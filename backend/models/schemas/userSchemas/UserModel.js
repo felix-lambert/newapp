@@ -1,3 +1,5 @@
+var mongoosastic = require('../../mongoosastic');
+
 exports = module.exports = function(mongoose) {
 
   /*
@@ -9,6 +11,7 @@ exports = module.exports = function(mongoose) {
   var Schema                = mongoose.Schema;
   var passportLocalMongoose = require('passport-local-mongoose');
   var tokenSecret           = 'bloc';
+  var ObjectIdSchema = Schema.ObjectId;
 
   var UserSchema = new Schema({
     email: {
@@ -26,7 +29,8 @@ exports = module.exports = function(mongoose) {
     username: {
       type: String,
       unique: true,
-      sparse: true
+      sparse: true,
+      es_indexed:true
     },
     password: String,
     DATE_CREATE: {
@@ -37,7 +41,10 @@ exports = module.exports = function(mongoose) {
       type: Number,
       max: 5
     },
-    profileImage: String,
+    profileImage: {
+      type: String,
+      es_indexed:true
+    },
     salt: String,
     guest: Boolean,
     provider: String,
@@ -102,23 +109,6 @@ exports = module.exports = function(mongoose) {
         }
       });
     },
-
-    findUser: function(username, cb) {
-      this.find().exec(function(err, user) {
-        if (err) {
-          cb(err, null);
-        } else {
-          var filter = [];
-          for (var i = 0; i < user.length; i++) {
-            if (user[i].username && user[i].username !== username) {
-              filter.push([user[i].username, user[i]._id]);
-            }
-          }
-          cb(false, filter);
-        }
-      });
-    },
-
     getUserToken: function(email, token, cb) {
       var self = this;
       this.findOne({email: email})
@@ -225,6 +215,8 @@ exports = module.exports = function(mongoose) {
     usernameField: 'email',
     usernameLowerCase: true
   });
+
+  UserSchema.plugin(mongoosastic);
 
   // create the model for User and expose it to our app
   mongoose.model('User', UserSchema);

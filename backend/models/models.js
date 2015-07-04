@@ -1,9 +1,9 @@
 exports = module.exports = function(mongoose) {
-  console.log('**********************models******************');
+  console.log('**********************models******************************');
   require('./schemas/notificationSchemas/NotificationModel')(mongoose);
   require('./schemas/notificationSchemas/LikeModel')(mongoose);
   require('./schemas/userSchemas/TokenModel')(mongoose);
-  require('./schemas/StatusModel')(mongoose);
+  require('./schemas/actualitySchemas/StatusModel')(mongoose);
   require('./schemas/userSchemas/ImageModel')(mongoose);
   require('./schemas/userSchemas/UsernameModel')(mongoose);
   require('./schemas/userSchemas/UserModel')(mongoose);
@@ -14,5 +14,5 @@ exports = module.exports = function(mongoose) {
   require('./schemas/announceSchemas/AnnounceCommentModel')(mongoose);
   require('./schemas/announceSchemas/CategoryModel')(mongoose);
   require('./schemas/transactionSchemas/TransactionModel')(mongoose);
-  require('./schemas/ActualityModel')(mongoose);
+  require('./schemas/actualitySchemas/ActualityModel')(mongoose);
 };

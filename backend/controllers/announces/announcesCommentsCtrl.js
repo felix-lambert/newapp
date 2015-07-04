@@ -16,27 +16,40 @@ module.exports = {
   addComment: function(req, res) {
     console.log('_______ADD COMMENT_____');
 
-    Announce.findOne({
-      _id: req.params.announceId
-    }).exec(function(err, result) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      }
+    function findOneAnnounce(findOneAnnounceCallback) {
+      Announce.findOne({
+          _id: req.params.announceId
+      }, function(error, result) {
+        if (error) {
+          findOneAnnounceCallback(error);
+        } else {
+          findOneAnnounceCallback(null, result);
+        }
+      });
+    }
+
+    function saveComment(announce, saveCommentCallback) {
       var comment      = new Comment();
       comment.content  = req.body.content;
       comment.creator  = req.user._id;
-      comment.announce = result;
+      comment.announce = announce;
       comment.save(function(err, comments) {
         if (err) {
-          ee.emit('error', err);
-          res.status(400).json(err);
+          saveCommentCallback(err);
         } else {
-          res.status(200).json({
-            newRating: req.newRating
-          });
+          saveCommentCallback(null);
         }
       });
+    }
+    // Faire une promise
+    async.waterfall([findOneAnnounce, saveComment], function(error) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json(null);
+      }
     });
   },
 
@@ -117,7 +130,6 @@ module.exports = {
       announce: req.params.announceId
     })
     .sort('-date')
-    .populate('creator creatorUsername announce')
     .exec(function(err, comments) {
       if (err) {
         ee.emit('error', err);

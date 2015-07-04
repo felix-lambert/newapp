@@ -7,6 +7,17 @@ var Comment  = mongoose.model('AnnounceComment');
 var async    = require('async');
 var moment   = require('moment');
 var ee       = require('../../config/event');
+var async    = require('async');
+
+Announce.createMapping(function(err, mapping) {
+  if (err) {
+    console.log('error creating mapping (you can safely ignore this)');
+    console.log(err);
+  } else {
+    console.log('mapping created!');
+    console.log(mapping);
+  }
+});
 
 module.exports = {
 
@@ -15,24 +26,47 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   postAnnounce: function(req, res) {
     console.log('_____________POST /api/announces_____');
-    var announce = new Announce({
-      title: req.body.title,
-      content: req.body.content,
-      type: req.body.type,
-      price: req.body.price,
-      creator : req.user._id,
-      creatorUsername: req.user._id,
-      activated: req.body.activated,
-      category: req.body.category,
-      tags: req.body.tags,
-      nbComment: 0,
-    });
-    announce.save(function(err, saveItem) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(400).json(err);
+
+    function saveAnnounceMongo(saveAnnounceMongoCallback) {
+      var announce = new Announce({
+        title: req.body.title,
+        content: req.body.content,
+        type: req.body.type,
+        price: req.body.price,
+        creator : req.user._id,
+        creatorUsername: req.user._id,
+        activated: req.body.activated,
+        category: req.body.category,
+        tags: req.body.tags,
+        nbComment: 0,
+      });
+      announce.save(function(err, saveItem) {
+        if (err) {
+          saveAnnounceMongoCallback(err);
+        } else {
+          saveAnnounceMongoCallback(null, announce);
+        }
+      });
+    }
+
+    function saveAnnounceES(announce, saveAnnounceESCallback) {
+      announce.on('es-indexed', function(err, res) {
+        if (err) {
+          saveAnnounceESCallback(err);
+        } else {
+          saveAnnounceESCallback(null, announce);
+        }
+      });
+    }
+
+    // Faire une promise
+    async.waterfall([saveAnnounceMongo, saveAnnounceES], function(error, announce) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
       } else {
-        return res.status(200).json();
+        res.status(200).json(announce);
       }
     });
   },
@@ -44,27 +78,46 @@ module.exports = {
 
     console.log('*****************Update announce*******************');
     console.log(req.params);
-    Announce.findOne({
+
+    function findOneAnnounce(findOneAnnounceCallback) {
+      Announce.findOne({
         '_id': req.params.announceId
-    }, function(err, result) {
-      if (err || !result) {
-        ee.emit('error', err);
-        return res.status(500).json(err);
-      }
-      if (result.creator.equals(req.user._id)) {
-        result.title   = req.params.title;
-        result.content = req.params.content;
-        result.save(function(err) {
+      }, function(err, result) {
+        if (err || !result) {
+          findOneAnnounceCallback(err);
+        } else {
+          findOneAnnounceCallback(null, result);
+        }
+      });
+    }
+
+    function updateAnnounce(announce, updateAnnounceCallback) {
+      if (annnounce.creator.equals(req.user._id)) {
+        announce.title   = req.params.title;
+        announce.content = req.params.content;
+
+        announce.save(function(err) {
           if (err) {
             console.log('THERE IS THE ERROR');
             ee.emit('error', err);
-            res.status(400).json(err);
+            updateAnnounceCallback(err);
           } else {
-            res.status(200).json(result);
+            updateAnnounceCallback(err, announce);
           }
         });
       } else {
-        return res.status(500).send('You can only update your own announce.');
+        updateAnnounceCallback('You can only update your own announce.');
+      }
+    }
+
+    // Faire une promise
+    async.waterfall([findOneAnnounce, updateAnnounce], function(error, result) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json(result);
       }
     });
   },
@@ -74,6 +127,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   show: function(req, res) {
     console.log('***************load announce*********************');
+
     Announce.load(req.params.announceId, function(err, announce) {
       if (err) {
         ee.emit('error', err);
@@ -82,8 +136,9 @@ module.exports = {
       if (!announce) {
         return next(new Error('Failed to load announce '));
       } else {
-        var announcePost = Announce.addAnnouncePost(announce);
-        res.status(200).json(announcePost);
+        Announce.organizeAnnounceData(announce, function(result) {
+          res.status(200).json(result);
+        });
       }
     });
   },
@@ -93,28 +148,73 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   changeStatusAnnounce: function(req, res) {
     console.log('***************status announce*********************');
-    console.log(req.params);
-    Announce.findOne({
+
+    function findOneAnnounce(findOneAnnounceCallback) {
+      Announce.findOne({
         '_id': req.params.announceId
-    }, function(err, result) {
-      if (err || !result) {
-        ee.emit('error', err);
-        return res.status(500).json(err);
-      }
-      if (result.creator.equals(req.user._id)) {
-        result.activated = req.params.status;
-        result.save(function(err) {
+      }, function(err, result) {
+        if (err || !result) {
+          findOneAnnounceCallback(err);
+        } else {
+          findOneAnnounceCallback(null, result);
+        }
+      });
+    }
+
+    function updateAnnounceStatus(announce, updateAnnounceStatusCallback) {
+      console.log('update announce status');
+
+      if (announce.creator._id.equals(req.user._id)) {
+        announce.activated = req.params.status;
+        announce.save(function(err) {
           if (err) {
             console.log('THERE IS THE ERROR');
             ee.emit('error', err);
-            res.status(400).json(err);
+            updateAnnounceStatusCallback(err);
           } else {
-            console.log(result);
-            res.status(200).json(result);
+            updateAnnounceStatusCallback(err, announce);
           }
         });
       } else {
-        return res.status(500).send('You can only update your own announce.');
+        updateAnnounceStatusCallback('You can only update your own announce.');
+      }
+    }
+
+    // Faire une promise
+    async.waterfall([findOneAnnounce, updateAnnounceStatus], function(error, result) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json(result);
+      }
+    });
+  },
+
+  /////////////////////////////////////////////////////////////////
+  // SEARCH AN ANNOUNCE ///////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////
+  searchAnnounces: function(req, res) {
+    console.log('_____________________search announce____________');
+    var terms = req.params.terms;
+    console.log(req.params.terms);
+    console.log(terms);
+    Announce.search({
+      query:{
+        'multi_match': {
+          'fields':  ['content', 'title'],
+            'query': req.params.terms,
+            'fuzziness': 'AUTO'
+      }
+    }}, function(err, results) {
+      console.log('results');
+      console.log(results.hits);
+      if (err) {
+        ee.emit('error', err);
+        res.status(400).json(err);
+      } else {
+        res.status(200).json({terms:terms, announces:results});
       }
     });
   },
@@ -143,7 +243,6 @@ module.exports = {
         .find()
         .sort('-created')
         .where('activated').equals(true)
-        .populate('creator creatorImage')
         .skip((req.params.limit * req.params.page) - req.params.limit)
         .limit(req.params.limit)
         .exec(next);
@@ -167,9 +266,8 @@ module.exports = {
         });
       };
       async.map(results.find, countComments, function(err, result) {
-        console.log(result);
         return res.json({
-          total: Math.ceil(results.count / req.params.limit),
+          total: results.count,
           announces: result
         });
       });
@@ -196,9 +294,8 @@ module.exports = {
         find: findAnnounces,
         count: countAnnounces
     }, function done(err, results) {
-      console.log(results.count / req.params.limit);
       return res.status(200).json({
-        total: Math.ceil(results.count / req.params.limit),
+        total: results.count,
         announces: results.find
       });
     });

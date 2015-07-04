@@ -10,6 +10,7 @@ var Images    = mongoose.model('Image');
 var Status    = mongoose.model('Status');
 var ee        = require('../config/event');
 var Actuality = mongoose.model('Actuality');
+var async    = require('async');
 
 module.exports = {
 
@@ -21,7 +22,6 @@ module.exports = {
     var destPath         = path.join(__dirname, '../../frontend/images/');
     var originalFilename = req.files.file.originalFilename;
     if (originalFilename) {
-      console.log('originalFilename' + originalFilename);
       var hashName    = crypto.createHash('md5').
       update(originalFilename).digest('hex') + '.jpeg';
       var writeStream = req.files.file.ws;
@@ -52,7 +52,6 @@ module.exports = {
         creator: req.user._id
       })
       .sort('-created')
-      .populate('creator')
       .exec(function(err, result) {
         if (err) {
           ee.emit('error', err);
@@ -95,17 +94,18 @@ module.exports = {
   getImages: function(req, res, next) {
 
     console.log('____________get images from user__________');
+
     var sendImages = [];
     Images.find({
-      creator: req.params.userId ? req.params.userId : req.user._id
+      creator: req.user._id
     })
     .sort({profileImage: -1})
-    .populate('creator')
     .exec(function(err, result) {
       if (err) {
         ee.emit('error', err);
         return res.status(501).json(err);
       }
+      console.log('result');
       console.log(result);
       res.status(200).json(result);
     });
@@ -125,43 +125,89 @@ module.exports = {
   },
 
   changeImageStatus: function(req, res, next) {
-    console.log('updateImages');
-    Images.findOne({'creator': req.user._id})
-    .where('profileImage').equals(true)
-    .exec(function(err, result) {
-      console.log(result);
-      result.profileImage = false;
-      result.save(function(err, answer) {
+
+    function findOneUserImage(findOneUserImageCallback) {
+      Images.findOne({'creator': req.user._id})
+      .where('profileImage').equals(true)
+      .exec(function(err, result) {
+        console.log(result);
         if (err) {
-          console.log('THERE IS THE ERROR');
-          ee.emit('error', err);
-          res.status(400).json(err);
+          findOneUserImageCallback(err);
         } else {
-          console.log('test if profile is false');
-          console.log(answer);
-          Images.findOne({
-            '_id': req.params.imageId
-          }, function(err, doProfile) {
-            if (err || !doProfile) {
-              ee.emit('error', err);
-              return res.status(500).json(err);
-            }
-            User.findOne({'_id': req.user._id}).exec(function(err, res) {
-              res.profileImage = req.params.imageName;
-              res.save();
-            });
+          findOneUserImageCallback(null, result);
+        }
+      });
+    }
+
+    function saveImage(result, saveImageCallback) {
+      if (result !== null) {
+        result.profileImage = false;
+        result.save(function(err, answer) {
+          if (err) {
+            saveImageCallback(err);
+          } else {
+            saveImageCallback(null);
+          }
+        });
+      } else {
+        saveImageCallback(null);
+      }
+    }
+
+    function findOneImage(findOneImageCallback) {
+      console.log('find one image');
+      console.log(req.params.imageId);
+      Images.findOne({
+        '_id': req.params.imageId
+      }, function(err, doProfile) {
+        console.log(err);
+        console.log('doProfile...');
+        console.log(doProfile);
+        if (err) {
+          findOneImageCallback(err);
+        } else {
+          findOneImageCallback(null, doProfile);
+        }
+      });
+    }
+
+    function saveOneProfileUserImage(doProfile, saveOneProfileUserImageCallback) {
+      console.log('do profile');
+      console.log(req.params.imageId);
+      User.findOne({'_id': req.user._id}).exec(function(err, res) {
+        console.log(req.params.imageName);
+        res.profileImage = req.params.imageName;
+        res.save(function(err, res) {
+          if (err) {
+            saveOneProfileUserImageCallback(err);
+          } else {
             doProfile.profileImage = true;
             doProfile.save(function(err, response) {
               if (err) {
-                ee.emit('error', err);
-                res.status(400).json(err);
+                saveOneProfileUserImageCallback(err);
               } else {
-                res.status(200).json(response);
+                saveOneProfileUserImageCallback(null);
               }
             });
-          });
-        }
+          }
+        });
       });
+
+    }
+    // Faire une promise
+    async.waterfall([
+      findOneUserImage,
+      saveImage,
+      findOneImage,
+      saveOneProfileUserImage
+    ], function(error) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json();
+      }
     });
   }
 };

@@ -1,4 +1,4 @@
-<div ng-show="!currentUser">
+<div ng-show="!currentUser && !page">
 
 <!--   <div class="container" ng-hide="page === 'login'">
     <div class="row">
@@ -6,7 +6,7 @@
         <div class="embed-responsive embed-responsive-16by9">
           <iframe class="embed-responsive-item" src="//www.youtube.com/embed/mpE8UMMZa9w?rel=0"></iframe>
         </div>
-        
+
       </div>
     </div>
   </div> -->
@@ -98,7 +98,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                 </form>
               </div>
             </div>
@@ -108,15 +108,15 @@
     </div>
   </div>
 </div>
-<div ng-show="currentUser">
+<div ng-show="currentUser && !page">
 
   <div class="container">
     <div class="row">
       <h3>Bonjour {{currentUser.username}}</h3>
     </div>
-    
+
     <div class="row">
-      
+
       <div class="col-md-6">
         <div class="widget-area no-padding blank">
           <div class="status-upload">
@@ -133,7 +133,7 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </div>
 </div>

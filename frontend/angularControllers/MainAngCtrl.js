@@ -1,16 +1,21 @@
 angular.module('InTouch')
   .controller('MainAngCtrl', MainAngCtrl);
 
-MainAngCtrl.$inject = ['$scope', 'Auth', '$location',
+MainAngCtrl.$inject = ['$injector', '$scope', '$location',
 '$rootScope', 'appLoading'];
 
-function MainAngCtrl($scope, Auth, $location, $rootScope, appLoading) {
+function MainAngCtrl($injector, $scope, $location, $rootScope) {
 
   console.log('*****mainctrl******');
-  
-  var vm      = this;
-  vm.Login    = Login;
-  vm.register = register;
+
+  var vm         = this;
+
+  // Requirements
+  var Auth       = $injector.get('Auth');
+  var appLoading = $injector.get('appLoading');
+
+  vm.Login       = Login;
+  vm.register    = register;
 
   appLoading.ready();
 

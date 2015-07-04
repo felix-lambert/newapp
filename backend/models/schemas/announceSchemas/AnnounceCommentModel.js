@@ -1,3 +1,5 @@
+var autopopulate = require('mongoose-autopopulate');
+
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
   var moment = require('moment');
@@ -7,11 +9,13 @@ exports = module.exports = function(mongoose) {
       rating: Boolean,
       creator: {
           type: Schema.ObjectId,
-          ref: 'User'
+          ref: 'User',
+          autopopulate: true
       },
       creatorUsername: {
           type: Schema.ObjectId,
-          ref: 'Username'
+          ref: 'Username',
+          autopopulate: true
       },
       date: {
           type: Date,
@@ -21,7 +25,8 @@ exports = module.exports = function(mongoose) {
       FORMATTED_DATE: String,
       announce: {
           type: Schema.ObjectId,
-          ref: 'Announce'
+          ref: 'Announce',
+          autopopulate: true
       }
   });
 
@@ -40,6 +45,8 @@ exports = module.exports = function(mongoose) {
     this.FORMATTED_DATE = FORMATTED_DATE;
     next();
   });
+
+  announceCommentSchema.plugin(autopopulate);
 
   mongoose.model('AnnounceComment', announceCommentSchema);
 };

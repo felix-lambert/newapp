@@ -1,3 +1,5 @@
+var autopopulate = require('mongoose-autopopulate');
+
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 
@@ -11,11 +13,13 @@ exports = module.exports = function(mongoose) {
       updated: [Date],
       creator: {
         type: Schema.ObjectId,
-        ref:'User'
+        ref:'User',
+        autopopulate: true
       },
       creatorUsername: {
         type: Schema.ObjectId,
-        ref: 'Username'
+        ref: 'Username',
+        autopopulate: true
       },
   });
 
@@ -30,6 +34,8 @@ exports = module.exports = function(mongoose) {
     this.updated.push(Date.now());
     next();
   });
+
+  imageSchema.plugin(autopopulate);
 
   mongoose.model('Image', imageSchema);
 };

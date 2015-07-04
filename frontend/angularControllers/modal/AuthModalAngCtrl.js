@@ -1,13 +1,16 @@
 angular.module('InTouch')
   .controller('AuthModalAngCtrl', AuthModalAngCtrl);
 
-AuthModalAngCtrl.$inject = ['Username', '$modalInstance'];
+AuthModalAngCtrl.$inject = ['$injector', '$modalInstance'];
 
-function AuthModalAngCtrl(Username, $modalInstance) {
+function AuthModalAngCtrl($injector, $modalInstance) {
 
-  var vm      = this;
-  vm.saveUser = saveUser;
-  vm.cancel   = cancel;
+  var vm       = this;
+
+  var Username = $injector.get('Username');
+
+  vm.saveUser  = saveUser;
+  vm.cancel    = cancel;
 
   ////////////////////////////////////////////////////////////////////////////
 

@@ -8,58 +8,46 @@ it('get / return a 200 response', function(done) {
   request(app).get('/').expect(200, done);
 });
 
-it('get /api/messages/ return a 200 response', function(done) {
-  request(app).get('/api/messages/').expect(200, done);
-});
-
-it('get /api/announces return a 200 response', function(done) {
-  request(app).get('/api/announces').expect(200, done);
-});
-
-it('get /* return a 200 response', function(done) {
-  request(app).get('/*').expect(200, done);
-});
-
 it('get /search return a 200 response (search)', function(done) {
   request(app)
-      .get('/search')
-      .expect(200, done);
+    .get('/search')
+    .expect(200, done);
 });
 
 it('get /api/notifications/ return a 400 response', function(done) {
   request(app)
-      .get('/api/notifications/')
-      .expect(400, done);
+    .get('/api/notifications/')
+    .expect(400, done);
 });
 
 it('get /auth/username-exists return a 400 response', function(done) {
   request(app)
-      .get('/auth/username-exists')
-      .expect(400, done);
+    .get('/auth/username-exists')
+    .expect(400, done);
 });
 
 it('get /auth/email-exists return a 400 response', function(done) {
   request(app)
-      .get('/auth/email-exists')
-      .expect(400, done);
+    .get('/auth/email-exists')
+    .expect(400, done);
 });
 
 it('should return the correct HTML', function(done) {
   request(app)
-      .get('/')
-      .end(function(err, res) {
-        assert.isTrue(res.text.indexOf('</html>') > 0);
-        done();
-      });
+    .get('/')
+    .end(function(err, res) {
+      assert.isTrue(res.text.indexOf('</html>') > 0);
+      done();
+    });
 });
 
 it('Sign in user', function(done) {
   request(app).post('/auth/login')
-      .send({
-        email : 'frepirtjiupghtr',
-        password : 'frejrpijgtripjgtr'
-      })
-      .expect(400, done)
+    .send({
+      email : 'frepirtjiupghtr',
+      password : 'frejrpijgtripjgtr'
+    })
+    .expect(400, done);
 });
 
 it('Sign in user', function(done) {
@@ -119,7 +107,7 @@ it('Register', function(done) {
       .expect(400, done);
 });
 
-it('Register', function(done) {
+it('Register not same password', function(done) {
   request(app).post('/auth/register')
       .send({
         email : 'lambertfelix8@gmail.com',
@@ -129,7 +117,7 @@ it('Register', function(done) {
       .expect(400, done);
 });
 
-it('Register', function(done) {
+it('Register again', function(done) {
   request(app).post('/auth/register')
       .send({
         email : 'lambertfelix8@gmail.com',
@@ -139,14 +127,14 @@ it('Register', function(done) {
       .expect(400, done);
 });
 
-it('Register', function(done) {
+it('Register other time', function(done) {
   request(app).post('/auth/register')
       .send({
         email : 'bobby@gmail.com',
         password : 'lebarbarelemelon',
         confPassword: 'lebarbarelemelon'
       })
-      .expect(200, done);
+      .expect(400, done);
 });
 
 // it('should return the correct HTML', function(done) {

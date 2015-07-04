@@ -10,9 +10,8 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   // GET NOTIFICATION /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
-  getNotification: function(req, res, next) {
+  getNotifications: function(req, res, next) {
     console.log('___________get Notification________________________');
-    console.log(req.user._id);
     if (req.user) {
       Notification.findUserNotifications({
         creator: req.user._id

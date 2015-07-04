@@ -16,7 +16,6 @@ var routes = [{
     path: '/api/user/profile-image',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, ProfileCtrl.defineProfileImage]
-},
-];
+}];
 
 module.exports = routes;

@@ -74,7 +74,6 @@ exports = module.exports = function(mongoose) {
   // PLUGINS //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   function slugGenerator(options) {
-    console.log('slug generator');
     options = options || {};
     var key = options.key || 'content';
 

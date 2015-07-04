@@ -16,6 +16,7 @@ function Announce($q, $http) {
     deleteAnnounce: deleteAnnounce,
     putAnnounce: putAnnounce,
     statusAnnounce: statusAnnounce,
+    searchAnnounces: searchAnnounces
   };
 
   return announcesFnct;
@@ -33,6 +34,17 @@ function Announce($q, $http) {
   function getAnnouncesPerPage(page, perpage, sort) {
     var deferred = $q.defer();
     $http.get('api/announces/list/' + page + '/' + perpage + '/' + sort)
+      .success(function(data) {
+        deferred.resolve(data);
+      }).error(function() {
+        deferred.reject();
+      });
+    return deferred.promise;
+  }
+
+  function searchAnnounces(term) {
+    var deferred = $q.defer();
+    $http.get('api/searchannounces/' + term)
       .success(function(data) {
         deferred.resolve(data);
       }).error(function() {
@@ -94,8 +106,9 @@ function Announce($q, $http) {
   }
 
   function statusAnnounce(announce) {
+    console.log(announce);
     var deferred = $q.defer();
-    $http.put('/api/announces/status/' + announce._id + '/' +
+    $http.put('/api/statusannounce/' + announce._id + '/' +
       announce.activated).success(function(data) {
         deferred.resolve(data);
       }).error(function() {

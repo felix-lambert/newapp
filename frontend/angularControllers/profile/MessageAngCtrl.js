@@ -8,8 +8,8 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   var vm               = this;
   var Typing           = false;
   var timeout          = undefined;
-  
-  
+
+
   vm.focus             = focus;
   vm.typing            = typing;
   vm.startChat         = startChat;
@@ -128,14 +128,9 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     vm.joined = true;
   }
 
-  socket.on('usernames', function(data) {
-    var html = '';
-    for (i = 0; i < data.length; i++) {
-      html += data[i];
-    }
-  });
-
   socket.on('updateUserDetail', function(data) {
+    console.log('///update user data//////');
+    console.log(data);
     $rootScope.users = data;
   });
 

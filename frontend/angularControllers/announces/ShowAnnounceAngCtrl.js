@@ -1,13 +1,19 @@
 angular.module('InTouch')
 .controller('ShowAnnounceAngCtrl', ShowAnnounceAngCtrl);
 
-ShowAnnounceAngCtrl.$inject = ['socket', 'toaster', 'Friends', 'Announce', 'Comments',
-  '$routeParams', '$rootScope', 'appLoading'];
+ShowAnnounceAngCtrl.$inject = ['$injector', '$routeParams', '$rootScope'];
 
-function ShowAnnounceAngCtrl(socket, toaster, Friends, Announce, Comments, $routeParams,
-  $rootScope, appLoading) {
-  
+function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
+
   var vm              = this;
+
+  var socket          = $injector.get('socket');
+  var Announce        = $injector.get('Announce');
+  var toaster         = $injector.get('toaster');
+  var appLoading      = $injector.get('appLoading');
+  var Friends         = $injector.get('Friends');
+  var Comments        = $injector.get('Comments');
+
   vm.findOne          = findOne;
   vm.getComments      = getComments;
   vm.postComment      = postComment;
@@ -16,7 +22,7 @@ function ShowAnnounceAngCtrl(socket, toaster, Friends, Announce, Comments, $rout
   vm.followUser       = followUser;
   vm.testIfFriend     = testIfFriend;
   vm.countFriends     = countFriends;
-  
+
 
   appLoading.ready();
 

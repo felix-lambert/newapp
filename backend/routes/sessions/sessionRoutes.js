@@ -14,8 +14,8 @@ var routes = [
    * Authentication routes
    */
   {
-      path: '/auth/logout/:id',
-      httpMethod: 'GET',
+      path: '/auth/logout',
+      httpMethod: 'DELETE',
       middleware: [SessionCtrl.logout]
   },
   /**

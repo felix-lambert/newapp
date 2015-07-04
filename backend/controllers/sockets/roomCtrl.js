@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var Room     = mongoose.model('Room');
 var ee       = require('../../config/event');
+var async    = require('async');
 
 module.exports = {
 
@@ -42,6 +43,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   create: function(req, res) {
     console.log('______CREATE ROOM TEST__________________');
+
     var usernames = new Array(req.body.nameRec, req.body.name);
 
     usernames.sort(alphabetical);
@@ -73,6 +75,7 @@ module.exports = {
         });
       }
     });
+
   },
 
   /////////////////////////////////////////////////////////////////
@@ -80,17 +83,38 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   update: function(req, res) {
     console.log('*****************Update room*******************');
-    Room.findOne({
-      '_id': req.room._id
-    }, function(err, result) {
-      result.title = req.body.title;
-      result.save(function(err) {
+    function findOneRoom(findOneRoomCallback) {
+      Room.findOne({
+        '_id': req.room._id
+      }, function(err, room) {
         if (err) {
-          res.status(400).json(err);
+          findOneRoomCallback(err);
         } else {
-          res.status(200).json(result);
+          findOneRoomCallback(null, room);
         }
       });
+    }
+
+    function saveRoom(room, saveRoomCallback) {
+      room.title = req.body.title;
+      room.save(function(err) {
+        if (err) {
+          saveRoomCallback(err);
+        } else {
+          saveRoomCallback(null, room);
+        }
+      });
+    }
+
+    // Faire une promise
+    async.waterfall([findOneRoom, saveRoom], function(error, result) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json(result);
+      }
     });
   },
 
@@ -115,7 +139,7 @@ module.exports = {
   all: function(req, res) {
     console.log('all rooms');
     Room.find().sort('-created')
-      .populate('creator').exec(function(err, rooms) {
+      .exec(function(err, rooms) {
         if (err) {
           res.status(400).json(err);
         } else {

@@ -19,34 +19,12 @@ function autoComplete() {
         };
 
         scope.search = function() {
-          scope.suggestions = [
-            'Appareils',
-            'Meubles',
-            'Vêtements',
-            'Echanges de savoirs',
-            'Informatique',
-            'Musique',
-            'Cours de langue',
-            'Photographie',
-            'Production vidéo',
-            'Transport',
-            'Garde d\'enfants',
-            'Ménage',
-            'Bricolage',
-            'Peinture',
-            'Jardinage',
-            'Expertise comptable',
-            'Préparation de plats cuisiniers',
-            'Aide pour la mise en place d\'un festin',
-            'Soins médicaux',
-            'Encadrement des activités sportives',
-            'coupe de cheveux',
-            'Manucure'
-            ];
+
           scope.selectedIndex = -1;
         };
 
         scope.addToSelectedTags = function(index) {
+          console.log('addToSelectedTags');
           if (scope.selectedTags.indexOf(scope.suggestions[index]) === -1) {
             scope.selectedTags.push(scope.suggestions[index]);
             scope.searchText  = '';
@@ -55,6 +33,7 @@ function autoComplete() {
         };
 
         scope.checkKeyDown = function(event) {
+          console.log('checkkeydown');
           if (event.keyCode === 40) {
             event.preventDefault();
             if (scope.selectedIndex + 1 !== scope.suggestions.length) {
@@ -71,8 +50,13 @@ function autoComplete() {
         };
 
         scope.$watch('selectedIndex', function(val) {
+          console.log('selectedIndex');
+          console.log('ùùùùùùùùùùùùùùùùùùùùùùùùùùùù');
+          console.log(val);
           if (val !== -1) {
+            console.log(scope.suggestions[scope.selectedIndex]);
             scope.searchText = scope.suggestions[scope.selectedIndex];
+            console.log(scope.searchText);
           }
         });
       }

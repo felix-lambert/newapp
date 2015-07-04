@@ -13,9 +13,16 @@ module.exports = function(server) {
 
   io.sockets.on('connection', function(socket) {
 
+    socket.on('disconnect', function() {
+      setTimeout(function() {
+           //do something
+      }, 10000);
+    });
+
     totalPeopleOnline = _.size(people);
 
     io.sockets.emit('updatePeopleCount', {count: totalPeopleOnline});
+    io.sockets.emit('updateUserDetail', people);
 
     totalRooms = _.size(rooms);
 

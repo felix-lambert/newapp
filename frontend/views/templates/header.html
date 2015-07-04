@@ -1,3 +1,15 @@
+<script>
+$(document).ready(function(e){
+    $('.search-panel .dropdown-menu').find('a').click(function(e) {
+    e.preventDefault();
+    var param = $(this).attr("href").replace("#","");
+    var concept = $(this).text();
+    $('.search-panel span#search_concept').text(concept);
+    $('.input-group #search_param').val(param);
+  });
+});
+</script>
+
 <style>
 ul.dropdown-cart{
     min-width:250px;
@@ -27,7 +39,7 @@ ul.dropdown-cart li .item-left span.item-info{
     float:left;
 }
 ul.dropdown-cart li .item-left span.item-info{
-    margin-left:10px;   
+    margin-left:10px;
 }
 ul.dropdown-cart li .item-left span.item-info span{
     display:block;
@@ -46,10 +58,121 @@ ul.dropdown-cart li .item-right button{
     padding-right:10px;
 }
 
+/***
+User Profile Sidebar by @keenthemes
+A component of Metronic Theme - #1 Selling Bootstrap 3 Admin Theme in Themeforest: http://j.mp/metronictheme
+Licensed under MIT
+***/
+
+/* Profile container */
+.profile {
+  margin: 20px 0;
+}
+
+/* Profile sidebar */
+.profile-sidebar {
+  padding: 20px 0 10px 0;
+  background: #fff;
+}
+
+.profile-userpic img {
+  float: none;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important;
+}
+
+.profile-usertitle {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-usertitle-name {
+  color: #5a7391;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+  text-transform: uppercase;
+  color: #5b9bd1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.profile-userbuttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.profile-userbuttons .btn {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 15px;
+  margin-right: 5px;
+}
+
+.profile-userbuttons .btn:last-child {
+  margin-right: 0px;
+}
+
+.profile-usermenu {
+  margin-top: 30px;
+}
+
+.profile-usermenu ul li {
+  border-bottom: 1px solid #f0f4f7;
+}
+
+.profile-usermenu ul li:last-child {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li a {
+  color: #93a3b5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.profile-usermenu ul li a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.profile-usermenu ul li a:hover {
+  background-color: #fafcfd;
+  color: #5b9bd1;
+}
+
+.profile-usermenu ul li.active {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li.active a {
+  color: #5b9bd1;
+  background-color: #f6f9fb;
+  border-left: 2px solid #5b9bd1;
+  margin-left: -2px;
+}
+
+/* Profile Content */
+.profile-content {
+  padding: 20px;
+  background: #fff;
+  min-height: 460px;
+}
+
 </style>
 <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
 <!-- Second navbar for search -->
-<nav class="navbar navbar-inverse" ng-controller="MainHeaderAngCtrl as header">
+<div ng-controller="MainHeaderAngCtrl as header">
+<nav class="navbar navbar-inverse">
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -87,23 +210,6 @@ ul.dropdown-cart li .item-right button{
             </div>
             <input type="hidden" name="search_param" value="all" id="search_param">
             <input type="text" class="form-control" ng-keydown="checkKeyDown($event)" class="" ng-model="header.searchText" ng-change="header.search()" name="x" placeholder="Rechercher...">
-            <ul class="list-group" ng-init="header.initListFriend()">
-              <li ng-repeat="suggestion in header.suggestions track by $index" class="list-group-item"
-                ng-class="{active : isSelected(suggestion)}"
-                ng-click="setSelected(suggestion)">
-                <h4 class="list-group-item-heading">{{suggestion.follow[0] || suggestion.notFollow[0]}}</h4> <span
-                  class="list-group-item-text" ng-show="suggestion.follow[0]">
-                  <div ng-show="suggestion " class="btn-group">
-                    <p class="btn btn-warning" ng-click="header.follow(suggestion.follow)"> Suivre</p>
-                  </div>
-                </span><span ng-show="suggestion.notFollow[0]"><div ng-repeat="username in header.usernames track by $index" class="btn-group" ng-if="username.wait === suggestion.notFollow[0]">
-                <p>En attente de confirmation</p>
-              </div>
-              <div class=" btn-group"  ng-repeat="username in header.usernames track by $index" ng-if="username.accepted === suggestion.notFollow[0]">
-                <p class="text-success">Ami</p>
-              </div></span>
-            </li>
-          </ul>
           <span class="input-group-btn">
             <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
           </span>
@@ -121,8 +227,8 @@ ul.dropdown-cart li .item-right button{
               <span class="item-left">
                 <img src="https://lorempixel.com/50/50/" alt="" />
                 <span class="item-info">
-                  <span ng-if="notification.type === 'friendRequest'">Requête d'amitié</span>
-                  <span ng-if="notification.type === 'accept'">Acceptation d'amitié</span>
+                  <span ng-if="notification.type === 'friendRequest'">Requête d'amitié : {{notification.userRec}}</span>
+                  <span ng-if="notification.type === 'accept'">Acceptation d'amitié : {{notification.userDes}}</span>
                   <span ng-if="notification.type === 'like'">
                   Cet utilisateur a lické une publication : {{notification.userRec}}</span>
                 </span>
@@ -152,14 +258,45 @@ ul.dropdown-cart li .item-right button{
     </div><!-- /.container -->
     </nav><!-- /.navbar -->
 
-<script>
-$(document).ready(function(e){
-    $('.search-panel .dropdown-menu').find('a').click(function(e) {
-    e.preventDefault();
-    var param = $(this).attr("href").replace("#","");
-    var concept = $(this).text();
-    $('.search-panel span#search_concept').text(concept);
-    $('.input-group #search_param').val(param);
-  });
-});
-</script>
+<div ng-init="header.initListFriend()">
+
+<div class="container">
+    <div class="row profile">
+    <div class="col-md-3" ng-repeat="suggestion in header.suggestions track by $index" class="list-group-item"
+      ng-class="{active : isSelected(suggestion)}"
+      ng-click="setSelected(suggestion)">
+      <div class="profile-sidebar">
+        <!-- SIDEBAR USERPIC -->
+        <div class="profile-userpic" ng-show='suggestion._source.profileImage !== null'>
+          <img src="images/{{suggestion._source.profileImage}}" class="img-responsive" alt="">
+        </div>
+        <div class="profile-userpic" ng-show='suggestion._source.profileImage === null'>
+          <img src="/images/default.jpeg" class="img-responsive" alt="">
+        </div>
+        <!-- END SIDEBAR USERPIC -->
+        <!-- SIDEBAR USER TITLE -->
+        <div class="profile-usertitle">
+          <div class="profile-usertitle-name">
+            {{suggestion._source.username.follow || suggestion._source.username.notFollow}}
+          </div>
+          <div class="profile-usertitle-job">
+            Developer
+          </div>
+        </div>
+        <!-- END SIDEBAR USER TITLE -->
+        <!-- SIDEBAR BUTTONS -->
+        <div class="profile-userbuttons">
+          <button type="button" ng-show="suggestion._source.username.follow" ng-click="header.follow(suggestion._source.username.follow)" class="btn btn-success btn-sm">Follow</button>
+          <div ng-show="suggestion._source.username.notFollow" ng-repeat="username in header.usernames track by $index">
+          <p ng-if="username.accepted === suggestion._source.username.notFollow">En attente de confirmation</p>
+          </div>
+          <div ng-show="suggestion._source.username.notFollow" ng-repeat="username in header.usernames track by $index">
+          <p>Ami</p>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm">Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

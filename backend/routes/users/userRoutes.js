@@ -12,10 +12,6 @@ var routes = [{
     path: '/auth/register/:id',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, UserCtrl.show]
-}, {
-    path: '/api/profile/:userId',
-    httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, UserCtrl.show]
 }];
 
 module.exports = routes;

@@ -33,9 +33,13 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listUserPagination]
 }, {
-    path: '/api/announces/status/:announceId/:status',
+    path: '/api/statusannounce/:announceId/:status',
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.changeStatusAnnounce]
+}, {
+    path: '/api/searchannounces/:terms',
+    httpMethod: 'GET',
+    middleware: [AnnouncesCtrl.searchAnnounces]
 }
 
 ];

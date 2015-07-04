@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Status   = mongoose.model('Status');
 var User     = mongoose.model('User');
 var ee       = require('../config/event');
+var async    = require('async');
 
 module.exports = {
 
@@ -32,26 +33,43 @@ module.exports = {
   addStatus: function(req, res) {
     console.log('_______ADD STATUS_____');
 
-    User.findOne({
-      _id: req.params.statusId
-    }, function(err, result) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      }
+    function findOneStatus(findOneStatusCallback) {
+      User.findOne({
+        _id: req.params.statusId
+      }, function(err, user) {
+        if (err) {
+          findOneStatusCallback(err);
+        } else {
+          findOneStatusCallback(null, user);
+        }
+      });
+    }
+
+    function saveStatus(user, saveStatusCallback) {
       var status     = new Status();
       status.content = req.body.content;
       status.author  = req.user._id;
-      status.user    = result;
+      status.user    = user;
       status.save(function(err) {
         if (err) {
-          ee.emit('error', err);
-          res.status(400).json(err);
+          saveStatusCallback(err);
         } else {
-          res.status(200).json();
+          saveStatusCallback(null);
         }
       });
+    }
+
+    // Faire une promise
+    async.waterfall([findOneStatus, saveStatus], function(error) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
+      } else {
+        res.status(200).json();
+      }
     });
+
   },
 
   /////////////////////////////////////////////////////////////////

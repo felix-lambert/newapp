@@ -1,10 +1,9 @@
 angular.module('InTouch')
   .controller('MainHeaderAngCtrl', MainHeaderAngCtrl);
 
-MainHeaderAngCtrl.$inject = ['Messages', 'Friends', 'toaster', '$localStorage', '$window', '$route', 'Notifications', 'socket', '$modal', 
-      '$http', '$rootScope', 'Auth', '$location', 'appLoading'];
-
 function arrayIndexOf(myArray, searchTerm) {
+  console.log(myArray);
+  console.log(searchTerm);
   for (var i = 0, len = myArray.length; i < len; i++) {
     if (myArray[i] === searchTerm[0]) {
       return i;
@@ -13,12 +12,23 @@ function arrayIndexOf(myArray, searchTerm) {
   return -1;
 }
 
-function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
-  $window, $route, Notifications, socket, $modal, $http,
-  $rootScope, Auth, $location, appLoading) {
+MainHeaderAngCtrl.$inject = ['$injector', '$localStorage', '$window',
+'$route', '$modal', '$http', '$rootScope', '$location'];
+
+function MainHeaderAngCtrl($injector, $localStorage, $window, $route,
+  $modal, $http, $rootScope, $location) {
 
   console.log('************ Main HEADER CTRL **********');
   var vm                 = this;
+
+  // Requirements
+  var Auth               = $injector.get('Auth');
+  var appLoading         = $injector.get('appLoading');
+  var Messages           = $injector.get('Messages');
+  var Friends            = $injector.get('Friends');
+  var toaster            = $injector.get('toaster');
+  var socket             = $injector.get('socket');
+  var Notifications      = $injector.get('Notifications');
 
   vm.search              = search;
   vm.see                 = see;
@@ -49,6 +59,10 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
         });
       }
     });
+    Notifications.getNotifications().then(function(response) {
+      $rootScope.currentUser.notifications = response;
+      $rootScope.currentUser.notificationsCount = response.length;
+    });
 
     socket.on('sendChatMessage', function(message) {
       console.log('_______________ send in header_____________________');
@@ -75,17 +89,6 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
       var userToken                               = $rootScope.currentUser.token;
       $http.defaults.headers.common['auth-token'] = userToken;
     }
-
-    Notifications.postNotification({
-      userDes: user.userDes,
-      user: user.user,
-      userId: user.id,
-      userDesId: user.userDesId,
-      type: 'friendRequest'
-    }).then(function(response) {
-      console.log('notifications success');
-    });
-
     if ($rootScope.currentUser) {
       Notifications.getNotifications().then(function(response) {
         $rootScope.currentUser.notifications = response;
@@ -128,15 +131,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
   socket.on('receiveAcceptFriendRequest', function(user) {
     console.log('_________receive friend request___________');
     if ($rootScope.currentUser.username === user.userRec) {
-      Notifications.postNotification({
-        userDes: user.userDes,
-        user: user.userRec,
-        userId: user.id,
-        userDesId: user.userDesId,
-        type: 'accept'
-      }).then(function(response) {
-        console.log('notifications success');
-      });
+
       Notifications.getNotifications().then(function(response) {
         $rootScope.currentUser.notifications = response;
         console.log('________________RESPONSE____________');
@@ -158,6 +153,12 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
     }
     $http.get('/search/' + '?term=' + vm.searchText)
       .success(function(data) {
+        if (data.length > 0) {
+          $rootScope.page = true;
+        } else {
+          $rootScope.page = false;
+        }
+
         console.log(data);
         if ($rootScope.currentUser) {
           console.log('inside currentuser');
@@ -165,22 +166,25 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
           .then(function(usernames) {
             console.log(usernames);
             for (var i = 0; i < usernames.length; i++) {
-              vm.usernames[i] = usernames[i].accepted ? 
+              vm.usernames[i] = usernames[i].accepted ?
               usernames[i].accepted : usernames[i].wait;
               console.log('test');
               console.log(vm.usernames[i]);
             }
+            console.log('test data follow');
             for (var j = 0; j < data.length; j++) {
               // Enlever le search de la boucle
-              var search = data[j];
+              var search = data[j]._source.username;
+              console.log(vm.usernames);
               var indexOfArray = arrayIndexOf(vm.usernames, search);
-              data[j] = indexOfArray < 0 ? {
-                  'follow': data[j]
+              data[j]._source.username = indexOfArray < 0 ? {
+                  'follow': data[j]._source.username
               } : {
-                  'notFollow': data[j]
+                  'notFollow': data[j]._source.username
               };
             }
-
+            console.log('put data in suggestions');
+            console.log(data);
             vm.suggestions = data;
             vm.usernames   = usernames;
           });
@@ -188,11 +192,11 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
           for (var j = 0; j < data.length; j++) {
             var search = data[j];
             data[j] = {
-                'notFollow': data[j]
+                'notFollow': data[j]._source.username
             };
           }
           console.log(vm.suggestions);
-          vm.suggestions = data;
+          vm.suggestions = data._source.username;
         }
         appLoading.ready();
       });
@@ -211,13 +215,25 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
     }).then(function(response) {
       console.log('friend request done');
     });
+
+    Notifications.postNotification({
+      userDes: userDes[0],
+      user: $rootScope.currentUser.username,
+      userId: $rootScope.currentUser._id,
+      userDesId: userDes[1],
+      type: 'friendRequest'
+    }).then(function(response) {
+      console.log('notifications success');
+    });
+
+
     console.log('toaster');
     toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
     socket.emit('sendFriendRequest', {
-        user: $rootScope.currentUser.username,
-        userDes: userDes[0],
-        userDesId: userDes[1],
-        id: $rootScope.currentUser._id
+      user: $rootScope.currentUser.username,
+      userDes: userDes[0],
+      userDesId: userDes[1],
+      id: $rootScope.currentUser._id
     });
   }
 
@@ -244,7 +260,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
       $rootScope.currentUser.notifications      = response;
       $rootScope.currentUser.notificationsCount = response.length;
     });
-    
+
   }
 
   function acceptFriendRequest(user) {
@@ -256,6 +272,16 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
     }).then(function(res) {
       console.log('remove');
     });
+
+    Notifications.postNotification({
+      userDes: user.userDes,
+      user: user.userRec,
+      userId: $rootScope.currentUser._id,
+      userDesId: user.userDesId,
+      type: 'accept'
+      }).then(function(response) {
+        console.log('notifications success');
+      });
 
     socket.emit('sendAcceptFriendRequest', {
       userRec: user.userRec,
@@ -297,7 +323,7 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
 
   function changePage(page) {
     console.log(page);
-    $rootScope.page = page;
+
   }
 
   function about() {
@@ -316,9 +342,16 @@ function MainHeaderAngCtrl(Messages, Friends, toaster, $localStorage,
   function logout() {
     console.log('logout');
     var userToken             = $rootScope.currentUser.token;
-    $localStorage.currentUser = null;
-    $rootScope.currentUser    = null;
-    $window.location.href     = '/auth/logout/' + userToken;
+
+    $http.delete('/auth/logout/')
+      .success(function(data) {
+        console.log(data);
+        if (data) {
+          console.log('test logout');
+          $localStorage.currentUser = null;
+          $rootScope.currentUser    = null;
+        }
+    });
     console.log('logout');
   }
 }

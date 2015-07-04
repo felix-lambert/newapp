@@ -11,21 +11,28 @@ module.exports = {
   // SEARCH USER //////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   search: function(req, res) {
-    console.log('////////////////SEARCH////////////////////');
-    var username;
     if (req.query.term) {
-      username   = req.user ? req.user.username : '';
+      var username   = req.user ? req.user.username : '';
       var search = req.query.term.toLowerCase();
-      User.findUser(username, function(err, users) {
-        if (err) {
-          ee.emit('error', err);
-          res.status(400).json(err);
-        } else {
-          res.status(200).json(users.filter(function(value) {
-            return value[0].indexOf(search) !== -1;
-          }));
-        }
-      });
+
+      console.log('test search : ');
+      console.log(search);
+      User.search({
+        query:{
+          "multi_match": {
+            "fields":  [ "username"],
+              "query": search,
+              "fuzziness": "AUTO"
+          }
+        }}, function(err, users) {
+          if (err) {
+            ee.emit('error', err);
+            res.status(400).json(err);
+          } else {
+            console.log(users.hits.hits);
+            res.status(200).json(users.hits.hits);
+          }
+        });
     } else {
       res.status(200).end();
     }
@@ -36,34 +43,41 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   userExist: function(req, res) {
     var username = req.query.u;
-    User.find({
-      'username': username
-    }).exec(function(err, user) {
-      setTimeout(function() {
-        var ok = !(user.length || err);
-        res.status(ok ? 200 : 400).json({
-              ok: ok
-        });
-      }, 400);
-    });
+    if (username) {
+      User.find({
+        'username': username
+      }).exec(function(err, user) {
+        setTimeout(function() {
+          var ok = !(user.length || err);
+          res.status(ok ? 200 : 400).json({
+                ok: ok
+          });
+        }, 400);
+      });
+    } else {
+      res.status(400).json();
+    }
   },
 
   /////////////////////////////////////////////////////////////////
   // CHECK EMAIL EXIST ////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   emailExist: function(req, res) {
-    console.log('emailExist');
-    var email = req.query.u;
-    User.find({
-        'email': email
-    }).exec(function(err, user) {
-      setTimeout(function() {
-        var ok = !(user.length || err);
-        res.status(ok ? 200 : 400).json({
-            ok: ok
-        });
-      }, 500);
-    });
+    if (req.query.u) {
+      var email = req.query.u;
+      User.find({
+          'email': email
+      }).exec(function(err, user) {
+        setTimeout(function() {
+          var ok = !(user.length || err);
+          res.status(ok ? 200 : 400).json({
+              ok: ok
+          });
+        }, 500);
+      });
+    } else {
+      res.status(400).json();
+    }
   },
 
 };

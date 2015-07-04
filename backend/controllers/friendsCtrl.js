@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Friend   = mongoose.model('Friend');
 var User     = mongoose.model('User');
 var ee       = require('../config/event');
+var async    = require('async');
 
 module.exports = {
 
@@ -46,83 +47,104 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   postFriend: function(req, res) {
 
-    function testIfFriendRequestDone(userId) {
-      Friend.findOne({
-        creator: req.body.idUser
-      }).exec(function(err, result) {
-        if (result && result.length > 0) {
-          console.log('Friend request already done');
-          return false;
+    function saveReceiverFriendRequest(saveReceiverFriendRequestCallback) {
+      Friend.saveFriend(req.body.idUser, req.user.username, function(error, result) {
+        if (error) {
+          saveReceiverFriendRequestCallback(error);
         } else {
-          return true;
+          saveReceiverFriendRequestCallback(null);
         }
       });
     }
 
-    function saveFriend(friend, user) {
-      Friend.findOneAndUpdate({
-        $and: [
-        {creator: friend.idUser},
-        {usernameWaitFriendRequest: user.username}
-        ]
-      }, {
-        usernameAcceptedFriendRequest: user.username,
-      }, {upsert: true}).exec(function(err, userOne) {
-        if (err) {
-          ee.emit('error', err);
-          return res.status(500).json(err);
+    function saveSenderFriendRequest(saveSenderFriendRequestCallback) {
+      Friend.saveFriend(req.body.idUser, req.user.username, function(error, result) {
+        if (error) {
+          saveSenderFriendRequestCallback(error);
         } else {
-          Friend.findOneAndUpdate({
-            $and: [
-              {creator: user._id},
-              {usernameWaitFriendRequest: friend.usernameAcceptedFriendRequest}
-            ]
-          }, {
-            usernameAcceptedFriendRequest: friend.usernameAcceptedFriendRequest,
-          }, {upsert: true}).exec(function(err, result) {
-            if (err) {
-              ee.emit('error', err);
-              return res.status(500).json(err);
-            } else {
-              return res.status(200).json(result);
-            }
-          });
+          saveSenderFriendRequestCallback(null);
         }
       });
     }
 
-    function saveWaitFriendRequest(user, friend) {
-      var firstFriend = new Friend();
-      var waitFriendRequest = friend.usernameWaitFriendRequest;
-      firstFriend.usernameWaitFriendRequest = waitFriendRequest;
-      firstFriend.creator = user._id;
-      firstFriend.save(function(err, doc) {
-        if (err) {
-          ee.emit('error', err);
-          return res.status(500).json(err);
+    function testIfReceiverFriendRequestDone(testIfReceiverFriendRequestDoneCallback) {
+      Friend.testIfFriendRequestDone(req.body.idUser, function(result) {
+        if (result === false) {
+          testIfReceiverFriendRequestDoneCallback('friend request already done');
         } else {
-          var secondFriend = new Friend();
-          secondFriend.usernameWaitFriendRequest = user.username;
-          secondFriend.save(function(err, doc) {
-            if (err) {
-              ee.emit('error', err);
-              return res.status(500).json(err);
-            } else {
-              return res.status(200).json(doc);
-            }
-          });
+          testIfReceiverFriendRequestDoneCallback(null);
         }
       });
+    }
+
+    function testIfSenderFriendRequestDone(testIfSenderFriendRequestDoneCallback) {
+      Friend.testIfFriendRequestDone(req.user._id, function(result) {
+        if (result === false) {
+          testIfSenderFriendRequestDoneCallback('friend request already done');
+        } else {
+          testIfSenderFriendRequestDoneCallback(null);
+        }
+      });
+    }
+
+    function saveWaitReceiverFriendRequest(saveWaitReceiverFriendRequestCallback) {
+      var friend = new Friend();
+      var waitFriendRequest = req.body.usernameWaitFriendRequest;
+      friend.usernameWaitFriendRequest = waitFriendRequest;
+      friend.creator = req.user._id;
+      friend.save(function(err, doc) {
+        if (err) {
+          saveWaitReceiverFriendRequestCallback(err);
+        } else {
+          saveWaitReceiverFriendRequestCallback(null);
+        }
+      });
+
+    }
+
+    function saveWaitSenderFriendRequest(saveWaitSenderFriendRequestCallback) {
+      var friend = new Friend();
+      var waitFriendRequest = req.body.usernameWaitFriendRequest;
+      friend.usernameWaitFriendRequest = req.user.username;
+      friend.creator = req.user._id;
+      friend.save(function(err, doc) {
+        if (err) {
+          saveWaitReceiverFriendRequestCallback(err);
+        } else {
+          saveWaitReceiverFriendRequestCallback(null);
+        }
+      });
+
     }
 
     if (req.body.usernameAcceptedFriendRequest) {
-      console.log('username accepted');
-      saveFriend(req.body, req.user);
+      // Faire une promise
+      async.waterfall([saveReceiverFriendRequest, saveSenderFriendRequest], function(error, result) {
+        if (error) {
+          //handle readFile error or processFile error here
+          ee.emit('error', error);
+          res.status(400).json(error);
+        } else {
+          res.status(200).json();
+        }
+      });
     } else if (req.body.usernameWaitFriendRequest) {
-      console.log('username wait');
-      testIfFriendRequestDone(req.body.idUser);
-      testIfFriendRequestDone(req.user._id);
-      saveWaitFriendRequest(req.user, req.body);
+
+      // Faire une promise
+      async.waterfall([
+        testIfReceiverFriendRequestDone,
+        testIfSenderFriendRequestDone,
+        saveWaitReceiverFriendRequest,
+        saveWaitSenderFriendRequest
+      ], function(error, result) {
+        if (error) {
+          //handle readFile error or processFile error here
+          ee.emit('error', error);
+          res.status(400).json(error);
+        } else {
+          res.status(200).json();
+        }
+      });
     }
   },
 
@@ -211,22 +233,22 @@ module.exports = {
     var sendFriends = [];
     console.log(req.params.idUser);
     Friend.find({creator: req.params.idUser})
-        .sort('-created')
-        .exec(function(err, friends) {
-          if (err) {
-            ee.emit('error', err);
-            res.status(501).json(err);
-          } else {
-            console.log(friends);
-            friends.forEach(function(item) {
-              if (item.usernameAcceptedFriendRequest) {
-                sendFriends.push({
-                  accepted: item.usernameAcceptedFriendRequest
-                });
-              }
-            });
-            res.status(200).json(sendFriends.length);
-          }
-        });
+      .sort('-created')
+      .exec(function(err, friends) {
+        if (err) {
+          ee.emit('error', err);
+          res.status(501).json(err);
+        } else {
+          console.log(friends);
+          friends.forEach(function(item) {
+            if (item.usernameAcceptedFriendRequest) {
+              sendFriends.push({
+                accepted: item.usernameAcceptedFriendRequest
+              });
+            }
+          });
+          res.status(200).json(sendFriends.length);
+        }
+      });
   },
 };

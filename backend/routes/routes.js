@@ -18,31 +18,28 @@ var router = express.Router();
  * Defines routes for application
  */
 var indexRoutes = [
-  {
-    path: '/partials/*',
-    httpMethod: 'GET',
-    middleware: [
-      function(req, res) {
-        console.log('_____________get /partials/_____');
-        var requestedView = path.join('./', req.url);
-        res.render(requestedView);
-      }
-    ]
-  },
-  {
-    path: '/*',
-    httpMethod: 'GET',
-    middleware: [
-      function(req, res) {
-        console.log(req.flash);
-        res.render('index');
-      }
-    ]
-  },
+{
+  path: '/partials/*',
+  httpMethod: 'GET',
+  middleware: [
+    function(req, res) {
+      console.log('_____________get /partials/_____');
+      var requestedView = path.join('./', req.url);
+      res.render(requestedView);
+    }
+  ]
+}, {
+  path: '/*',
+  httpMethod: 'GET',
+  middleware: [
+    function(req, res) {
+      res.render('index');
+    }
+  ]},
 ];
 
 module.exports = function(app) {
-  console.log('**********************routes******************');
+  console.log('********************************routes*************************************');
 
   var announceRoutes          = require('./announces/announceRoutes');
   var messageRoutes           = require('./sockets/messageRoutes');

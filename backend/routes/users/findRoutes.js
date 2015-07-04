@@ -20,7 +20,6 @@ var routes = [{
     path: '/auth/email-exists',
     httpMethod: 'GET',
     middleware: [FindCtrl.emailExist]
-},
-];
+}];
 
 module.exports = routes;

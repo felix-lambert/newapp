@@ -6,5 +6,6 @@ angular.module('InTouch', [
   'ngStorage',
   'toaster',
   'door3.css',
-  'angularFileUpload'
+  'angularFileUpload',
+  'tagger'
 ]);

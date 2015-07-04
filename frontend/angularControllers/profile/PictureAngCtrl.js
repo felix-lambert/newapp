@@ -8,7 +8,7 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   FileUploader, $http, appLoading, toaster) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
-  
+
   var vm                                      = this;
   var userToken                               = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
@@ -54,15 +54,15 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
       name: image.name,
       _id: image._id,
       defaultImage: true
-    }).then(function() {});
-
-    toaster.pop('success', 'L\'image de profil a bien été modifié');
-    console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-    Images.getImages().then(function(response) {
-      console.log(response);
-      vm.profileImages = response;
-      Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
-        console.log(res);
+    }).then(function() {
+      toaster.pop('success', 'L\'image de profil a bien été modifié');
+      console.log('__AnnouncesCtrl $scope.initListAnnounce__');
+      Images.getImages().then(function(response) {
+        console.log(response);
+        vm.profileImages = response;
+        Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
+          console.log(res);
+        });
       });
     });
   }

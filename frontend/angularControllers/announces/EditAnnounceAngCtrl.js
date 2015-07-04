@@ -1,15 +1,20 @@
 angular.module('InTouch')
 .controller('EditAnnounceAngCtrl', EditAnnounceAngCtrl);
 
-EditAnnounceAngCtrl.$inject = ['$location', '$routeParams', 'Announce', '$rootScope', '$http', 'appLoading'];
+EditAnnounceAngCtrl.$inject = ['$injector', '$location', '$routeParams', '$rootScope', '$http'];
 
-function EditAnnounceAngCtrl($location, $routeParams, Announce, $rootScope, $http, appLoading) {
+function EditAnnounceAngCtrl($injector, $location, $routeParams, $rootScope, $http) {
 
   console.log('*************AnnounceCtrl************************');
 
-  var vm     = this;
-  vm.findOne = findOne;
-  vm.update  = update;
+  var vm         = this;
+
+  // Requirements
+  var Announce   = $injector.get('Announce');
+  var appLoading = $injector.get('appLoading');
+
+  vm.findOne     = findOne;
+  vm.update      = update;
 
   appLoading.ready();
 

@@ -14,7 +14,6 @@ module.exports = {
   getActualities: function(req, res) {
     console.log('_____GET /api/actuality');
     Actuality.find()
-    .populate('creator likeCreator')
     .sort('-date')
     .exec(function(err, actualities) {
       if (err) {
@@ -45,7 +44,7 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////
-  // DELETE COMMENT ///////////////////////////////////////////////
+  // DELETE ACTUALITY /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   removeActuality: function(req, res) {
     console.log('______DELETE /api/actuality___');

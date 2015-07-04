@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('Auth', Auth);
 
-Auth.$inject = ['$rootScope', 'Session', 'User', '$http', 'Notifications', '$localStorage'];
+Auth.$inject = ['$q', '$rootScope', 'Session', 'User', '$http', 'Notifications', '$localStorage'];
 
-function Auth($rootScope, Session, User, $http, Notifications, $localStorage) {
+function Auth($q, $rootScope, Session, User, $http, Notifications, $localStorage) {
   return {
     login: function(user, callback) {
       var cb = callback || angular.noop;
@@ -27,22 +27,19 @@ function Auth($rootScope, Session, User, $http, Notifications, $localStorage) {
         console.log(err);
         return cb(err.data);
       });
-    
+
     },
 
-    logout: function(callback) {
+    deleteSession: function() {
+      console.log('deleteSession');
       var scope = this;
-      var cb = callback || angular.noop;
       var userToken = $localStorage.currentUser.token;
-
+      var deferred = $q.defer();
       $http.defaults.headers.common['auth-token'] = userToken;
-      Session.delete(function(res) {
-        console.log('delete');
-        scope.resetSession();
-        return cb();
-      },
-      function(err) {
-        return cb(err.data);
+      $http.delete('/auth/logout/').success(function(data) {
+        deferred.resolve(data);
+      }).error(function() {
+        deferred.reject();
       });
     },
 

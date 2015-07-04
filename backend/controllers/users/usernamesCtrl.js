@@ -46,7 +46,6 @@ module.exports = {
     Username.find({
         'username': req.body.username
     }).sort('-created')
-    .populate('creator')
     .exec(function(err, usernames) {
       var notification;
       usernames.forEach(function(item) {

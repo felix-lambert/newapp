@@ -52,11 +52,56 @@ exports = module.exports = function(mongoose) {
       this.findOne({
           _id: id
       }).populate('creator').exec(cb);
+    },
+    saveFriend: function(idUser, username, cb) {
+      console.log(idUser);
+      this.findOneAndUpdate({
+        $and: [
+        {creator: idUser},
+        {usernameWaitFriendRequest: username}
+        ]
+      }, {
+        usernameAcceptedFriendRequest: username,
+      }, {upsert: true}).exec(function(err, userOne) {
+        if (err) {
+          return cb(err);
+        } else {
+          return cb(null);
+        }
+      });
+    },
+
+    testIfFriendRequestDone: function(userId, cb) {
+      this.findOne({
+        creator: userId
+      }).exec(function(err, result) {
+        if (result && result.length > 0) {
+          return cb(false);
+        } else {
+          return cb(true);
+        }
+      });
+    },
+
+     saveWaitFriendRequest: function(user, friend, cb) {
+      
     }
   };
 
   /**
    * Methods
+    function testIfFriendRequestDone(userId) {
+      Friend.findOne({
+        creator: userId
+      }).exec(function(err, result) {
+        if (result && result.length > 0) {
+          console.log('Friend request already done');
+          return false;
+        } else {
+          return true;
+        }
+      });
+    }
    */
   friendSchema.methods.expressiveQuery = function(creator, date, callback) {
     console.log('--------friends expressiveQuery-----------------');

@@ -7,6 +7,7 @@ module.exports = function(grunt) {
       build: {
         src: [
           "frontend/angularLib/angular.js",
+          "frontend/angularLib/angular-tagger.min.js",
           "frontend/angularLib/angular-animate.js",
           "frontend/angularLib/angular-resource.js",
           "frontend/angularLib/ui-bootstrap-tpls.js",
@@ -70,17 +71,6 @@ module.exports = function(grunt) {
           "frontend/angularFilters/searchForFltr.js"
         ],
         dest: 'frontend/minifiedProject.min.js'
-      }
-    },
-    compress: {
-      main: {
-        options: {
-          mode: 'gzip'
-        },
-        expand: true,
-        cwd: 'assets/',
-        src: ['frontend/minifiedProject.min.js'],
-        dest: 'frontend/'
       }
     }
   });

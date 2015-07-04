@@ -13,18 +13,14 @@ var routes = [
      path: '/api/usernames/',
      httpMethod: 'GET',
      middleware: [auth.ensureAuthenticated, UsernameCtrl.getUsername]
-},
-{
+}, {
     path: '/api/usernames/',
     httpMethod: 'POST',
     middleware: [auth.ensureAuthenticated, UsernameCtrl.saveUsername]
-},
-{
+}, {
     path: '/api/usernames/',
-    httpMethod: 'PUT',
+    httpMethod: 'DELETE',
     middleware: [auth.ensureAuthenticated, UsernameCtrl.deleteUsername]
-}
-
-];
+}];
 
 module.exports = routes;

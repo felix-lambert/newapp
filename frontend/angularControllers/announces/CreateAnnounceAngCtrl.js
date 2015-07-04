@@ -1,21 +1,23 @@
 angular.module('InTouch')
 .controller('CreateAnnounceAngCtrl', CreateAnnounceAngCtrl);
 
-CreateAnnounceAngCtrl.$inject = ['Actuality', '$timeout', '$localStorage', '$scope', '$http', 'Announce',
-'$rootScope', 'toaster', '$modal', 'appLoading'];
+CreateAnnounceAngCtrl.$inject = ['$injector', '$timeout', '$localStorage', '$scope', '$http', '$rootScope', '$modal'];
 
-function CreateAnnounceAngCtrl(Actuality, $timeout, $localStorage, $scope,
-  $http, Announce, $rootScope, toaster,
-  $modal, appLoading) {
+function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
+  $http, $rootScope, $modal) {
 
   console.log('*************AnnounceCtrl************************');
 
   var vm                    = this;
-  vm.decorateNumberPage     = decorateNumberPage;
+
+  // Requirements
+  var Actuality             = $injector.get('Actuality');
+  var Announce              = $injector.get('Announce');
+  var toaster               = $injector.get('toaster');
+  var appLoading            = $injector.get('appLoading');
+
   vm.paginateUser           = paginateUser;
   vm.listUsers              = listUsers;
-  vm.previousUser           = previousUser;
-  vm.nextUser               = nextUser;
   vm.reset                  = reset;
   vm.range                  = range;
   vm.create                 = create;
@@ -34,13 +36,11 @@ function CreateAnnounceAngCtrl(Actuality, $timeout, $localStorage, $scope,
   var allAnnounces  = [];
   vm.tags           = [];
   vm.page           = 1;
-  vm.limit          = 5;
   vm.total          = 0;
   vm.pageNumbers    = [];
-  vm.maxSize        = 5;
+  vm.maxSize        = 10;
   vm.bigTotalItems  = 175;
   vm.bigCurrentPage = 1;
-
 
   ////////////////////////////////////////////////////////////////////////
 
@@ -50,10 +50,32 @@ function CreateAnnounceAngCtrl(Actuality, $timeout, $localStorage, $scope,
     vm.paginateUser(vm.page);
   }
 
-  function decorateNumberPage(page, decoration, weight) {
-    $('#bt' + page).css('text-decoration', decoration);
-    $('#bt' + page).css('font-weight', weight);
-  }
+  vm.options = [
+    'Appareils',
+    'Meubles',
+    'Vêtements',
+    'Echanges de savoirs',
+    'Informatique',
+    'Musique',
+    'Cours de langue',
+    'Photographie',
+    'Production vidéo',
+    'Transport',
+    'Garde d\'enfants',
+    'Ménage',
+    'Bricolage',
+    'Peinture',
+    'Jardinage',
+    'Expertise comptable',
+    'Préparation de plats cuisiniers',
+    'Aide pour la mise en place d\'un festin',
+    'Soins médicaux',
+    'Encadrement des activités sportives',
+    'coupe de cheveux',
+    'Manucure'
+  ];
+
+  vm.tags = [];
 
   function paginateUser(page) {
     console.log('paginate user announces');
@@ -61,49 +83,26 @@ function CreateAnnounceAngCtrl(Actuality, $timeout, $localStorage, $scope,
     if ($rootScope.currentUser) {
       Announce.getAnnouncesFromUser({
         page : vm.page,
-        limit : vm.limit,
+        limit : vm.maxSize,
         user: $rootScope.currentUser._id
       }).then(function(data) {
-        console.log('______________________________________');
+        console.log('_________paginate user____________________');
 
         vm.announces   = data.announces;
         console.log(vm.announces);
         for (var i = 0; i < vm.announces.length; i++) {
-          if (vm.announces[i].title.length > 9) {
-            console.log(vm.announces[i].title.length);
-            vm.announces[i].title = vm.announces[i].title.substring(0, 10) + '...';
+          if (vm.announces[i].title.length > 18) {
+            vm.announces[i].title = vm.announces[i].title.substring(0, 19) + '...';
           }
         }
+        console.log(data.total);
         vm.total       = data.total;
-        vm.pageNumbers = [];
-        for (var j = 0; j < vm.total; j++) {
-          vm.pageNumbers.push(j + 1);
-        }
       });
-      angular.forEach(vm.pageNumbers, function(page, key) {
-        vm.decorateNumberPage(page, 'none', 'normal');
-      });
-      vm.decorateNumberPage(page, 'underline', 'bold');
     }
   }
-
 
   function listUsers() {
     vm.paginate(vm.page);
-  }
-
-  function previousUser() {
-    if (vm.page > 1) {
-      vm.page--;
-    }
-    vm.paginateUser(vm.page);
-  }
-
-  function nextUser() {
-    if (vm.page < vm.total) {
-      vm.page++;
-    }
-    vm.paginateUser(vm.page);
   }
 
   function reset() {
@@ -136,7 +135,7 @@ function CreateAnnounceAngCtrl(Actuality, $timeout, $localStorage, $scope,
         price: vm.price,
         images: vm.selectedImages,
         activated: true,
-        tags: vm.data.tags
+        tags: vm.tags
       }).then(function(response) {
         Actuality.postActuality({status: 1, content:vm.content}).then(function(res) {
           console.log(res);

@@ -53,8 +53,7 @@ var routeObject = {
   '/announces/:announceId': {
     templateUrl: '/partials/announces/viewAnnc.html',
     controller: 'ShowAnnounceAngCtrl',
-    controllerAs: 'showAnnounce',
-    css: '../stylesheets/showAnnc.css'
+    controllerAs: 'showAnnounce'
   },
   '/profile/:userId': {
     templateUrl: '/partials/profile/profileView.html',

@@ -1,19 +1,24 @@
 angular.module('InTouch')
 .controller('ListAnnouncesAngCtrl', ListAnnouncesAngCtrl);
 
-ListAnnouncesAngCtrl.$inject = ['Announce', '$http', '$rootScope', 'appLoading'];
+ListAnnouncesAngCtrl.$inject = ['$injector', '$http', '$rootScope'];
 
-function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
+function ListAnnouncesAngCtrl($injector, $http, $rootScope) {
 
   var vm = this;
+
+  // Requirements
+  var Announce          = $injector.get('Announce');
+  var appLoading        = $injector.get('appLoading');
 
   console.log('*************AnnounceCtrl************************');
   vm.decorateNumberPage = decorateNumberPage;
   vm.paginate           = paginate;
-  vm.previous           = previous;
-  vm.next               = next;
   vm.initListAnnounce   = initListAnnounce;
   vm.like               = like;
+  vm.pageChanged        = pageChanged;
+  vm.listUsers          = listUsers;
+  vm.search             = search;
 
   appLoading.ready();
 
@@ -22,14 +27,27 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
     $http.defaults.headers.common['auth-token'] = userToken;
   }
 
-  var allAnnounces = [];
-  vm.tags          = [];
-  vm.page          = 1;
-  vm.limit         = 10;
-  vm.total         = 0;
-  vm.pageNumbers   = [];
+  var allAnnounces  = [];
+  vm.tags           = [];
+  vm.page           = 1;
+  vm.total          = 0;
+  vm.pageNumbers    = [];
+  vm.maxSize        = 10;
+  vm.bigTotalItems  = 175;
+  vm.bigCurrentPage = 1;
+  vm.searching      = false;
 
   /////////////////////////////////////////////////////////////
+
+  function pageChanged(currentPage) {
+    console.log('Page changed to: ' + currentPage);
+    vm.page = currentPage;
+    vm.paginate(vm.page);
+  }
+
+  function listUsers() {
+    vm.paginate(vm.page);
+  }
 
   function like(announceId, usernameDes, userDesId) {
     console.log('like');
@@ -67,16 +85,28 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
     $('#bt' + page).css('font-weight', weight);
   }
 
+  function search() {
+    Announce.searchAnnounces(vm.searchText).then(function(data) {
+      console.log(data);
+      if (data.announces) {
+        console.log(data.announces.hits.hits);
+        vm.findResults = data.announces.hits.hits;
+        vm.searching = true;
+      }
+    });
+  }
+
   function paginate(page) {
 
     vm.page = page;
     Announce.getAnnounces({
       page : vm.page,
-      limit : vm.limit
+      limit : vm.maxSize
     }).then(function(data) {
       console.log('paginate');
       console.log(data);
       vm.announces   = data.announces;
+      console.log(vm.announces);
       for (var i = 0; i < vm.announces.length; i++) {
         if (vm.announces[i].title.length > 34) {
           vm.announces[i].title = vm.announces[i].title.substring(0, 35) + '...';
@@ -86,33 +116,9 @@ function ListAnnouncesAngCtrl(Announce, $http, $rootScope, appLoading) {
           vm.announces[i].content = vm.announces[i].content.substring(0, 35) + '...';
         }
       }
-      vm.total       = data.total;
-      vm.pageNumbers = [];
-      for (var i = 0; i < vm.total; i++) {
-        vm.pageNumbers.push(i + 1);
-      }
+      vm.total = data.total;
     });
-    angular.forEach(vm.pageNumbers, function(page, key) {
-      vm.decorateNumberPage(page, 'none', 'normal');
-    });
-    vm.decorateNumberPage(page, 'underline', 'bold');
   }
-
-  function previous() {
-    if (vm.page > 1) {
-
-      vm.page--;
-    }
-    vm.paginate(vm.page);
-  }
-
-  function next() {
-    if (vm.page < vm.total) {
-      vm.page++;
-    }
-    vm.paginate(vm.page);
-  }
-
   function initListAnnounce() {
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
     vm.paginate(vm.page);

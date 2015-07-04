@@ -1,3 +1,5 @@
+var autopopulate = require('mongoose-autopopulate');
+
 exports = module.exports = function(mongoose) {
 
   var Schema = mongoose.Schema;
@@ -11,7 +13,8 @@ exports = module.exports = function(mongoose) {
     },
     creator: {
       type: Schema.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      autopopulate: true
     },
     created: Date,
     updated: [Date],
@@ -42,6 +45,8 @@ exports = module.exports = function(mongoose) {
     console.log('--------friends expressiveQuery-----------------');
     return this.find('creator', creator).where('date').gte(date).run(callback);
   };
+
+  likeSchema.plugin(autopopulate);
 
   mongoose.model('Like', likeSchema);
 };

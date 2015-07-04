@@ -1,10 +1,11 @@
 /////////////////////////////////////////////////////////////////
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var mongoose     = require('mongoose');
-var Like         = mongoose.model('Like');
-var Actuality    = mongoose.model('Actuality');
-var ee           = require('../../config/event');
+var mongoose  = require('mongoose');
+var Like      = mongoose.model('Like');
+var Actuality = mongoose.model('Actuality');
+var ee        = require('../../config/event');
+var async     = require('async');
 
 module.exports = {
 
@@ -18,7 +19,6 @@ module.exports = {
         creator: req.user
       })
       .sort('-created')
-      .populate('creator')
       .exec(function(err, likes) {
         if (err) {
           ee.emit('error', err);
@@ -54,38 +54,63 @@ module.exports = {
   saveLike: function(req, res, next) {
     console.log('______________save like______________________');
 
-    var like = new Like({
-      userRec: req.body.usernameDes,
-      creator: req.body.userDesId,
-      userSend: req.user.username,
-      likeType: req.body.likeType
-    });
+    function save(saveCallback) {
+      var like = new Like({
+        userRec: req.body.usernameDes,
+        creator: req.body.userDesId,
+        userSend: req.user.username,
+        likeType: req.body.likeType
+      });
 
-    like.save(function(err, result) {
-      if (err) {
-        ee.emit('error', err);
-        res.status(400).json(err);
+      like.save(function(err, result) {
+        if (err) {
+          saveCallback(err);
+        } else {
+          saveCallback(null);
+        }
+      });
+    }
+
+    function updateLikeOnType(updateLikeOnTypeCallback) {
+      if (req.body.likeType === 'actuality') {
+        Actuality.findOneAndUpdate({
+          '_id': req.body.id
+        }, {
+          likeCreator: result._id
+        }, {upsert: true})
+        .exec(function(err, results) {
+          if (err) {
+            updateLikeOnTypeCallback(err);
+          } else {
+            updateLikeOnTypeCallback(null);
+          }
+        });
+      } else if (req.body.likeType === 'announce') {
+        Announce.findOneAndUpdate({
+          '_id': req.body.id
+        }, {
+          likeCreator: result._id
+        }, {upsert: true})
+        .exec(function(err, results) {
+          if (err) {
+            updateLikeOnTypeCallback(err);
+          } else {
+            updateLikeOnTypeCallback(null);
+          }
+          res.status(201).json();
+        });
+      }
+
+    }
+
+    // Faire une promise
+    async.waterfall([save, updateLikeOnType], function(error) {
+      if (error) {
+        //handle readFile error or processFile error here
+        ee.emit('error', error);
+        res.status(400).json(error);
       } else {
-        if (req.body.likeType === 'actuality') {
-          Actuality.findOneAndUpdate({
-            '_id': req.body.id
-          }, {
-            likeCreator: result._id
-          }, {upsert: true})
-          .exec(function(err, results) {
-            res.status(201).json();
-          });
-        }
-        if (req.body.likeType === 'announce') {
-          Actuality.findOneAndUpdate({
-            '_id': req.body.id
-          }, {
-            likeCreator: result._id
-          }, {upsert: true})
-          .exec(function(err, results) {
-            res.status(201).json();
-          });
-        }
+        res.status(200).json();
       }
     });
   },
