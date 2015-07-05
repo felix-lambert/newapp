@@ -6,11 +6,9 @@
     "node": "0.12.x",
     "npm": "1.5.x"
   },
-  "scripts": {
-    "start": "node start.js",
-    "postinstall": "sudo grunt uglify"
-  },
   "config": {
+    "start": "node start.js",
+    "postinstall": "sudo grunt uglify",
     "blanket": {
       "pattern": "backend/controllers/session/sessionCtrl.js",
       "data-cover-never": "node_modules"
