@@ -10,7 +10,12 @@
     "postinstall": "sudo grunt uglify",
     "start": "node start.js"
   },
-
+  "config": {
+    "blanket": {
+      "pattern": "backend/controllers/session/sessionCtrl.js",
+      "data-cover-never": "node_modules"
+    }
+  },
   "dependencies": {
     "body-parser": "^1.13.1",
     "connect-mongo": "^0.8.1",
