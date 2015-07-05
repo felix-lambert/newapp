@@ -6,16 +6,11 @@
     "node": "0.12.x",
     "npm": "1.5.x"
   },
-  "config": {
-    "blanket": {
-      "pattern": "backend/controllers/session/sessionCtrl.js",
-      "data-cover-never": "node_modules"
-    }
-  },
   "scripts": {
-    "start": "node start.js",
-    "postinstall": "sudo grunt uglify"
+    "postinstall": "sudo grunt uglify",
+    "start": "node start.js"
   },
+
   "dependencies": {
     "body-parser": "^1.13.1",
     "connect-mongo": "^0.8.1",
