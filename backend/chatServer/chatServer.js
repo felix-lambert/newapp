@@ -37,7 +37,6 @@ module.exports = function(server) {
 
     socket.on('sendLike', function(user) {
       console.log('__________SEND LIKE___________');
-      console.log(user);
       io.sockets.emit('receiveLike', user);
     });
 
