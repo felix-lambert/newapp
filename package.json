@@ -8,7 +8,7 @@
   },
   "config": {
     "start": "node start.js",
-    "postinstall": "sudo grunt uglify",
+    "postinstall": "sudo grunt uglify && sudo grunt cssmin",
     "blanket": {
       "pattern": "backend/controllers/session/sessionCtrl.js",
       "data-cover-never": "node_modules"
