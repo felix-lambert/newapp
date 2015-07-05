@@ -2,7 +2,7 @@ angular.module('InTouch')
 
 .factory('Actuality', Actuality);
 
-Status.$inject = ['$q', '$http'];
+Actuality.$inject = ['$q', '$http'];
 
 function Actuality($q, $http) {
 

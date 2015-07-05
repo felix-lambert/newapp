@@ -1,10 +1,10 @@
 angular.module('InTouch')
 
-.factory('Messages', messages);
+.factory('Messages', Messages);
 
-messages.$inject = ['$q', '$http'];
+Messages.$inject = ['$q', '$http'];
 
-function messages($q, $http) {
+function Messages($q, $http) {
 
   var messagesFnct = {
     postMessage: postMessage,

@@ -1,10 +1,10 @@
 angular.module('InTouch')
 
-.factory('Comments', comments);
+.factory('Comments', Comments);
 
-comments.$inject = ['$q', '$http'];
+Comments.$inject = ['$q', '$http'];
 
-function comments($q, $http) {
+function Comments($q, $http) {
 
   var commentsFnct = {
     postComment: postComment,

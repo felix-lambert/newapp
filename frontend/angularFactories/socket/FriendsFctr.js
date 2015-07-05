@@ -1,10 +1,10 @@
 angular.module('InTouch')
 
-.factory('Friends', friends);
+.factory('Friends', Friends);
 
-friends.$inject = ['$q', '$http'];
+Friends.$inject = ['$q', '$http'];
 
-function friends($q, $http) {
+function Friends($q, $http) {
 
   var friendsFnct = {
     postFriend: postFriend,

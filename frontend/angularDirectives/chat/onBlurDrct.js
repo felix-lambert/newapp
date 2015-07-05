@@ -4,7 +4,6 @@
 angular.module('InTouch')
   .directive('onBlur', Blur);
 
-
 function Blur() {
   return {
       restrict: 'A',

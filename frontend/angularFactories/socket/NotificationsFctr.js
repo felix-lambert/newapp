@@ -1,10 +1,10 @@
 angular.module('InTouch')
 
-.factory('Notifications', notifications);
+.factory('Notifications', Notifications);
 
 notifications.$inject = ['$q', '$http'];
 
-function notifications($q, $http) {
+function Notifications($q, $http) {
 
   var notificationsFnct = {
     postNotification: postNotification,

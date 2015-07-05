@@ -1,10 +1,10 @@
 angular.module('InTouch')
 
-.factory('Rooms', rooms);
+.factory('Rooms', Rooms);
 
-rooms.$inject = ['$q', '$http'];
+Rooms.$inject = ['$q', '$http'];
 
-function rooms($q, $http) {
+function Rooms($q, $http) {
 
   var roomsFnct = {
     postRoom: postRoom,

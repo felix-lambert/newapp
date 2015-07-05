@@ -3,6 +3,16 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    cssmin: {
+       dist: {
+          options: {
+             banner: '/*! MyLib.js 1.0.0 | Aurelio De Rosa (@AurelioDeRosa) | MIT Licensed */'
+          },
+          files: {
+             'frontend/stylesheets/style.min.css': ['frontend/stylesheets/*.css']
+          }
+      }
+    },
     uglify: {
       build: {
         src: [
@@ -77,7 +87,9 @@ module.exports = function(grunt) {
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+
   // Default task(s).
-  grunt.registerTask('heroku', ['uglify']);
+  grunt.registerTask('heroku', ['uglify', 'cssmin']);
 
 };
