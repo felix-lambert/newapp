@@ -7,7 +7,7 @@
     "npm": "1.5.x"
   },
   "scripts": {
-    "postinstall": "sudo grunt uglify",
+    "postinstall": "grunt uglify",
     "start": "node start.js"
   },
   "config": {
