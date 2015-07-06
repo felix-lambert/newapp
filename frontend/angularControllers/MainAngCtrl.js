@@ -23,6 +23,7 @@ function MainAngCtrl($injector, $scope, $location, $rootScope) {
 
   function Login() {
     console.log('_______________LOG IN____________');
+    console.log('cool');
     appLoading.loading();
     var vm = this;
     Auth.login({

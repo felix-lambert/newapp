@@ -76,7 +76,13 @@ var routeObject = {
     templateUrl: '/partials/profile/picturePrfl.html',
     controller: 'PictureAngCtrl',
     controllerAs: 'picture',
-    css: '../stylesheets/picturePrfl.css'
+    css: '../stylesheets/picturePrfl.css',
+    resolve: {
+      preGetImages: function(Images) {
+        console.log('preGetRooms');
+        return Images.getImages();
+      }
+    }
   },
   '/transaction': {
     templateUrl: '/partials/transaction/transaction.html',
@@ -86,7 +92,13 @@ var routeObject = {
   '/messages': {
     templateUrl: '/partials/profile/messagePrfl.html',
     controller: 'MessageAngCtrl',
-    controllerAs: 'message'
+    controllerAs: 'message',
+    resolve: {
+      preGetRooms: function(Rooms) {
+        console.log('preGetRooms');
+        return Rooms.getRooms();
+      }
+    }
   },
   '/historic': {
     templateUrl: '/partials/profile/historicPrfl.html',

@@ -2,7 +2,7 @@ angular.module('InTouch')
 
 .factory('Notifications', Notifications);
 
-notifications.$inject = ['$q', '$http'];
+Notifications.$inject = ['$q', '$http'];
 
 function Notifications($q, $http) {
 

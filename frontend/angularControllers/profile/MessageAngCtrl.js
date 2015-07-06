@@ -1,14 +1,13 @@
 angular.module('InTouch')
   .controller('MessageAngCtrl', MessageAngCtrl);
 
-MessageAngCtrl.$inject = ['Rooms', 'Friends', 'Messages', '$rootScope', 'socket', 'appLoading'];
+MessageAngCtrl.$inject = ['Rooms', 'Friends', 'Messages', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
 
-function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading) {
+function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading, preGetRooms) {
 
   var vm               = this;
   var Typing           = false;
   var timeout          = undefined;
-
 
   vm.focus             = focus;
   vm.typing            = typing;
@@ -17,8 +16,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   vm.joinRoom          = joinRoom;
   vm.leaveRoom         = leaveRoom;
   vm.deleteRoom        = deleteRoom;
-  vm.disconnect        = disconnect;
-  vm.pageChangeHandler = pageChangeHandler;
   vm.send              = send;
   vm.peopleCount       = 0;
   vm.joined            = false;
@@ -33,10 +30,15 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
 
   appLoading.ready();
 
-  Rooms.getRooms().then(function(response) {
-    console.log(response);
-    vm.rooms = response[0];
-  });
+  console.log('message ang ctrl');
+
+  var get = preGetRooms;
+
+  console.log(get);
+
+  vm.rooms = get[0];
+
+  console.log(vm.rooms);
 
   /////////////////////////////////////////////////////////////
 
@@ -50,10 +52,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   }
 
   function typing(event, user) {
-    console.log('test typing');
-    console.log(event);
-    console.log(user);
-    console.log(vm.focussed);
     if (event.which !== 13) {
       if (Typing === false && vm.focussed) {
         Typing = true;
@@ -200,15 +198,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     socket.emit('deleteRoom', room.id);
   }
 
-  function disconnect() {
-
-    socket.on('disconnect', function() {
-      vm.status      = 'offline';
-      vm.users       = 0;
-      vm.peopleCount = 0;
-    });
-  }
-
   socket.on('sendUserDetail', function(data) {
     vm.user = data;
   });
@@ -245,10 +234,6 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   socket.on('updateRoomsCount', function(data) {
     vm.roomCount = data.count;
   });
-
-  function pageChangeHandler(num) {
-    console.log('meals page changed to ' + num);
-  }
 
   socket.emit('joinSocketServer', {name: $rootScope.currentUser.username});
 

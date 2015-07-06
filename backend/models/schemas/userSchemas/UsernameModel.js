@@ -7,7 +7,7 @@ exports = module.exports = function(mongoose) {
   var moment      = require('moment');
 
   var usernameSchema = new Schema({
-      username: String,
+
       DATE_CREATED: {
           type: Date,
           default: Date.now

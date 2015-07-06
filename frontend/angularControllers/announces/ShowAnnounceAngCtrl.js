@@ -23,7 +23,6 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
   vm.testIfFriend     = testIfFriend;
   vm.countFriends     = countFriends;
 
-
   appLoading.ready();
 
   ///////////////////////////////////////////////////////////////////////////

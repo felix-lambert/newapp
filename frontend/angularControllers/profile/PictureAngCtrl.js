@@ -2,10 +2,10 @@ angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
 PictureAngCtrl.$inject = ['Actuality', '$scope', 'Images', '$rootScope',
-'FileUploader', '$http', 'appLoading', 'toaster'];
+'FileUploader', '$http', 'appLoading', 'toaster', 'preGetImages'];
 
 function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
-  FileUploader, $http, appLoading, toaster) {
+  FileUploader, $http, appLoading, toaster, preGetImages) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
 
@@ -19,10 +19,7 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
 
   appLoading.ready();
   if ($rootScope.currentUser) {
-    Images.getImages().then(function(response) {
-      console.log(response);
-      vm.profileImages = response;
-    });
+    vm.profileImages = preGetImages;
   }
 
   if ($rootScope.currentUser.images &&
@@ -57,12 +54,9 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
     }).then(function() {
       toaster.pop('success', 'L\'image de profil a bien été modifié');
       console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-      Images.getImages().then(function(response) {
-        console.log(response);
-        vm.profileImages = response;
-        Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
-          console.log(res);
-        });
+      vm.profileImages = preGetImages;
+      Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
+        console.log(res);
       });
     });
   }
@@ -73,10 +67,7 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
 
     toaster.pop('danger', 'L\'image a bien été supprimé');
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-    Images.getImages().then(function(response) {
-      console.log(response);
-      vm.profileImages = response;
-    });
+    vm.profileImages = preGetImages;
   }
 
   /////////////////////////////////////////////////////////////////

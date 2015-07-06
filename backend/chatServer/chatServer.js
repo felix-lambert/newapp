@@ -13,11 +13,7 @@ module.exports = function(server) {
 
   io.sockets.on('connection', function(socket) {
 
-    socket.on('disconnect', function() {
-      setTimeout(function() {
-           //do something
-      }, 10000);
-    });
+
 
     totalPeopleOnline = _.size(people);
 
@@ -53,6 +49,13 @@ module.exports = function(server) {
     socket.on('typing', function(data, user) {
       io.sockets.in(socket.room).emit('isTyping',
         {isTyping: data.isTyping, person: data.user});
+    });
+
+    socket.on('disconnect', function() {
+      console.log('disconnect');
+      if (typeof people[socket.id] !== 'undefined') { //this handles the refresh of the name screen
+        purgatory.purge(socket, 'disconnect');
+      }
     });
 
     socket.on('joinSocketServer', function(data) {

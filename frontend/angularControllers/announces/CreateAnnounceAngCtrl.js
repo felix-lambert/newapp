@@ -81,6 +81,7 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     console.log('paginate user announces');
     vm.page = page;
     if ($rootScope.currentUser) {
+
       Announce.getAnnouncesFromUser({
         page : vm.page,
         limit : vm.maxSize,

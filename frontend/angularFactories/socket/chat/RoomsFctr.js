@@ -25,6 +25,7 @@ function Rooms($q, $http) {
   }
 
   function getRooms() {
+    console.log('get rooms');
     var deferred = $q.defer();
     $http.get('/api/rooms/').success(function(data) {
       deferred.resolve(data);

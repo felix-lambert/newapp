@@ -23,6 +23,7 @@ exports = module.exports = function(mongoose) {
         unique: true
       }
     },
+    anonymUsername: String,
     token: {
       type: Object
     },
@@ -121,7 +122,6 @@ exports = module.exports = function(mongoose) {
           usr.FORMATTED_DATE = FORMATTED_DATE;
           cb(false, usr);
         } else {
-          // cb(new Error('Token does not exist or does not match.'), null);
           cb(false, usr);
         }
       });
