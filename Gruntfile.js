@@ -79,4 +79,13 @@ module.exports = function(grunt) {
     'shell:git-add-dist',
     'shell:git-commit-build'
   ]);
+
+  grunt.registerTask('heroku', ['copy',
+    'useminPrepare',
+    'concat',
+    'uglify',
+    'cssmin',
+    'usemin',
+    'shell:git-add-dist',
+    'shell:git-commit-build']);
 };
