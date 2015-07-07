@@ -31,6 +31,7 @@ exports = module.exports = function(app, express, config) {
   app.use(bodyParser.json());
   app.use(methodOverride());
   if (process.env.NODE_ENV === 'production') {
+    console.log('inside production');
     app.use(express.static(path.join(__dirname, '/../../dist')));
   } else {
     app.use(express.static(path.join(__dirname, '/../../frontend')));
