@@ -1,0 +1,65 @@
+
+<div class="ctx_">
+  <div class="container_">
+    <div class="image-box image-box-bg" style="background-image: url('{{currentUser.profileImage.small}}');">
+    </div>
+    
+    <p>Date d'inscription : {{currentUser.date_created}}</p>
+    <form ng-submit="send()" ng-init="initStatus()">
+      <div class="form-group">
+        <label class="control-label" for="content">Exprimez-vous</label>
+        <div class="controls">
+          <textarea ng-model="txtcomment" placeholder="Exprimez-vous" style='width:550px'></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="controls">
+          <button ng-click='postStatus();' id="status" class="btn_1" type="submit">Valider</button>
+        </div>
+      </div>
+      <ul>
+        <p ng-repeat="comment in status"> {{ comment.content }} <a href="" ng-click="removeStatus(comment)">x</a></p>
+      </ul>
+    </form>
+
+        <div ng-controller="AnnouncesAngCtrl as announces">
+      <section ng-init="findFromUser(currentUser._id)">
+        <h2>Liste de vos services</h2>
+        <input class="form-input" type="text" ng-model="searchString" placeholder="Rechercher" />
+        <table class="table">
+          <tr>
+            <th class="xsmall_hidden">Demande
+            </th>
+            <th>Service
+            </th>
+            <th>Actions
+            </th>
+          </tr>
+          <tr ng-repeat="announce in announces | searchFor:searchString">
+            <td ng-if="currentUser._id == announce.author._id" class="xsmall_hide">
+              {{announce.type}}
+            </td>
+            <td ng-if="currentUser._id == announce.author._id">
+              {{announce.title}}
+            </td>
+            <td ng-if="currentUser._id == announce.author._id">
+              <div class="btn-group">
+                <a class="btn btn-default" href="/announces/{{announce._id}}">Voir</a>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-danger" ng-click="remove(announce)">Supprimer</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </section>
+      <div>
+        <h1>Réputation</h1>
+        <p>{{reputation}} / 5</p>
+        <p><i>pour {{rated}} annonces notés</i>
+        <strong>( total : {{total}} )</strong></p>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="stylesheets/angular-tagger.css"/>
+
+<toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
+<div class="row">
+  <section class="newService">
+    <div class="col-md-6">
+      <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+            <span class="glyphicon glyphicon-file"></span>
+            Publier un service
+            </h4>
+          </div>
+          <form ng-submit="createAnnounce.create()">
+            <div id="collapseOne" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="title">Demande</label>
+                      <select name="demande" ng-model="createAnnounce.type" class="form-control">
+                        <option>Offre</option>
+                        <option>Recherche</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="price">Nombre d'heures</label>
+                      <input type="number" ng-model="createAnnounce.price" class="form-control" placeholder="Prix" required/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <input type="text" ng-model="createAnnounce.title" class="form-control" placeholder="Titre" required />
+                    </div>
+                    <div class="form-group">
+                      <textarea ng-model="createAnnounce.content" class="form-control" placeholder="Description" rows="5" required></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="category">
+                      Category</label>
+                      <select ng-model="createAnnounce.category" class="form-control">
+                        <optgroup label="Réparations">
+                          <option>Appareils</option>
+                          <option>Meubles</option>
+                          <option>Vêtements</option>
+                        </optgroup>
+                        <optgroup label="Echanges de savoirs">
+                          <option>Informatique</option>
+                          <option>Musique</option>
+                          <option>Cours de langue</option>
+                          <option>Photographie</option>
+                          <option>Production vidéo</option>
+                        </optgroup>
+                        <option>Transport</option>
+                        <option>Garde d'enfants</option>
+                        <option>Ménage</option>
+                        <option>Bricolage</option>
+                        <option>Peinture</option>
+                        <option>Jardinage</option>
+                        <option>Expertise comptable</option>
+                        <optgroup label="Services de restauration">
+                          <option>Préparation de plats cuisiniers</option>
+                          <option>Aide pour la mise en place d'un festin</option>
+                        </optgroup>
+                        <option>Encadrement des activités sportives</option>
+                        <option>Soins médicaux</option>
+                        <option>Coupe de cheveux</option>
+                        <option>Manucure</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="tags">
+                      Talents</label>
+                      <tagger ng-model="createAnnounce.tags" options="createAnnounce.options" ng-model="createAnnounce.tags" model="createAnnounce.data.tags"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-success btn-sm">
+                <span class="glyphicon glyphicon-floppy-disk"></span>Valider</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+    <div ng-init="createAnnounce.initListCreateAnnounce(currentUser._id)" class="col-md-6">
+      <ul class="event-list" ng-repeat="announce in createAnnounce.announces">
+          <li ng-if="currentUser._id === announce.creator._id">
+            <div class="info" ng-if="currentUser._id === announce.creator._id">
+              <h2 class="title">{{announce.title}}</h2>
+              <p class="desc">{{announce.type}}</p>
+              <ul>
+                <li style="width:50%;"><span class="fa fa-money"></span> {{announce.price}}</li>
+                <li style="width:34%;"> <span class="fa fa-child"></span>3</li>
+              </ul>
+            </div>
+            <div class="social">
+              <ul>
+                <li class="facebook" style="width:33%;"><a href="/announces/{{announce._id}}"><span class="fa fa-eye"></span></a></li>
+                <li class="twitter" style="width:34%;"><a ng-if="announce.activated === true" ng-click="createAnnounce.desactivate(announce)"><span class="fa fa-toggle-off"></span></a>
+                <a ng-if="announce.activated === false" ng-click="createAnnounce.activate(announce)"><span class="fa fa-toggle-on"></span></a></li>
+                <li class="google-plus" style="width:33%;"><a ng-click="createAnnounce.remove(announce)"><span class="fa fa-eraser "></span></a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+    <pagination total-items="createAnnounce.total" ng-change="createAnnounce.pageChanged(createAnnounce.bigCurrentPage)" ng-model="createAnnounce.bigCurrentPage" max-size="createAnnounce.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
+  </section>
+</div>

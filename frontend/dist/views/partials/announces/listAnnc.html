@@ -1,0 +1,149 @@
+<style>
+.btn-glyphicon { padding:8px; background:#ffffff; margin-right:4px; }
+.icon-btn { padding: 1px 15px 3px 2px; border-radius:50px;}
+</style>
+
+<style>
+
+div.margin {
+  margin-bottom: 1.5em;
+}
+
+
+/* Text Input */
+.form-input {
+  background: #fafafa;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  padding: 12px 16px;
+  min-width: 25%;
+}
+
+.btn-clean {
+  display: inline-block;
+  padding: 12px 16px;
+  background: #fafafa;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  text-decoration: none;
+  color: #8f8f8f;
+  font-size: 1em;
+  -webkit-transition: all .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
+  -ms-transition: all .25s ease-in-out;
+  -o-transition: all .25s ease-in-out;
+  transition: all .25s ease-in-out;
+}
+
+.btn-clean i {
+  position: relative;
+  top: 1px;
+  margin-left: 7px;
+  font-size: 1.15em;
+}
+
+.btn-clean i.ion-ios-arrow-down {
+  top: 2px;
+  margin-left: 8px;
+}
+
+.btn-clean:hover,
+.btn-clean:focus,
+.btn-clean:active,
+.clean.button-group.open .button {
+  border-color: #8f8f8f;
+  color: #808080;
+  text-decoration: none;
+}
+
+.form-input:focus {
+  border-color: #8f8f8f;
+}
+</style>
+
+<section ng-init="listAnnounces.initListAnnounce()">
+
+  <div class="margin">
+    <input type="text" class="form-input" ng-keydown="checkKeyDown($event)" class="" ng-model="listAnnounces.searchText" ng-change="listAnnounces.search()"placeholder="Rechercher service..">
+  </div>
+  <div ng-repeat="announceResult in listAnnounces.findResults">
+    <div class="well">
+      <div class="media">
+        <a ng-show='announceResult._source.creator.profileImage' class="pull-left" href="#">
+          <img class="media-object" src="/images/{{announceResult._source.announce.creator.profileImage}}" width="150" height="150">
+        </a>
+        <a ng-if='!announceResult._source.creator.profileImage' class="pull-left" href="#">
+          <img class="media-object" src="/images/default.jpeg" width="150" height="150">
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading">
+          <a href="announces/{{announceResult._source._id}}">
+            <b>{{announceResult._source.title}}</b>
+          </a>
+          <button ng-hide="announceResult._source.likeCreator.userSend == currentUser.username" ng-click="listAnnounces.like(announceResult._source._id, announceResult._source.creator.username, announceResult._source.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+          </h4>
+          <p class="text-right">{{announceResult._source.creator.username}}</p>
+          <p>{{announceResult._source.content | cutFilter }}</p>
+
+          <ul class="list-inline list-unstyled">
+            <li><span><i class="glyphicon glyphicon-calendar"></i>
+            {{announceResult._source.FORMATTED_DATE}} </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i>{{announceResult._source.nbComment}}</span>
+            <li>|</li>
+            <li>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>{{announceResult._source.price}} crédit(s)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div ng-show="listAnnounces.searching === false" ng-repeat="announce in listAnnounces.announces">
+    <div class="well">
+      <div class="media">
+        <a ng-show='announce.creator.profileImage' class="pull-left" href="#">
+          <img class="media-object" src="/images/{{announce.creator.profileImage}}" width="150" height="150">
+        </a>
+        <a ng-if='!announce.creator.profileImage' class="pull-left" href="#">
+          <img class="media-object" src="/images/default.jpeg" width="150" height="150">
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading">
+          <a href="announces/{{announce._id}}">
+            <b>{{announce.title}}</b>
+          </a>
+          <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+          </h4>
+          <p class="text-right">{{announce.creator.username}}</p>
+          <p>{{announce.content | cutFilter }}</p>
+
+          <ul class="list-inline list-unstyled">
+            <li><span><i class="glyphicon glyphicon-calendar"></i>
+            {{announce.FORMATTED_DATE}} </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i>{{announce.nbComment}}</span>
+            <li>|</li>
+            <li>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>{{announce.price}} crédit(s)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <pagination total-items="listAnnounces.total" ng-change="listAnnounces.pageChanged(listAnnounces.bigCurrentPage)" ng-model="listAnnounces.bigCurrentPage" max-size="listAnnounces.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
+</section>

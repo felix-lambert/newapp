@@ -1,0 +1,27 @@
+<h1>Paramètre</h1>
+<p><a ng-click="toggleEditProfile()">Modifier</a></p>
+<div ng-show="!editProfile" class="alert_ alert-info_">
+  <p><b><u>{{profile.username}}</u></b></p>
+  <p>Email : {{profile.email}}</p>
+  <p ng-show="errorEmail" style="color:red;">L'email est déja utilisé !</p>
+  <p>Prénom : {{profile.firstName}}</p>
+  <p>Nom : {{profile.lastName}}</p>
+  <p>Age : {{profile.age}}</p>
+</div>
+<div ng-show="editProfile">
+  <form class="form" name="form" novalidate ng-submit="editProfileSubmit(form)">
+    <div class="form-group">
+      <input type="email" class="form-input" name="email" ng-model="profile.email" placeholder="Email" class="input" required autofocus on-focus autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-input" name="firstName" ng-model="profile.firstName" placeholder="Prénom" class="input" autofocus on-focus autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-input" name="lastName" ng-model="profile.lastName" placeholder="Nom" class="input" autofocus on-focus autocomplete="off" value="{{profile.lastName}}"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-input" name="lastName" ng-model="profile.age" placeholder="Age" class="input" autofocus on-focus autocomplete="off" value="{{profile.age}}"/>
+    </div>
+    <button class="btn_1 wf" type="submit" ng-disabled="form.$invalid">Valider</button>
+  </form>
+</div>

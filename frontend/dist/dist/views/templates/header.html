@@ -1,0 +1,302 @@
+<style>
+ul.dropdown-cart{
+    min-width:250px;
+}
+ul.dropdown-cart li .item{
+    display:block;
+    padding:3px 10px;
+    margin: 3px 0;
+}
+ul.dropdown-cart li .item:hover{
+    background-color:#f3f3f3;
+}
+ul.dropdown-cart li .item:after{
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+ul.dropdown-cart li .item-left{
+    float:left;
+}
+ul.dropdown-cart li .item-left img,
+ul.dropdown-cart li .item-left span.item-info{
+    float:left;
+}
+ul.dropdown-cart li .item-left span.item-info{
+    margin-left:10px;
+}
+ul.dropdown-cart li .item-left span.item-info span{
+    display:block;
+}
+ul.dropdown-cart li .item-right{
+    float:right;
+}
+ul.dropdown-cart li .item-right button{
+    margin-top:14px;
+}
+
+.label,.glyphicon { margin-right:5px; }
+
+.filter-col{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+/***
+User Profile Sidebar by @keenthemes
+A component of Metronic Theme - #1 Selling Bootstrap 3 Admin Theme in Themeforest: http://j.mp/metronictheme
+Licensed under MIT
+***/
+
+/* Profile container */
+.profile {
+  margin: 20px 0;
+}
+
+/* Profile sidebar */
+.profile-sidebar {
+  padding: 20px 0 10px 0;
+  background: #fff;
+}
+
+.profile-userpic img {
+  float: none;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important;
+}
+
+.profile-usertitle {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-usertitle-name {
+  color: #5a7391;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+  text-transform: uppercase;
+  color: #5b9bd1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.profile-userbuttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.profile-userbuttons .btn {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 15px;
+  margin-right: 5px;
+}
+
+.profile-userbuttons .btn:last-child {
+  margin-right: 0px;
+}
+
+.profile-usermenu {
+  margin-top: 30px;
+}
+
+.profile-usermenu ul li {
+  border-bottom: 1px solid #f0f4f7;
+}
+
+.profile-usermenu ul li:last-child {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li a {
+  color: #93a3b5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.profile-usermenu ul li a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.profile-usermenu ul li a:hover {
+  background-color: #fafcfd;
+  color: #5b9bd1;
+}
+
+.profile-usermenu ul li.active {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li.active a {
+  color: #5b9bd1;
+  background-color: #f6f9fb;
+  border-left: 2px solid #5b9bd1;
+  margin-left: -2px;
+}
+
+/* Profile Content */
+.profile-content {
+  padding: 20px;
+  background: #fff;
+  min-height: 460px;
+}
+
+</style>
+<toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
+<!-- Second navbar for search -->
+<div ng-controller="MainHeaderAngCtrl as header">
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-3">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#" ng-click="header.changePage('index')"><img alt="Brand" src="/icons/logo.png"></a>
+      <span class="app-loading-container">
+        <span class="app-loading-animation" data-ng-class="status"></span>
+      </span>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="navbar-collapse-3">
+      <form class="navbar-form navbar-left" role="search">
+        <div class="col-xs-12">
+          <div class="input-group">
+            <div class="input-group-btn search-panel">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              <span id="search_concept">Filtrer par</span> <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#contains">Annonces</a></li>
+                <li><a href="#its_equal">Utilisateurs</a></li>
+                <li><a href="#greather_than">Plus populaires</a></li>
+                <li><a href="#less_than">Par nombre de commentaires</a></li>
+                <li><a href="#less_than">Par nombre d'heures de proposés</a></li>
+                <li><a href="#less_than">Par nombre d'heures d'offerts'</a></li>
+                <li><a href="#less_than">Contient les mots ...</a></li>
+                <li class="divider"></li>
+                <li><a href="#all">N'importe</a></li>
+              </ul>
+            </div>
+            <input type="hidden" name="search_param" value="all" id="search_param">
+            <input type="text" class="form-control" ng-keydown="checkKeyDown($event)" class="" ng-model="header.searchText" ng-change="header.search()" name="x" placeholder="Rechercher...">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+          </span>
+        </div>
+      </div>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href='/' ng-click="header.changePage('index')">Accueil</a></li>
+      <li><a href='/' ng-click="header.open('lg')">A propos</a></li>
+      <li ng-show="currentUser" class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-pencil"></span> {{currentUser.notificationsCount}} - Notifications<span class="caret"></span></a>
+        <ul class="dropdown-menu dropdown-cart" role="menu">
+          <li ng-repeat="notification in currentUser.notifications">
+            <span class="item">
+              <span class="item-left">
+                <img src="https://lorempixel.com/50/50/" alt="" />
+                <span class="item-info">
+                  <span ng-if="notification.type === 'friendRequest'">Requête d'amitié : {{notification.userRec}}</span>
+                  <span ng-if="notification.type === 'accept'">Acceptation d'amitié : {{notification.userDes}}</span>
+                  <span ng-if="notification.type === 'like'">
+                  Cet utilisateur a lické une publication : {{notification.userRec}}</span>
+                </span>
+              </span>
+              <span class="item-right">
+                <button type="button" ng-if="notification.type === 'friendRequest'" class="btn btn-xs btn btn-success" data-ng-click="header.acceptFriendRequest(notification)">Accepter</button>
+                <button data-ng-click="header.refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
+              </span>
+            </span>
+          </li>
+          <li class="divider"></li>
+          <li><a class="text-center" href="">View Cart</a></li>
+        </ul>
+      </li>
+      <li class="dropdown" ng-show='currentUser'><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+        class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary">{{nbMessages}}</span>
+      </a>
+      <ul class="dropdown-menu" >
+        <li ng-repeat="message in header.messages"><a href="#"><span class="label label-warning">{{message.name}}</span>{{message.message}}</a></li>
+        <li class="divider"></li>
+        <li><a href="#" class="text-center">View All</a></li>
+      </ul>
+    </li>
+    <li ng-show="!currentUser"><a href='/' ng-click="header.changePage('login')">Se connecter</a></li>
+    <li ng-show="currentUser"><a href='/' ng-click="header.logout()">Déconnexion</a></li>
+    </div><!-- /.navbar-collapse -->
+    </div><!-- /.container -->
+    </nav><!-- /.navbar -->
+
+<div ng-init="header.initListFriend()">
+
+<div class="container">
+    <div class="row profile">
+    <div class="col-md-3" ng-repeat="suggestion in header.suggestions track by $index" class="list-group-item"
+      ng-class="{active : isSelected(suggestion)}"
+      ng-click="setSelected(suggestion)">
+      <div class="profile-sidebar">
+        <!-- SIDEBAR USERPIC -->
+        <div class="profile-userpic" ng-show='suggestion._source.profileImage !== null'>
+          <img src="images/{{suggestion._source.profileImage}}" class="img-responsive" alt="">
+        </div>
+        <div class="profile-userpic" ng-show='suggestion._source.profileImage === null'>
+          <img src="/images/default.jpeg" class="img-responsive" alt="">
+        </div>
+        <!-- END SIDEBAR USERPIC -->
+        <!-- SIDEBAR USER TITLE -->
+        <div class="profile-usertitle">
+          <div class="profile-usertitle-name">
+            {{suggestion._source.username.follow || suggestion._source.username.notFollow}}
+          </div>
+          <div class="profile-usertitle-job">
+            Developer
+          </div>
+        </div>
+        <!-- END SIDEBAR USER TITLE -->
+        <!-- SIDEBAR BUTTONS -->
+        <div class="profile-userbuttons">
+          <button type="button" ng-show="suggestion._source.username.follow" ng-click="header.follow(suggestion._source.username.follow)" class="btn btn-success btn-sm">Follow</button>
+          <div ng-show="suggestion._source.username.notFollow" ng-repeat="username in header.usernames track by $index">
+          <p ng-if="username.accepted === suggestion._source.username.notFollow">En attente de confirmation</p>
+          </div>
+          <div ng-show="suggestion._source.username.notFollow" ng-repeat="username in header.usernames track by $index">
+          <p>Ami</p>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm">Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  $(document).ready(function(e){
+      $('.search-panel .dropdown-menu').find('a').click(function(e) {
+      e.preventDefault();
+      var param = $(this).attr("href").replace("#","");
+      var concept = $(this).text();
+      $('.search-panel span#search_concept').text(concept);
+      $('.input-group #search_param').val(param);
+    });
+  });
+</script>
