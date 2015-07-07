@@ -85,7 +85,5 @@ module.exports = function(grunt) {
     'concat',
     'uglify',
     'cssmin',
-    'usemin',
-    'shell:git-add-dist',
-    'shell:git-commit-build']);
+    'usemin']);
 };
