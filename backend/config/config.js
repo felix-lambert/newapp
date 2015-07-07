@@ -13,6 +13,8 @@ var bodyParser     = require('body-parser');
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 exports = module.exports = function(app, express, config) {
+
+  console.log('///////////CONFIGURATION//////////////////');
   if (process.env.NODE_ENV === 'production') {
     app.set('views', __dirname + '/../../dist/views');
   } else {
