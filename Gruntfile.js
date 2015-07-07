@@ -7,13 +7,13 @@ module.exports = function(grunt) {
 
       shell: {
         'git-add-dist': {
-          command: 'git add .'
+          command: 'sudo git add .'
         },
         'git-commit-build': {
-          command: 'git commit -am "build"'
+          command: 'sudo git commit -am "build"'
         },
         'push': {
-          command: 'git push heroku master'
+          command: 'sudo git push heroku master'
         }
       },
 
@@ -80,6 +80,6 @@ module.exports = function(grunt) {
     'usemin',
     'shell:git-add-dist',
     'shell:git-commit-build',
-    'shell: push'
+    'shell:push'
   ]);
 };
