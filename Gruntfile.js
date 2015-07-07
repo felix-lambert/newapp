@@ -23,6 +23,7 @@ module.exports = function(grunt) {
               cwd: 'frontend/',
               src: [
               '**',
+              '!*.js',
               '!angularControllers/**',
               '!angularDirectives/**',
               '!angularFactories/**',
