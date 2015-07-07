@@ -11,9 +11,6 @@ module.exports = function(grunt) {
         },
         'git-commit-build': {
           command: 'sudo git commit -am "build"'
-        },
-        'push': {
-          command: 'sudo git push heroku master'
         }
       },
 
