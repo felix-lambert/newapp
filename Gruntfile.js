@@ -77,7 +77,6 @@ module.exports = function(grunt) {
     'cssmin',
     'usemin',
     'shell:git-add-dist',
-    'shell:git-commit-build',
-    'shell:push'
+    'shell:git-commit-build'
   ]);
 };
