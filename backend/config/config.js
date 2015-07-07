@@ -13,8 +13,12 @@ var bodyParser     = require('body-parser');
 // CONFIGURATION ////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 exports = module.exports = function(app, express, config) {
+  if (process.env.NODE_ENV === 'production') {
+    app.set('views', __dirname + '/../../dist/views');
+  } else {
+    app.set('views', __dirname + '/../../frontend/views');
+  }
 
-  app.set('views', __dirname + '/../../frontend/views');
   app.engine('html', require('ejs').renderFile);
   app.set('view engine', 'html');
 
@@ -26,5 +30,9 @@ exports = module.exports = function(app, express, config) {
 
   app.use(bodyParser.json());
   app.use(methodOverride());
-  app.use(express.static(path.join(__dirname, '/../../frontend')));
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '/../../dist')));
+  } else {
+    app.use(express.static(path.join(__dirname, '/../../frontend')));
+  }
 };

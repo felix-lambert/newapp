@@ -19,7 +19,12 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   upload: function(req, res) {
     console.log('//////File caracteristics/////////');
-    var destPath         = path.join(__dirname, '../../frontend/images/');
+    var destPath;
+    if (process.env.NODE_ENV === 'production') {
+      destPath = path.join(__dirname, '../../dist/images/');
+    } else {
+      destPath = path.join(__dirname, '../../frontend/images/');
+    }
     var originalFilename = req.files.file.originalFilename;
     if (originalFilename) {
       var hashName    = crypto.createHash('md5').
