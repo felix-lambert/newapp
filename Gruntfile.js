@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         'git-commit-build': {
           command: 'git commit -am "build"'
         },
-        'heroku': {
+        'push': {
           command: 'git push heroku master'
         }
       },
@@ -80,6 +80,6 @@ module.exports = function(grunt) {
     'usemin',
     'shell:git-add-dist',
     'shell:git-commit-build',
-    'shell: heroku'
+    'shell: push'
   ]);
 };
