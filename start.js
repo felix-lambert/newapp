@@ -8,7 +8,6 @@ var config    = require('./backend/db/database');
 var multipart = require('connect-multiparty');
 var chalk     = require('chalk');
 
-
 console.log(chalk.blue('Launching dependencies ... please wait.'));
 
 /////////////////////////////////////////////////////////////////

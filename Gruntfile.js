@@ -1,63 +1,48 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
-      pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON('package.json'),
 
-      clean: ['dist', '.tmp'],
+    clean: ['dist', '.tmp'],
 
-      shell: {
-        'git-add-dist': {
-          command: 'sudo git add .'
+    copy: {
+        main: {
+            expand: true,
+            cwd: 'frontend/',
+            src: [
+            '**',
+            '!angularMain/**',
+            '!angularControllers/**',
+            '!angularDirectives/**',
+            '!angularFactories/**',
+            '!angularFilters/**',
+            '!angularLib/**',
+            '!javascript/**',
+            '!**/*.css'],
+            dest: 'dist/'
         },
-        'git-commit-build': {
-          command: 'sudo git commit -am "build"'
+        shims: {
+            expand: true,
+            cwd: 'frontend/lib/webshim/shims',
+            src: ['**'],
+            dest: 'dist/js/shims'
         }
-      },
+    },
 
-      copy: {
-          main: {
-              expand: true,
-              cwd: 'frontend/',
-              src: [
-              '**',
-              '!*.js',
-              '!angularControllers/**',
-              '!angularDirectives/**',
-              '!angularFactories/**',
-              '!angularFilters/**',
-              '!angularLib/**',
-              '!javascript/**',
-              '!**/*.css'],
-              dest: 'dist/'
-          },
-          shims: {
-              expand: true,
-              cwd: 'frontend/lib/webshim/shims',
-              src: ['**'],
-              dest: 'dist/js/shims'
-          }
-      },
+    useminPrepare: {
+        html: 'frontend/views/index.html'
+    },
 
-      rev: {
-          files: {
-              src: ['dist/**/*.{js,css}', '!dist/js/shims/**']
-          }
-      },
+    usemin: {
+      html: ['dist/views/index.html']
+    },
 
-      useminPrepare: {
-          html: 'frontend/views/index.html'
-      },
-
-      usemin: {
-          html: ['dist/views/index.html']
-      },
-
-      uglify: {
-        options: {
-          report: 'min',
-          mangle: false
-        }
+    uglify: {
+      options: {
+        report: 'min',
+        mangle: false
       }
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -66,19 +51,20 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-usemin');
-  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-rev');
 
   // Tell Grunt what to do when we type "grunt" into the terminal
   grunt.registerTask('default', [
     'copy',
     'useminPrepare',
-    'concat',
     'uglify',
-    'cssmin',
-    'usemin'
+    'usemin',
+    'concat',
+    'cssmin'
   ]);
 
-  grunt.registerTask('heroku', ['copy',
+  grunt.registerTask('heroku', [
+    'copy',
     'useminPrepare',
     'concat',
     'uglify',

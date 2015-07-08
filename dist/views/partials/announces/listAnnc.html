@@ -70,14 +70,14 @@ div.margin {
     <div class="well">
       <div class="media">
         <a ng-show='announceResult._source.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" src="/images/{{announceResult._source.announce.creator.profileImage}}" width="150" height="150">
+          <img class="media-object" ng-src="/images/{{announceResult._source.announce.creator.profileImage}}" width="150" height="150">
         </a>
         <a ng-if='!announceResult._source.creator.profileImage' class="pull-left" href="#">
           <img class="media-object" src="/images/default.jpeg" width="150" height="150">
         </a>
         <div class="media-body">
           <h4 class="media-heading">
-          <a href="announces/{{announceResult._source._id}}">
+          <a ng-href="announces/{{announceResult._source._id}}">
             <b>{{announceResult._source.title}}</b>
           </a>
           <button ng-hide="announceResult._source.likeCreator.userSend == currentUser.username" ng-click="listAnnounces.like(announceResult._source._id, announceResult._source.creator.username, announceResult._source.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
@@ -110,14 +110,14 @@ div.margin {
     <div class="well">
       <div class="media">
         <a ng-show='announce.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" src="/images/{{announce.creator.profileImage}}" width="150" height="150">
+          <img class="media-object" ng-src="/images/{{announce.creator.profileImage}}" width="150" height="150">
         </a>
         <a ng-if='!announce.creator.profileImage' class="pull-left" href="#">
           <img class="media-object" src="/images/default.jpeg" width="150" height="150">
         </a>
         <div class="media-body">
           <h4 class="media-heading">
-          <a href="announces/{{announce._id}}">
+          <a ng-href="announces/{{announce._id}}">
             <b>{{announce.title}}</b>
           </a>
           <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>

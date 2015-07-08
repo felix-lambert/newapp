@@ -168,7 +168,7 @@ span.tags
         </div>
         <div class="col-xs-12 col-sm-4 text-center">
           <figure>
-            <img src="/images/{{showAnnounce.announce.creator.profileImage}}" width="150" height="150" alt="" class="img-circle img-responsive">
+            <img ng-src="/images/{{showAnnounce.announce.creator.profileImage}}" width="150" height="150" alt="" class="img-circle img-responsive">
             <figcaption class="ratings" ng-hide="currentUser.username === showAnnounce.announce.creator.username">
             <p>Ratings
               <a href="#">
@@ -204,7 +204,7 @@ span.tags
         <div class="col-xs-12 col-sm-4 emphasis">
           <h2><strong>0</strong></h2>
           <p><small>Il a rencontré</small></p>
-          <a class="btn btn-info btn-block" href="/profile/{{showAnnounce.announce.creator._id._id}}"><span class="fa fa-user"></span> Voir profile</a>
+          <a class="btn btn-info btn-block" ng-href="/profile/{{showAnnounce.announce.creator._id._id}}"><span class="fa fa-user"></span> Voir profile</a>
         </div>
         <div class="col-xs-12 col-sm-4 emphasis">
           <h2><strong>{{showAnnounce.announce.price}} crédit(s)</strong></h2>
@@ -216,10 +216,10 @@ span.tags
             <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu text-left" role="menu">
-              <li ng-show="currentUser.username === showAnnounce.announce.creator.username"><a href="/announces/{{showAnnounce.announce._id}}/edit">Modifier</li>
-              <li ng-hide="currentUser.username === showAnnounce.announce.creator.username"><a href="#"><span class="fa fa-envelope pull-right"></span> Envoyer un email </a></li>
+              <li ng-show="currentUser.username === showAnnounce.announce.creator.username"><a ng-href="/announces/{{showAnnounce.announce._id}}/edit">Modifier</li>
+              <li ng-hide="currentUser.username === showAnnounce.announce.creator.username"><a ng-href="#"><span class="fa fa-envelope pull-right"></span> Envoyer un email </a></li>
               <li ng-hide="currentUser.username === showAnnounce.announce.creator.username" class="divider"></li>
-              <li ng-hide="currentUser.username === showAnnounce.announce.creator.username"><a href="#"><span class="fa fa-warning pull-right"></span>Signaler cet utilisateur</a></li>
+              <li ng-hide="currentUser.username === showAnnounce.announce.creator.username"><a ng-href="#"><span class="fa fa-warning pull-right"></span>Signaler cet utilisateur</a></li>
             </ul>
           </div>
         </div>
@@ -251,7 +251,7 @@ span.tags
 
             <figure class="thumbnail">
 
-              <img class="img-responsive" src="/images/{{comment.creator.profileImage}}" />
+              <img class="img-responsive" ng-src="/images/{{comment.creator.profileImage}}" />
               <figcaption class="text-center"></figcaption>
             </figure>
           </div>
