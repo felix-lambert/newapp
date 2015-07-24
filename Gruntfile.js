@@ -30,11 +30,14 @@ module.exports = function(grunt) {
     },
 
     useminPrepare: {
-        html: 'frontend/views/index.html'
+        html: ['frontend/views/index.html',
+              'frontend/views/partials/announces/createAnnc.html'
+              ]
     },
 
     usemin: {
-      html: ['dist/views/index.html']
+      html: ['dist/views/index.html',
+      'frontend/views/partials/announces/createAnnc.html']
     },
 
     uglify: {
