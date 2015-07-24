@@ -9,9 +9,16 @@ var moment        = require('moment');
 var ee            = require('../../config/event');
 var async         = require('async');
 var elasticsearch = require("elasticsearch");
-var ES            = new elasticsearch.Client({
-  host: "localhost:9200"
-});
+
+if (process.env.NODE_ENV === 'production') {
+  var ES = new elasticsearch.Client({
+    host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
+  });
+} else {
+  var ES = new elasticsearch.Client({
+    host: "localhost:9200"
+  });
+}
 
 module.exports = {
 
