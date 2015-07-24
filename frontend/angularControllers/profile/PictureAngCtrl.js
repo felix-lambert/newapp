@@ -18,6 +18,8 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   vm.noImages                                 = false;
 
   appLoading.ready();
+  $localStorage.searchField = null;
+  
   if ($rootScope.currentUser) {
     vm.profileImages = preGetImages;
   }
@@ -37,12 +39,12 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   });
 
   uploader.filters.push({
-      name: 'imageFilter',
-      fn: function(item /*{File|FileLikeObject}*/ , options) {
-        var type = '|' + item.type.slice(item.type.lastIndexOf('/') +
-          1) + '|';
-        return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-      }
+    name: 'imageFilter',
+    fn: function(item /*{File|FileLikeObject}*/ , options) {
+      var type = '|' + item.type.slice(item.type.lastIndexOf('/') +
+        1) + '|';
+      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+    }
   });
 
   function doDefaultImage(image) {

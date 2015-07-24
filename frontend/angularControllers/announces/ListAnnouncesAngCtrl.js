@@ -4,38 +4,35 @@ angular.module('InTouch')
 ListAnnouncesAngCtrl.$inject = ['$injector', '$http', '$rootScope'];
 
 function ListAnnouncesAngCtrl($injector, $http, $rootScope) {
+    console.log('*************AnnounceCtrl************************');
 
-  var vm = this;
-
+  var vm              = this;
+  
   // Requirements
-  var Announce          = $injector.get('Announce');
-  var appLoading        = $injector.get('appLoading');
-
-  console.log('*************AnnounceCtrl************************');
-  vm.decorateNumberPage = decorateNumberPage;
-  vm.paginate           = paginate;
-  vm.initListAnnounce   = initListAnnounce;
-  vm.like               = like;
-  vm.pageChanged        = pageChanged;
-  vm.listUsers          = listUsers;
-  vm.search             = search;
+  var Announce        = $injector.get('Announce');
+  var appLoading      = $injector.get('appLoading');
+  
+  
+  vm.paginate         = paginate;
+  vm.initListAnnounce = initListAnnounce;
+  vm.like             = like;
+  vm.pageChanged      = pageChanged;
+  vm.listUsers        = listUsers;
+  vm.search           = search;
 
   appLoading.ready();
+
+  $localStorage.searchField = null;
 
   if ($rootScope.currentUser) {
     var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
 
-  var allAnnounces  = [];
-  vm.tags           = [];
-  vm.page           = 1;
-  vm.total          = 0;
-  vm.pageNumbers    = [];
-  vm.maxSize        = 10;
-  vm.bigTotalItems  = 175;
-  vm.bigCurrentPage = 1;
-  vm.searching      = false;
+  vm.page      = 1;
+  vm.total     = 0;
+  vm.maxSize   = 10;
+  vm.searching = false;
 
   /////////////////////////////////////////////////////////////
 
@@ -78,11 +75,6 @@ function ListAnnouncesAngCtrl($injector, $http, $rootScope) {
       userDesId: userDesId,
       id: $rootScope.currentUser._id
     });
-  }
-
-  function decorateNumberPage(page, decoration, weight) {
-    $('#bt' + page).css('text-decoration', decoration);
-    $('#bt' + page).css('font-weight', weight);
   }
 
   function search() {

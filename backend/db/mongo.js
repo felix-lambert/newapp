@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////
 // MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var mongoose = require('mongoose');
-var config   = require('./database');
-var ee       = require('../config/event');
-
+var mongoose     = require('mongoose');
+var config       = require('./database');
+var ee           = require('../config/event');
+	
 var mongoOptions = {
-    db: {
-        safe: true
-    }
+	db: {
+		safe: true
+	}
 };
 
 /////////////////////////////////////////////////////////////////

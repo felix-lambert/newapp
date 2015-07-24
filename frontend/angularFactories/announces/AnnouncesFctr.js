@@ -16,7 +16,8 @@ function Announce($q, $http) {
     deleteAnnounce: deleteAnnounce,
     putAnnounce: putAnnounce,
     statusAnnounce: statusAnnounce,
-    searchAnnounces: searchAnnounces
+    searchAnnounces: searchAnnounces,
+    pressSearchAnnounces: pressSearchAnnounces
   };
 
   return announcesFnct;
@@ -42,9 +43,9 @@ function Announce($q, $http) {
     return deferred.promise;
   }
 
-  function searchAnnounces(term) {
+  function searchAnnounces(res) {
     var deferred = $q.defer();
-    $http.get('api/searchannounces/' + term)
+    $http.get('api/searchannounces/' + res.term + '/' + res.page)
       .success(function(data) {
         deferred.resolve(data);
       }).error(function() {
@@ -52,6 +53,18 @@ function Announce($q, $http) {
       });
     return deferred.promise;
   }
+
+  function pressSearchAnnounces(term) {
+    var deferred = $q.defer();
+    $http.post('api/searchannounces/', term)
+      .success(function(data) {
+        deferred.resolve(data);
+      }).error(function() {
+        deferred.reject();
+      });
+    return deferred.promise;
+  }
+
 
   function getAnnounces(announce) {
     var deferred = $q.defer();

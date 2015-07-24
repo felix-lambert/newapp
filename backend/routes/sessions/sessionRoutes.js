@@ -4,7 +4,6 @@
 var path        = require('path');
 var passport    = require('passport');
 var SessionCtrl = require('../../controllers/session/sessionCtrl');
-var auth        = require('../../authentification/auth');
 
 /**
  * Defines routes for application

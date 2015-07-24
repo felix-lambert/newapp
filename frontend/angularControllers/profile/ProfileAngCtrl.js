@@ -14,6 +14,8 @@ function ProfileAngCtrl($rootScope, Status, appLoading) {
 
   appLoading.ready();
 
+  $localStorage.searchField = null;
+
   //////////////////////////////////////////////////////////////////
 
   function removeStatus(status) {

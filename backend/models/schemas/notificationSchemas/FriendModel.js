@@ -82,30 +82,6 @@ exports = module.exports = function(mongoose) {
         }
       });
     },
-
-     saveWaitFriendRequest: function(user, friend, cb) {
-      
-    }
-  };
-
-  /**
-   * Methods
-    function testIfFriendRequestDone(userId) {
-      Friend.findOne({
-        creator: userId
-      }).exec(function(err, result) {
-        if (result && result.length > 0) {
-          console.log('Friend request already done');
-          return false;
-        } else {
-          return true;
-        }
-      });
-    }
-   */
-  friendSchema.methods.expressiveQuery = function(creator, date, callback) {
-    console.log('--------friends expressiveQuery-----------------');
-    return this.find('creator', creator).where('date').gte(date).run(callback);
   };
 
   mongoose.model('Friend', friendSchema);

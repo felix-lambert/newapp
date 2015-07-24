@@ -14,6 +14,8 @@ function AuthModalAngCtrl($injector, $modalInstance) {
 
   ////////////////////////////////////////////////////////////////////////////
 
+  $localStorage.searchField = null;
+
   function saveUser() {
     console.log('save user');
     console.log(vm.username);

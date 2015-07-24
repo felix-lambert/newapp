@@ -8,6 +8,8 @@ function ProfileViewAngCtrl($routeParams, Images, $rootScope, $location, appLoad
 
   var vm           = this;
 
+  $localStorage.searchField = null;
+
   Images.getImagesById($routeParams.userId).then(function(response) {
     console.log(response);
     vm.profileImages = response;

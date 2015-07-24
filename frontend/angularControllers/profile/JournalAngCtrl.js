@@ -5,4 +5,7 @@ JournalAngCtrl.$inject = ['$rootScope', '$location', 'appLoading'];
 
 function JournalAngCtrl($rootScope, $location, appLoading) {
   appLoading.ready();
+
+  $localStorage.searchField = null;
+  
 }

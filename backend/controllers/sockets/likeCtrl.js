@@ -20,12 +20,7 @@ module.exports = {
       })
       .sort('-created')
       .exec(function(err, likes) {
-        if (err) {
-          ee.emit('error', err);
-          return res.status(501).json(err);
-        } else {
-          return res.status(200).json(likes);
-        }
+        return res.status(err ? 501 : 200).json(err ? err : likes);
       });
     } else {
       return res.status(400).json('User is not recognized');
@@ -39,12 +34,7 @@ module.exports = {
     console.log('deleteLike');
     Like.remove({_id: req.body.userToDelete})
     .exec(function(err) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      } else {
-        return res.status(200).json('remove notif');
-      }
+      return res.status(err ? 501 : 200).json(err ? err : 'remove like');
     });
   },
 
@@ -63,11 +53,7 @@ module.exports = {
       });
 
       like.save(function(err, result) {
-        if (err) {
-          saveCallback(err);
-        } else {
-          saveCallback(null);
-        }
+        saveCallback(err ? err : null);
       });
     }
 
@@ -79,11 +65,7 @@ module.exports = {
           likeCreator: result._id
         }, {upsert: true})
         .exec(function(err, results) {
-          if (err) {
-            updateLikeOnTypeCallback(err);
-          } else {
-            updateLikeOnTypeCallback(null);
-          }
+          updateLikeOnTypeCallback(err ? err : null);
         });
       } else if (req.body.likeType === 'announce') {
         Announce.findOneAndUpdate({
@@ -92,12 +74,7 @@ module.exports = {
           likeCreator: result._id
         }, {upsert: true})
         .exec(function(err, results) {
-          if (err) {
-            updateLikeOnTypeCallback(err);
-          } else {
-            updateLikeOnTypeCallback(null);
-          }
-          res.status(201).json();
+          updateLikeOnTypeCallback(err ? err : null);
         });
       }
 
@@ -105,13 +82,7 @@ module.exports = {
 
     // Faire une promise
     async.waterfall([save, updateLikeOnType], function(error) {
-      if (error) {
-        //handle readFile error or processFile error here
-        ee.emit('error', error);
-        res.status(400).json(error);
-      } else {
-        res.status(200).json();
-      }
+      res.status(error ? 400 : 200).json(error ? error : null);
     });
   },
 };

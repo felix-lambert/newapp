@@ -1,17 +1,14 @@
-var mongoosastic = require('../../mongoosastic');
-
 exports = module.exports = function(mongoose) {
 
   /*
    * Module dependencies
    */
+  var Schema                = mongoose.Schema;
   var Token                 = mongoose.model('Token');
   var moment                = require('moment');
   var jwt                   = require('jwt-simple');
-  var Schema                = mongoose.Schema;
   var passportLocalMongoose = require('passport-local-mongoose');
   var tokenSecret           = 'bloc';
-  var ObjectIdSchema = Schema.ObjectId;
 
   var UserSchema = new Schema({
     email: {
@@ -31,7 +28,6 @@ exports = module.exports = function(mongoose) {
       type: String,
       unique: true,
       sparse: true,
-      es_indexed:true
     },
     password: String,
     DATE_CREATE: {
@@ -43,8 +39,7 @@ exports = module.exports = function(mongoose) {
       max: 5
     },
     profileImage: {
-      type: String,
-      es_indexed:true
+      type: String
     },
     salt: String,
     guest: Boolean,
@@ -67,11 +62,7 @@ exports = module.exports = function(mongoose) {
         var token = self.encode({email: email});
         usr.token = new Token({token:token});
         usr.save(function(err, usr) {
-          if (err) {
-            cb(err, null);
-          } else {
-            cb(false, usr.token.token);
-          }
+          cb(err ? err : false, usr.token.token);
         });
       });
     },
@@ -86,11 +77,7 @@ exports = module.exports = function(mongoose) {
           user.images.push({name: name});
           console.log('___________________________________');
           user.save(function(err, result) {
-            if (err) {
-              cb(err, null);
-            } else {
-              cb(false, user.images);
-            }
+            cb(err ? err : false, user.images);
           });
         }
       });
@@ -110,6 +97,7 @@ exports = module.exports = function(mongoose) {
         }
       });
     },
+    
     getUserToken: function(email, token, cb) {
       var self = this;
       this.findOne({email: email})
@@ -154,69 +142,16 @@ exports = module.exports = function(mongoose) {
         }
         usr.token = null;
         usr.save(function(err, usr) {
-          if (err) {
-            cb(err, null);
-          } else {
-            cb(false, 'removed');
-          }
+          cb(err ? err : false, err ? null : 'removed');
         });
       });
     }
 };
 
-  /**
-   * Virtuals
-   */
-  UserSchema
-   .virtual('USER_INFO')
-   .get(function() {
-    console.log('*************USER INFO*************');
-    return {
-      '_id': this._id,
-      'username': this.username,
-      'email': this.email,
-      'images': this.images
-    };
-  });
-
-  UserSchema.methods = {
-    calculateReputation: function(callback) {
-      console.log('_____calculateReputation_____________________');
-      var Announce = mongoose.model('Announce');
-      Announce.find({
-        creator: this
-      }, function(err, ann) {
-        if (err) {
-          return callback(null);
-        }
-        var key = 0;
-        var value = 0;
-        var rated = 0;
-        for (key in ann) {
-          if (ann[key].rating) {
-            value += parseInt(ann[key].rating);
-            rated++;
-          }
-        }
-        var reput = null;
-        if (value && rated) {
-          reput = (value / rated).toPrecision(2);
-        }
-        return (callback({
-          total: ann.length,
-          rated: rated,
-          reputation: reput
-        }));
-      });
-    },
-  };
-
   UserSchema.plugin(passportLocalMongoose, {
     usernameField: 'email',
     usernameLowerCase: true
   });
-
-  UserSchema.plugin(mongoosastic);
 
   // create the model for User and expose it to our app
   mongoose.model('User', UserSchema);

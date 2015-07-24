@@ -58,6 +58,7 @@
     "grunt-contrib-nodeunit": "~0.4.1",
     "grunt-contrib-uglify": "~0.9.1",
     "grunt-shell": "~1.1.2",
-    "grunt-filerev": "~2.3.1"
+    "grunt-filerev": "~2.3.1",
+    "mongodb": "~2.0.39"
   }
 }

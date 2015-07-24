@@ -10,109 +10,52 @@ var async    = require('async');
 module.exports = {
 
   /////////////////////////////////////////////////////////////////
-  // GET FRIEND BY ID /////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////
-  getFriend: function(req, res, next, id) {
-    console.log('________________load friend__________________________');
-    Friend.load(id, function(err, friend) {
-      if (err) {
-        ee.emit('error', err);
-        return next(err);
-      }
-      if (!friend) {
-        return next(new Error('Failed to load friend ' + id));
-      }
-      var friendPost = {
-          _id: friend._id,
-          created: friend.created,
-          creator: {
-              _id: friend.creator._id,
-              username: friend.creator.username,
-              usernameFacebook: friend.creator.facebook.username,
-              usernameGoogle: friend.creator.google.username,
-              usernameLinkedIn: friend.creator.linkedIn.username,
-          },
-          username: friend.usernameWaitFriendRequest,
-          slug: friend.slug,
-          __v: friend.__v,
-          updated: friend.updated
-      };
-      req.friend = friendPost;
-      next();
-    });
-  },
-
-  /////////////////////////////////////////////////////////////////
   // CREATE A FRIEND //////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   postFriend: function(req, res) {
 
     function saveReceiverFriendRequest(saveReceiverFriendRequestCallback) {
       Friend.saveFriend(req.body.idUser, req.user.username, function(error, result) {
-        if (error) {
-          saveReceiverFriendRequestCallback(error);
-        } else {
-          saveReceiverFriendRequestCallback(null);
-        }
+        saveReceiverFriendRequestCallback(error ? error : null);
       });
     }
 
     function saveSenderFriendRequest(saveSenderFriendRequestCallback) {
       Friend.saveFriend(req.body.idUser, req.user.username, function(error, result) {
-        if (error) {
-          saveSenderFriendRequestCallback(error);
-        } else {
-          saveSenderFriendRequestCallback(null);
-        }
+        saveSenderFriendRequestCallback(error ? error : null);
       });
     }
 
     function testIfReceiverFriendRequestDone(testIfReceiverFriendRequestDoneCallback) {
       Friend.testIfFriendRequestDone(req.body.idUser, function(result) {
-        if (result === false) {
-          testIfReceiverFriendRequestDoneCallback('friend request already done');
-        } else {
-          testIfReceiverFriendRequestDoneCallback(null);
-        }
+        testIfReceiverFriendRequestDoneCallback(result === false ? 'friend request already done' : null);
       });
     }
 
     function testIfSenderFriendRequestDone(testIfSenderFriendRequestDoneCallback) {
       Friend.testIfFriendRequestDone(req.user._id, function(result) {
-        if (result === false) {
-          testIfSenderFriendRequestDoneCallback('friend request already done');
-        } else {
-          testIfSenderFriendRequestDoneCallback(null);
-        }
+        testIfSenderFriendRequestDoneCallback(result === false ? 'friend request already done' : null);
       });
     }
 
     function saveWaitReceiverFriendRequest(saveWaitReceiverFriendRequestCallback) {
-      var friend = new Friend();
-      var waitFriendRequest = req.body.usernameWaitFriendRequest;
+      var friend                       = new Friend();
+      var waitFriendRequest            = req.body.usernameWaitFriendRequest;
       friend.usernameWaitFriendRequest = waitFriendRequest;
-      friend.creator = req.user._id;
-      friend.save(function(err, doc) {
-        if (err) {
-          saveWaitReceiverFriendRequestCallback(err);
-        } else {
-          saveWaitReceiverFriendRequestCallback(null);
-        }
+      friend.creator                   = req.user._id;
+      friend.save(function(err) {
+        saveWaitReceiverFriendRequestCallback(err ? err : null);
       });
 
     }
 
     function saveWaitSenderFriendRequest(saveWaitSenderFriendRequestCallback) {
-      var friend = new Friend();
-      var waitFriendRequest = req.body.usernameWaitFriendRequest;
+      var friend                       = new Friend();
+      var waitFriendRequest            = req.body.usernameWaitFriendRequest;
       friend.usernameWaitFriendRequest = req.user.username;
-      friend.creator = req.user._id;
-      friend.save(function(err, doc) {
-        if (err) {
-          saveWaitReceiverFriendRequestCallback(err);
-        } else {
-          saveWaitReceiverFriendRequestCallback(null);
-        }
+      friend.creator                   = req.user._id;
+      friend.save(function(err) {
+        saveWaitSenderFriendRequestCallback(err ? err : null);
       });
 
     }
@@ -120,13 +63,7 @@ module.exports = {
     if (req.body.usernameAcceptedFriendRequest) {
       // Faire une promise
       async.waterfall([saveReceiverFriendRequest, saveSenderFriendRequest], function(error, result) {
-        if (error) {
-          //handle readFile error or processFile error here
-          ee.emit('error', error);
-          res.status(400).json(error);
-        } else {
-          res.status(200).json();
-        }
+        res.status(error ? 400 : 200).json(error ? error : null);
       });
     } else if (req.body.usernameWaitFriendRequest) {
 
@@ -137,13 +74,7 @@ module.exports = {
         saveWaitReceiverFriendRequest,
         saveWaitSenderFriendRequest
       ], function(error, result) {
-        if (error) {
-          //handle readFile error or processFile error here
-          ee.emit('error', error);
-          res.status(400).json(error);
-        } else {
-          res.status(200).json();
-        }
+        res.status(error ? 400 : 200).json(error ? error : null);
       });
     }
   },
@@ -157,7 +88,7 @@ module.exports = {
       creator: req.params.friendId
     }).where('usernameWaitFriendRequest').equals(req.params.user)
     .remove(function(err, result) {
-      res.status(200).json();
+      res.status(err ? 400 : 200).json(err ? err : null);
     });
   },
 
@@ -215,11 +146,7 @@ module.exports = {
               testWait.push(item.usernameWaitFriendRequest);
             }
           });
-          if (testWait.indexOf(req.params.user) === 0) {
-            res.status(200).json(2);
-          } else {
-            res.status(200).json(1);
-          }
+          res.status(200).json(testWait.indexOf(req.params.user) === 0 ? 2 : 1);
         }
       }
     });

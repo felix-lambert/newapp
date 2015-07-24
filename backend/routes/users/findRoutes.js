@@ -8,7 +8,13 @@ var auth     = require('../../authentification/auth');
 /**
  * Defines routes for application
  */
-var routes = [{
+var routes = [
+{
+    path: '/api/usershow/:id',
+    httpMethod: 'GET',
+    middleware: [FindCtrl.show]
+},
+{
     path: '/search',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FindCtrl.search]

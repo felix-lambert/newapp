@@ -1,8 +1,8 @@
 angular.module('InTouch').factory('Images', Images);
 
-Images.$inject = ['$q', '$http'];
+Images.$inject = ['$q', '$http', '$rootScope'];
 
-function Images($q, $http) {
+function Images($q, $http, $rootScope) {
 
   var imagesFnct = {
     getImages: getImages,
@@ -14,6 +14,8 @@ function Images($q, $http) {
   return imagesFnct;
 
   function getImages() {
+    var userToken  = $rootScope.currentUser.token;
+    $http.defaults.headers.common['auth-token'] = userToken;
     var deferred = $q.defer();
     $http.get('/api/images/').success(function(data) {
       deferred.resolve(data);

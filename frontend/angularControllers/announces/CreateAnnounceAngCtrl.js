@@ -18,8 +18,6 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
 
   vm.paginateUser           = paginateUser;
   vm.listUsers              = listUsers;
-  vm.reset                  = reset;
-  vm.range                  = range;
   vm.create                 = create;
   vm.remove                 = remove;
   vm.desactivate            = desactivate;
@@ -28,19 +26,17 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   vm.pageChanged            = pageChanged;
 
   appLoading.ready();
+  $localStorage.searchField = null;
 
   if ($rootScope.currentUser) {
     var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
   }
-  var allAnnounces  = [];
-  vm.tags           = [];
-  vm.page           = 1;
-  vm.total          = 0;
-  vm.pageNumbers    = [];
-  vm.maxSize        = 10;
-  vm.bigTotalItems  = 175;
-  vm.bigCurrentPage = 1;
+
+  vm.tags    = [];
+  vm.page    = 1;
+  vm.total   = 0;
+  vm.maxSize = 10;
 
   ////////////////////////////////////////////////////////////////////////
 
@@ -104,24 +100,6 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
 
   function listUsers() {
     vm.paginate(vm.page);
-  }
-
-  function reset() {
-    vm.successMessage       = null;
-    vm.errorMessage         = null;
-    vm.nameErrorMessage     = null;
-    vm.usernameErrorMessage = null;
-    vm.passwordErrorMessage = null;
-    vm.listUsers();
-  }
-
-  function range(min, max, step) {
-    step = step || 1;
-    var input = [];
-    for (var i = min; i <= max; i += step) {
-      input.push(i);
-    }
-    return input;
   }
 
   function create() {
@@ -188,12 +166,30 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   function remove(announce) {
     console.log('remove');
     console.log(announce);
-    Announce.deleteAnnounce(announce._id).then(function(err) {});
-    for (var i in vm.announces) {
-      if (vm.announces[i] == announce) {
-        vm.announces.splice(i, 1);
+    swal({
+      title: 'Etes-vous sur?',
+      text: 'Vous allez devoir recréer une nouvelle annonce!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Oui',
+      closeOnConfirm: false,
+      closeOnCancel: false
+    },
+    function(isConfirm) {
+      if (isConfirm) {
+        Announce.deleteAnnounce(announce._id).then(function(err) {});
+        for (var i in vm.announces) {
+          if (vm.announces[i] == announce) {
+            vm.announces.splice(i, 1);
+          }
+        }
+        swal('Effacé!', 'Votre annonce a été effacée.', 'success');
+      } else {
+        swal('Annulé', 'Votre annonce n\'a pas été effacée', 'error');
       }
-    }
+    });
+
   }
 
   function desactivate(announce) {

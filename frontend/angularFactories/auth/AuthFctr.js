@@ -10,15 +10,14 @@ function Auth(socket, $q, $rootScope, Session, User, $http, Notifications, $loca
       console.log(user);
 
       Session.save({
-          email: user.email_username,
-          password: user.password
+        email: user.email_username,
+        password: user.password
       }, function(user) {
         console.log('________________RESPONSE LOGIN____________');
         $localStorage.currentUser = user;
         $rootScope.currentUser = $localStorage.currentUser;
         var userToken = $rootScope.currentUser.token;
         $http.defaults.headers.common['auth-token'] = userToken;
-        socket.connect(userToken);
         Notifications.getNotifications().then(function(response) {
           $rootScope.currentUser.notifications = response;
           $rootScope.currentUser.notificationsCount = response.length;
@@ -38,7 +37,6 @@ function Auth(socket, $q, $rootScope, Session, User, $http, Notifications, $loca
       var deferred = $q.defer();
       $http.defaults.headers.common['auth-token'] = userToken;
       $http.delete('/auth/logout/').success(function(data) {
-        socket.disconnect();
         deferred.resolve(data);
       }).error(function() {
         deferred.reject();
@@ -60,7 +58,6 @@ function Auth(socket, $q, $rootScope, Session, User, $http, Notifications, $loca
         $rootScope.currentUser = $localStorage.currentUser;
         var userToken = $rootScope.currentUser.token;
         $http.defaults.headers.common['auth-token'] = userToken;
-        socket.connect(userToken);
         return cb();
       },
       function(err) {

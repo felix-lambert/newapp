@@ -13,8 +13,6 @@ module.exports = function(server) {
 
   io.sockets.on('connection', function(socket) {
 
-
-
     totalPeopleOnline = _.size(people);
 
     io.sockets.emit('updatePeopleCount', {count: totalPeopleOnline});
@@ -23,7 +21,7 @@ module.exports = function(server) {
     totalRooms = _.size(rooms);
 
     io.sockets.emit('updateRoomsCount', {count: totalRooms});
-    sendToSelf(socket, 'connectingToSocketServer', {
+    socket.emit('connectingToSocketServer', {
       status: 'online',
     });
 
@@ -76,7 +74,8 @@ module.exports = function(server) {
         io.sockets.emit('updateRoomsCount', {count: totalRooms});
         io.sockets.emit('updateUserDetail', people);
         io.sockets.emit('updatePeopleCount', {count: totalPeopleOnline});
-        sendToSelf(socket, 'joinedSuccessfully');
+
+        io.sockets.emit('joinedSuccessfully');
         io.sockets.emit('updateUserDetail', people);
         sockets.push(socket);
       }
@@ -89,7 +88,7 @@ module.exports = function(server) {
       socket.room = username.roomName;
       socket.join(socket.room);
       io.sockets.emit('updateUserDetail', people);
-      sendToSelf(socket, 'sendUserDetail', people[socket.id]);
+      io.sockets.emit('sendUserDetail', people[socket.id]);
     });
 
     socket.on('createRoom', function(data) {
@@ -111,13 +110,8 @@ module.exports = function(server) {
       io.sockets.emit('updateRoomsCount', {count: totalRooms});
       io.sockets.emit('listAvailableChatRooms', rooms);
       io.sockets.emit('updateUserDetail', people);
-      sendToSelf(socket, 'sendUserDetail', people[socket.id]);
+      socket.emit('sendUserDetail', people[socket.id]);
     });
 
   });
-};
-
-sendToSelf = function(socket, method, data) {
-  console.log('send to self');
-  socket.emit(method, data);
 };

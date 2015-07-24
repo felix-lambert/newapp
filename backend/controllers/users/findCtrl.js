@@ -7,31 +7,30 @@ var ee       = require('../../config/event');
 
 module.exports = {
 
-  /////////////////////////////////////////////////////////////////
+  show: function(req, res, next) {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    var userId = req.params.id;
+    User.findById(userId, function(err, user) {
+      res.status(err ? 400 : 200).json(err ? 'Failed to load User' : user);
+    });
+  },
+
+  ////////////////////////////////////////////////////////////////
   // SEARCH USER //////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   search: function(req, res) {
     if (req.query.term) {
-      var username   = req.user ? req.user.username : '';
-      var search = req.query.term.toLowerCase();
-
-      console.log('test search : ');
-      console.log(search);
+      var username = req.user ? req.user.username : '';
+      var search   = req.query.term.toLowerCase();
       User.search({
         query:{
-          "multi_match": {
-            "fields":  [ "username"],
-              "query": search,
-              "fuzziness": "AUTO"
+          'multi_match': {
+            'fields':  ['username'],
+              'query': search,
+              'fuzziness': 'AUTO'
           }
         }}, function(err, users) {
-          if (err) {
-            ee.emit('error', err);
-            res.status(400).json(err);
-          } else {
-            console.log(users.hits.hits);
-            res.status(200).json(users.hits.hits);
-          }
+          res.status(err ? 400 : 200).json(err ? err : users.hits.hits);
         });
     } else {
       res.status(200).end();
@@ -63,6 +62,7 @@ module.exports = {
   // CHECK EMAIL EXIST ////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   emailExist: function(req, res) {
+    console.log('test');
     if (req.query.u) {
       var email = req.query.u;
       User.find({
@@ -78,6 +78,6 @@ module.exports = {
     } else {
       res.status(400).json();
     }
-  },
+  }
 
 };

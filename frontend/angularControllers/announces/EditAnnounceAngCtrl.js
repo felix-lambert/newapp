@@ -18,6 +18,8 @@ function EditAnnounceAngCtrl($injector, $location, $routeParams, $rootScope, $ht
 
   appLoading.ready();
 
+  $localStorage.searchField = null;
+
   if ($rootScope.currentUser) {
     var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;

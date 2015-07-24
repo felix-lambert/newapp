@@ -142,14 +142,12 @@ body,html{
             <li><a href="/announces">Liste des services</a></li>
           </ul>
         </li>
-        <li ><a href="/messages">Messages<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-envelope"></span></a></li>
+        <li ng-show="currentUser"><a href="/messages">Messages<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-envelope"></span></a></li>
         <li ><a href="#">Notifications<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span></a></li>
         <li ><a href="/actuality">Actualités<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-info-sign"></span></a></li>
-        <li ><a href="/pictures">Photos<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-picture"></span></a></li>
+        <li ng-show="currentUser"><a href="/pictures">Photos<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-picture"></span></a></li>
         <li ><a href="/transaction">Transactions<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-time"></span></a></li>
         <li ><a href="/historic">Historiques<span style="font-size:16px;" class="pull-right hidden-xs showopacity  glyphicon glyphicon-folder-open"></span></a></li>
-        <li ><a href"/reputation">Réputation<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-star"></span></a></li>
-        <li ><a href="/settings">Paramètres<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span></a></li>
       </ul>
     </div>
   </div>

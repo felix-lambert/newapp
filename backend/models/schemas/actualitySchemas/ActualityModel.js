@@ -1,7 +1,6 @@
 var autopopulate = require('mongoose-autopopulate');
 
 
-
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 

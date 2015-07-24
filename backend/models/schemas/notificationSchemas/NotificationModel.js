@@ -72,13 +72,5 @@ exports = module.exports = function(mongoose) {
     }
   };
 
-  /**
-   * Methods
-   */
-  notificationSchema.methods.expressiveQuery = function(creator, date, callback) {
-    console.log('--------friends expressiveQuery-----------------');
-    return this.find('creator', creator).where('date').gte(date).run(callback);
-  };
-
   mongoose.model('Notification', notificationSchema);
 };

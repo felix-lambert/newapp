@@ -55,6 +55,11 @@ var routeObject = {
     controller: 'ShowAnnounceAngCtrl',
     controllerAs: 'showAnnounce'
   },
+  '/message/:userId': {
+    templateUrl: 'partials/sendMessage.html',
+    controller: 'SendMessageAngCtrl',
+    controllerAs: 'sendMessage'
+  },
   '/profile/:userId': {
     templateUrl: 'partials/profile/profileView.html',
     controller: 'ProfileViewAngCtrl',

@@ -1,7 +1,60 @@
 var Q            = require('q');
 var moment       = require('moment');
 var autopopulate = require('mongoose-autopopulate');
-var mongoosastic = require('../../mongoosastic');
+
+var elasticsearch = require("elasticsearch");
+
+var ES = new elasticsearch.Client({
+  host: "localhost:9200"
+});
+
+ES.indices.create({
+    index: "announce",
+    body: {
+      "settings": {
+        "number_of_shards": 1, 
+        "analysis": {
+            "filter": {
+                "autocomplete_filter": { 
+                    "type":     "edge_ngram",
+                    "min_gram": 1,
+                    "max_gram": 20
+                }
+            },
+            "analyzer": {
+                "autocomplete": {
+                    "type":      "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "autocomplete_filter" 
+                    ]
+                }
+            }
+        }
+    }
+    }
+}, function(err,resp,respcode){
+    console.log('create index...');
+    console.log(err,resp,respcode);
+    
+    ES.indices.putMapping({
+      index: 'announce', 
+      type: 'ann',
+      body:{ 'ann': {
+            "properties": {
+                "title": {
+                    "type":     "string",
+                    "analyzer": "autocomplete"
+                }
+            }
+        }
+      } }, function(err, resp, respcode) {
+        console.log('put mapping...');
+        console.log(err,resp,respcode);
+    });
+});
+
 
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
@@ -9,7 +62,6 @@ exports = module.exports = function(mongoose) {
   announceSchema = new Schema({
     title: {
       type: String,
-      es_boost:2.0,
       required: true,
     },
     nbComment: Number,
@@ -49,11 +101,6 @@ exports = module.exports = function(mongoose) {
     creator: {
       type: Schema.ObjectId,
       ref: 'User',
-      autopopulate: true
-    },
-    creatorUsername: {
-      type: Schema.ObjectId,
-      ref: 'Username',
       autopopulate: true
     },
     price: {
@@ -117,13 +164,6 @@ exports = module.exports = function(mongoose) {
       return cb(announcePost);
     },
 
-    load: function(id, cb) {
-      console.log('*****************load announce******************');
-      this.findOne({
-          _id: id
-      }).exec(cb);
-    },
-
     findByTitle: function(title, callback) {
       console.log('find annonce by title');
       return this.find({
@@ -155,10 +195,8 @@ exports = module.exports = function(mongoose) {
     };
   }
 
-  announceSchema.plugin(mongoosastic);
 
   announceSchema.plugin(slugGenerator());
-
 
   announceSchema.plugin(autopopulate);
   /////////////////////////////////////////////////////////////////

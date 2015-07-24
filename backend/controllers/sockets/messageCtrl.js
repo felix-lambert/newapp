@@ -13,12 +13,8 @@ module.exports = {
   message: function(req, res, next, id) {
     console.log('***************load message*********************');
     Message.load(id, function(err, message) {
-      if (err) {
-        ee.emit('error', err);
-        return next(err);
-      }
-      if (!announce) {
-        return next(new Error('Failed to load message ' + id));
+      if (err || !result) {
+        findOneAnnounceCallback(err ? err : 'There is no message to load');
       }
       var messagePost = {
           _id: announce._id,
@@ -40,7 +36,6 @@ module.exports = {
 
       };
       req.message = messagePost;
-      next();
     });
   },
 
@@ -52,12 +47,7 @@ module.exports = {
     var message = new Message(req.body);
 
     message.save(function(err) {
-      if (err) {
-        ee.emit('error', err);
-        res.status(400).json(err);
-      } else {
-        res.status(201).json(message);
-      }
+      res.status(err ? 400 : 200).json(err ? err : message);
     });
   },
 
@@ -68,12 +58,7 @@ module.exports = {
     console.log('_______________________all messages______________________');
     Message.find({roomCreator: req.params.messageId}).sort('created')
       .exec(function(err, messages) {
-        if (err) {
-          ee.emit('error', err);
-          res.status(501).json(err);
-        } else {
-          res.status(200).json(messages);
-        }
+        res.status(err ? 501 : 200).json(err ? err : messages);
       });
   },
 
@@ -84,12 +69,7 @@ module.exports = {
     console.log('_______________________all messages______________________');
     Message.find({userRec: req.params.messageUsername})
       .sort('created').exec(function(err, messages) {
-        if (err) {
-          ee.emit('error', err);
-          res.status(501).json(err);
-        } else {
-          res.status(200).json(messages);
-        }
+        res.status(err ? 501 : 200).json(err ? err : messages);
       });
   }
 };

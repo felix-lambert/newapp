@@ -15,12 +15,7 @@ exports = module.exports = function(mongoose) {
         type: Schema.ObjectId,
         ref:'User',
         autopopulate: true
-      },
-      creatorUsername: {
-        type: Schema.ObjectId,
-        ref: 'Username',
-        autopopulate: true
-      },
+      }
   });
 
   /////////////////////////////////////////////////////////////////

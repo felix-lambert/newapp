@@ -15,7 +15,6 @@ var bodyParser     = require('body-parser');
 exports = module.exports = function(app, express, config) {
 
   console.log('///////////CONFIGURATION//////////////////');
-  console.log(process.env.NODE_ENV);
 
   if (process.env.NODE_ENV === 'production') {
     console.log('///////////production//////////////////');

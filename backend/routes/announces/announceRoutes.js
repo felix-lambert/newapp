@@ -15,7 +15,7 @@ var routes = [{
 }, {
     path: '/api/announces/:announceId',
     httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, AnnouncesCtrl.show]
+    middleware: [AnnouncesCtrl.show]
 }, {
     path: '/api/announces/:announceId/:content/:title',
     httpMethod: 'PUT',
@@ -37,8 +37,12 @@ var routes = [{
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.changeStatusAnnounce]
 }, {
-    path: '/api/searchannounces/:terms',
+    path: '/api/searchannounces/:terms/:page',
     httpMethod: 'GET',
+    middleware: [AnnouncesCtrl.searchAnnounces]
+}, {
+    path: '/api/searchannounces',
+    httpMethod: 'POST',
     middleware: [AnnouncesCtrl.searchAnnounces]
 }
 

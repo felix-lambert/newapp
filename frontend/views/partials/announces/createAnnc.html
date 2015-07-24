@@ -114,7 +114,7 @@
                 <li class="facebook" style="width:33%;"><a ng-href="/announces/{{announce._id}}"><span class="fa fa-eye"></span></a></li>
                 <li class="twitter" style="width:34%;"><a ng-if="announce.activated === true" ng-click="createAnnounce.desactivate(announce)"><span class="fa fa-toggle-off"></span></a>
                 <a ng-if="announce.activated === false" ng-click="createAnnounce.activate(announce)"><span class="fa fa-toggle-on"></span></a></li>
-                <li class="google-plus" style="width:33%;"><a ng-click="createAnnounce.remove(announce)"><span class="fa fa-eraser "></span></a></li>
+                <li style="width:33%;"><a ng-click="createAnnounce.remove(announce)"><span class="fa fa-eraser"></span></a></li>
               </ul>
             </div>
           </li>

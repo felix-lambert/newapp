@@ -12,11 +12,6 @@ exports = module.exports = function(mongoose) {
           ref: 'User',
           autopopulate: true
       },
-      creatorUsername: {
-          type: Schema.ObjectId,
-          ref: 'Username',
-          autopopulate: true
-      },
       date: {
           type: Date,
           default: Date.now

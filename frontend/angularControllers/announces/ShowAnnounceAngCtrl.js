@@ -4,16 +4,16 @@ angular.module('InTouch')
 ShowAnnounceAngCtrl.$inject = ['$injector', '$routeParams', '$rootScope'];
 
 function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
-
+  
   var vm              = this;
-
+  
   var socket          = $injector.get('socket');
   var Announce        = $injector.get('Announce');
   var toaster         = $injector.get('toaster');
   var appLoading      = $injector.get('appLoading');
   var Friends         = $injector.get('Friends');
   var Comments        = $injector.get('Comments');
-
+  
   vm.findOne          = findOne;
   vm.getComments      = getComments;
   vm.postComment      = postComment;
@@ -25,18 +25,22 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
 
   appLoading.ready();
 
+  $localStorage.searchField = null;
+
   ///////////////////////////////////////////////////////////////////////////
 
   function testIfFriend(announce) {
-    Friends.testIfFriend({
-      idUser: $rootScope.currentUser._id,
-      username: announce.creator.username
-    }).then(function(response) {
+    if ($rootScope.currentUser) {
+      Friends.testIfFriend({
+        idUser: $rootScope.currentUser._id,
+        username: announce.creator.username
+      }).then(function(response) {
 
-      vm.followStatus = response;
-      console.log(vm.followStatus);
-      console.log(response);
-    });
+        vm.followStatus = response;
+        console.log(vm.followStatus);
+        console.log(response);
+      });
+    }
   }
 
   function countFriends(announce) {
@@ -79,13 +83,16 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
     });
     console.log('toaster');
     toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
-    socket.emit('sendFriendRequest', {
-      user: $rootScope.currentUser.username,
-      userDes: userDes,
-      userDesId: idUser,
-      id: $rootScope.currentUser._id
-    });
-    vm.followStatus = 2;
+    if ($rootScope.currentUser) {
+      socket.emit('sendFriendRequest', {
+        user: $rootScope.currentUser.username,
+        userDes: userDes,
+        userDesId: idUser,
+        id: $rootScope.currentUser._id
+      });
+
+      vm.followStatus = 2;
+    }
   }
 
   function getComments() {
@@ -124,7 +131,6 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
   function initViewAnnounce() {
     console.log('__AnnouncesCtrl $scope.initViewAnnounce__');
     vm.findOne();
-
     vm.getComments();
   }
 }

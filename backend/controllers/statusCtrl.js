@@ -19,11 +19,7 @@ module.exports = {
     })
     .sort('-date')
     .exec(function(err, status) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      }
-      res.status(200).json(status);
+      return res.status(err ? 501 : 200).json(err ? err : status);
     });
   },
 
@@ -80,42 +76,42 @@ module.exports = {
     Status.findOne({
         _id: req.params.id
     }, function(err, result) {
-        if (err) {
-          res.status(501).json('Status not found.');
-        } else {
-          User.findOne({
-              _id: result.status
-          }, function(err, status) {
-              if (req.user._id.equals(result.author)) {
-                Status.remove(result, function(err) {
-                  if (err) {
-                    ee.emit('error', err);
-                    res.status(400).json(null);
-                  } else {
-                    res.status(200).json(null);
-                  }
-                });
-              } else if (err) {
-                ee.emit('error', err);
-                res.status(400).json({
-                  'message': 'Impossible to find status'
-                });
-              } else if (req.user._id == status.creator) {
-                Status.remove(result, function(err) {
-                  if (err) {
-                    ee.emit('error', err);
-                    res.status(400).json(null);
-                  } else {
-                    res.status(200).json(null);
-                  }
-                });
-              } else {
-                res.status(400).json({
-                    'message': 'error in remove status'
-                });
-              }
-            });
-        }
-      });
+      if (err) {
+        res.status(501).json('Status not found.');
+      } else {
+        User.findOne({
+            _id: result.status
+        }, function(err, status) {
+            if (req.user._id.equals(result.author)) {
+              Status.remove(result, function(err) {
+                if (err) {
+                  ee.emit('error', err);
+                  res.status(400).json(null);
+                } else {
+                  res.status(200).json(null);
+                }
+              });
+            } else if (err) {
+              ee.emit('error', err);
+              res.status(400).json({
+                'message': 'Impossible to find status'
+              });
+            } else if (req.user._id == status.creator) {
+              Status.remove(result, function(err) {
+                if (err) {
+                  ee.emit('error', err);
+                  res.status(400).json(null);
+                } else {
+                  res.status(200).json(null);
+                }
+              });
+            } else {
+              res.status(400).json({
+                  'message': 'error in remove status'
+              });
+            }
+          });
+      }
+    });
   },
 };

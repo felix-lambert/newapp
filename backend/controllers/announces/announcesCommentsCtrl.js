@@ -20,11 +20,7 @@ module.exports = {
       Announce.findOne({
           _id: req.params.announceId
       }, function(error, result) {
-        if (error) {
-          findOneAnnounceCallback(error);
-        } else {
-          findOneAnnounceCallback(null, result);
-        }
+        findOneAnnounceCallback(error ? error : null, result);
       });
     }
 
@@ -33,23 +29,14 @@ module.exports = {
       comment.content  = req.body.content;
       comment.creator  = req.user._id;
       comment.announce = announce;
-      comment.save(function(err, comments) {
-        if (err) {
-          saveCommentCallback(err);
-        } else {
-          saveCommentCallback(null);
-        }
+      comment.save(function(error, comments) {
+        saveCommentCallback(error ? error : null);
       });
     }
     // Faire une promise
     async.waterfall([findOneAnnounce, saveComment], function(error) {
-      if (error) {
-        //handle readFile error or processFile error here
-        ee.emit('error', error);
-        res.status(400).json(error);
-      } else {
-        res.status(200).json(null);
-      }
+      console.log(error);
+      res.status(error ? 400 : 200).json(error);
     });
   },
 
@@ -73,23 +60,14 @@ module.exports = {
       Comment.findOne({
           _id: req.params.id
       }, function(error, result) {
-        if (error) {
-          findAnnounceCallback(error);
-        } else {
-          findAnnounceCallback(null, result);
-        }
+        findAnnounceCallback(error ? error : null, result);
       });
     }
 
     function removeComment(comment, removeCommentCallback) {
       if (checkRemove(comment)) {
-        Comment.remove(comment, function(err) {
-          if (err) {
-            removeCommentCallback(err);
-            //handle readFile error or processFile error here
-          } else {
-            removeCommentCallback(null);
-          }
+        Comment.remove(comment, function(error) {
+          removeCommentCallback(error ? error : null);
         });
       } else {
         removeCommentCallback('you can\'t remove this announce');
@@ -98,13 +76,7 @@ module.exports = {
 
     // Faire une promise
     async.waterfall([findAnnounce, removeComment], function(error) {
-      if (error) {
-        //handle readFile error or processFile error here
-        ee.emit('error', error);
-        res.status(400).json(null);
-      } else {
-        res.status(200).json(null);
-      }
+      res.status(error ? 400 : 200).json(error);
     });
   },
 
@@ -130,12 +102,8 @@ module.exports = {
       announce: req.params.announceId
     })
     .sort('-date')
-    .exec(function(err, comments) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      }
-      res.status(200).json(getComments(comments));
+    .exec(function(error, comments) {
+      res.status(error ? 400 : 200).json(error ? error : getComments(comments));
     });
   }
 };

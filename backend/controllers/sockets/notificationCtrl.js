@@ -16,13 +16,7 @@ module.exports = {
       Notification.findUserNotifications({
         creator: req.user._id
       }, function(err, notifications) {
-        if (err) {
-          ee.emit('error', err);
-          return res.status(501).json(err);
-        } else {
-          console.log(notifications);
-          return res.status(200).json(notifications);
-        }
+        return res.status(err ? 501 : 200).json(err ? err : notifications);
       });
     } else {
       return res.status(400).json('User is not recognized');
@@ -36,12 +30,7 @@ module.exports = {
     console.log('deleteNotification');
     Notification.find({_id: req.body.userToDelete}).remove()
     .exec(function(err) {
-      if (err) {
-        ee.emit('error', err);
-        return res.status(501).json(err);
-      } else {
-        return res.status(200).json('remove notif');
-      }
+      return res.status(err ? 501 : 200).json(err ? err : 'remove notif');
     });
   },
 
@@ -50,6 +39,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   saveNotification: function(req, res, next) {
     console.log('saveNotification');
+    console.log(req.body);
     Notification.findOneAndUpdate({
       'creator': req.body.userDesId
     }, {
@@ -60,12 +50,7 @@ module.exports = {
       type: req.body.type
     }, {upsert: true})
     .exec(function(err) {
-      if (err) {
-        ee.emit('error', err);
-        res.status(400).json(err);
-      } else {
-        res.status(201).json('save succeeded');
-      }
+      res.status(err ? 400 : 200).json(err ? err : 'save succeeded');
     });
   },
 };

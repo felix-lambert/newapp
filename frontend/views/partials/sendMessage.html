@@ -1,0 +1,63 @@
+
+<style>
+.red{
+    color:red;
+    }
+.form-area
+{
+    background-color: #FAFAFA;
+    padding: 10px 40px 60px;
+    margin: 10px 0px 60px;
+    border: 1px solid GREY;
+    }
+</style>
+
+<div class="container">
+<div class="col-md-5">
+    <div class="form-area">
+        <form role="form" ng-submit="sendMessage.create()">
+        <br style="clear:both">
+                    <h3 style="margin-bottom: 25px; text-align: center;">Contact {{sendMessage.name.username}}</h3>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Nom" ng-model="sendMessage.title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Email (optionnel)" ng-model="sendMessage.email">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="mobile" name="mobile" ng-model="sendMessage.phoneNumber" placeholder="Numéro de téléphone (optionnel)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="subject" ng-model="sendMessage.content" name="Sujet" placeholder="Content" required>
+                    </div>
+                    <div class="form-group">
+                    <textarea class="form-control" type="textarea" id="message" placeholder="Message" maxlength="140" rows="7"></textarea>
+                        <span class="help-block"><p id="characterLeft" class="help-block ">Vous avez atteint la limite</p></span>
+                    </div>
+
+        <button type="button" id="submit" name="submit" class="btn btn-primary pull-right">Envoyer</button>
+        </form>
+    </div>
+</div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#characterLeft').text('140 characters left');
+  $('#message').keydown(function() {
+      var max = 140;
+      var len = $(this).val().length;
+      if (len >= max) {
+        $('#characterLeft').text('You have reached the limit');
+        $('#characterLeft').addClass('red');
+        $('#btnSubmit').addClass('disabled');
+      }
+      else {
+        var ch = max - len;
+        $('#characterLeft').text(ch + ' characters left');
+        $('#btnSubmit').removeClass('disabled');
+        $('#characterLeft').removeClass('red');
+      }
+    });
+});
+</script>

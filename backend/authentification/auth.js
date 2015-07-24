@@ -1,9 +1,8 @@
 /////////////////////////////////////////////////////////////////
-// MODULE DEPENDENCIES ///////////////////////
+// MODULE DEPENDENCIES //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
-var Username = mongoose.model('Username');
 var ee       = require('../config/event');
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,6 +12,7 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
   'use strict';
   console.log('_________________Ensure authentification__________________');
   var incomingToken = req.headers['auth-token'];
+  console.log(incomingToken);
   if (incomingToken) {
     var decoded = User.decode(incomingToken);
     if (decoded && decoded.email) {
@@ -20,17 +20,6 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
         if (err) {
           ee.emit('error', err);
           return res.status(400).json({error: 'Issue finding user.'});
-        } else {
-          req.user = user;
-          next();
-        }
-      });
-    } else if (decoded && decoded.username) {
-      Username.getUsernameToken(decoded.username, incomingToken,
-        function(err, user) {
-        if (err) {
-          ee.emit('error', err);
-          res.status(400).json({error: 'Issue finding user.'});
         } else {
           req.user = user;
           next();

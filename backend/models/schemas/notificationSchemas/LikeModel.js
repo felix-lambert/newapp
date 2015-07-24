@@ -38,14 +38,6 @@ exports = module.exports = function(mongoose) {
     next();
   });
 
-  /**
-   * Methods
-   */
-  likeSchema.methods.expressiveQuery = function(creator, date, callback) {
-    console.log('--------friends expressiveQuery-----------------');
-    return this.find('creator', creator).where('date').gte(date).run(callback);
-  };
-
   likeSchema.plugin(autopopulate);
 
   mongoose.model('Like', likeSchema);
