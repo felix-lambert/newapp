@@ -5,7 +5,6 @@ angular.module('InTouch', [
   'ui.bootstrap',
   'ngStorage',
   'toaster',
-  'door3.css',
   'angularFileUpload',
   'tagger',
   'vTabs',
