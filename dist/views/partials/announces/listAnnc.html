@@ -69,12 +69,6 @@ div.margin {
   <div ng-repeat="announceResult in listAnnounces.findResults">
     <div class="well">
       <div class="media">
-        <a ng-show='announceResult._source.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" ng-src="/images/{{announceResult._source.announce.creator.profileImage}}" width="150" height="150">
-        </a>
-        <a ng-if='!announceResult._source.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" src="/images/default.jpeg" width="150" height="150">
-        </a>
         <div class="media-body">
           <h4 class="media-heading">
           <a ng-href="announces/{{announceResult._source._id}}">
@@ -109,12 +103,6 @@ div.margin {
   <div ng-show="listAnnounces.searching === false" ng-repeat="announce in listAnnounces.announces">
     <div class="well">
       <div class="media">
-        <a ng-show='announce.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" ng-src="/images/{{announce.creator.profileImage}}" width="150" height="150">
-        </a>
-        <a ng-if='!announce.creator.profileImage' class="pull-left" href="#">
-          <img class="media-object" src="/images/default.jpeg" width="150" height="150">
-        </a>
         <div class="media-body">
           <h4 class="media-heading">
           <a ng-href="announces/{{announce._id}}">

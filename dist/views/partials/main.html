@@ -1,141 +1,315 @@
-<div ng-show="!currentUser && !page">
+<style>
+#custom-search-input{
+    padding: 3px;
+    border: solid 1px #E4E4E4;
+    border-radius: 6px;
+    background-color: #fff;
+}
 
-<!--   <div class="container" ng-hide="page === 'login'">
-    <div class="row">
-      <div class="col-md-9">
-        <div class="embed-responsive embed-responsive-16by9">
-          <iframe class="embed-responsive-item" src="//www.youtube.com/embed/mpE8UMMZa9w?rel=0"></iframe>
+#custom-search-input input{
+    border: 0;
+    box-shadow: none;
+}
+
+#custom-search-input button{
+    margin: 2px 0 0 0;
+    background: none;
+    box-shadow: none;
+    border: 0;
+    color: #666666;
+    padding: 0 8px 0 10px;
+    border-left: solid 1px #ccc;
+}
+
+#custom-search-input button:hover{
+    border: 0;
+    box-shadow: none;
+    border-left: solid 1px #ccc;
+}
+
+#custom-search-input .glyphicon-search{
+    font-size: 23px;
+}
+</style>
+
+</div>
+  <style>
+.btn-glyphicon { padding:8px; background:#ffffff; margin-right:4px; }
+.icon-btn { padding: 1px 15px 3px 2px; border-radius:50px;}
+</style>
+
+<style>
+
+div.margin {
+  margin-bottom: 1.5em;
+}
+/* Text Input */
+.form-input {
+  background: #fafafa;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  padding: 12px 16px;
+  min-width: 25%;
+}
+
+.btn-clean {
+  display: inline-block;
+  padding: 12px 16px;
+  background: #fafafa;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  text-decoration: none;
+  color: #8f8f8f;
+  font-size: 1em;
+  -webkit-transition: all .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
+  -ms-transition: all .25s ease-in-out;
+  -o-transition: all .25s ease-in-out;
+  transition: all .25s ease-in-out;
+}
+
+.btn-clean i {
+  position: relative;
+  top: 1px;
+  margin-left: 7px;
+  font-size: 1.15em;
+}
+
+.btn-clean i.ion-ios-arrow-down {
+  top: 2px;
+  margin-left: 8px;
+}
+
+.btn-clean:hover,
+.btn-clean:focus,
+.btn-clean:active,
+.clean.button-group.open .button {
+  border-color: #8f8f8f;
+  color: #808080;
+  text-decoration: none;
+}
+
+.form-input:focus {
+  border-color: #8f8f8f;
+}
+
+
+
+
+.checkbox label:after, 
+.radio label:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.checkbox .cr,
+.radio .cr {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    float: left;
+    margin-right: .5em;
+}
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+.checkbox .cr .cr-icon,
+.radio .cr .cr-icon {
+    position: absolute;
+    font-size: .8em;
+    line-height: 0;
+    top: 50%;
+    left: 20%;
+}
+
+.radio .cr .cr-icon {
+    margin-left: 0.04em;
+}
+
+.checkbox label input[type="checkbox"],
+.radio label input[type="radio"] {
+    display: none;
+}
+
+.checkbox label input[type="checkbox"] + .cr > .cr-icon,
+.radio label input[type="radio"] + .cr > .cr-icon {
+    transform: scale(3) rotateZ(-20deg);
+    opacity: 0;
+    transition: all .3s ease-in;
+}
+
+.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
+.radio label input[type="radio"]:checked + .cr > .cr-icon {
+    transform: scale(1) rotateZ(0deg);
+    opacity: 1;
+}
+
+.checkbox label input[type="checkbox"]:disabled + .cr,
+.radio label input[type="radio"]:disabled + .cr {
+    opacity: .5;
+}
+</style>
+
+<div ng-show="!currentUser && !page" >
+
+  <br/>
+<div class="container">
+  <div class="row">
+        <div class="col-md-6">
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                  <form ng-submit="auth.Search()">
+                    <input ng-model="auth.searchField" type="text" class="form-control input-lg" placeholder="Recherchez" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                    </form>
+                </div>
+            </div>
         </div>
+  </div>
+  <div class="col-sm-12">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>
+            Recherche dans le titre uniquement
+          </label>
+        </div>
+        </div>
+</div>
 
+<br/>
+<section ng-init="auth.initListAnnounce()">
+  <div ng-if="!auth.searchField">
+    <div ng-repeat="announce in auth.announces track by $index">
+      <div class="well">
+      <div class="media">
+        <div class="media-body">
+          <h4 class="media-heading">
+          <a ng-href="announces/{{announce._id}}">
+            <b>{{announce.title}}</b>
+          </a>
+          <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+          </h4>
+          <p class="text-right">{{announce.creator.username}}</p>
+          <p>{{announce.content }}</p>
+
+          <ul class="list-inline list-unstyled">
+            <li><span><i class="glyphicon glyphicon-calendar"></i>
+            {{announce.FORMATTED_DATE}} </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i>{{announce.nbComment}}</span>
+            <li>|</li>
+            <li>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>{{announce.price}} crédit(s)</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div> -->
-  <br/>
-  <div class="row">
-    <div class="container">
-      <div <div class="col-md-7 col-md-offset-1">
-        <div class="panel panel-login">
-          <div class="panel-heading">
-            <div class="row">
-              <div class="col-xs-6">
-                <a href="#" class="active" id="login-form-link">Login</a>
-              </div>
-              <div class="col-xs-6">
-                <a href="#" id="register-form-link">Register</a>
-              </div>
-            </div>
-            <hr>
-          </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-lg-12">
-                <form id="login-form" class="form" style="display: block;" name="form" ng-submit="auth.Login()" autocomplete="off" novalidate>
-                  <div class="form-group">
-                    <input type="text" class="form-control" tabindex="1" placeholder="Email ou pseudo" name="email_username" ng-model="auth.email_username" required mongoose-error/>
-                  </div>
-                  <div class="form-group">
-                    <input id="password" tabindex="2" class="form-control" placeholder="Mot de passe" type="password" name="password" ng-model="auth.passwordLog" ng-minlength="4" required mongoose-error/>
-                  </div>
-                  <span class="bl text-danger">{{auth.error}}</span>
-                  <div class="form-group">
-                    <div class="row">
-                      <div class="col-sm-6 col-sm-offset-3">
-                        <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Se Connecter">
-                        <span class="app-loading-container">
-                          <span class="app-loading-animation" data-ng-class="status"></span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-                <form id="register-form" class="form" name="form" style="display: none;" novalidate ng-submit="auth.register()">
-                  <div class="form-group">
-                    <input class="form-control" type="text" name="usernameReg" minlength="5" maxlength="30" ng-model="auth.username" pattern="^[-\w]+$" username-available-validator placeholder="Nom ou pseudo" required autocomplete="off" />
-                    <p class="form-help" ng-show="auth.usernameReg && form.usernameReg.$error.unique">
-                      That username is already taken.
-                    </p>
-                    <div ng-if="form.$submitted || form.usernameReg.$dirty" ng-messages="form.usernameReg.$error" class="errors">
-                      <div class="text-danger" ng-message="required">Vous n'avez pas entré votre pseudo</div>
-                      <div class="text-danger" ng-message="minlength">Votre pseudo doit comporter plus de 4 caractères</div>
-                      <div class="text-danger" ng-message="maxlength">Votre pseudo est trop long</div>
-                      <div class="text-danger" ng-message="pattern">Votre pseudo ne doit pas avoir des caractères alphanumériques</div>
-                      <div class="text-danger" ng-message="usernameAvailable">Ce pseudo a déjà été pris</div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <input type="email" class="form-control" name="emailReg" ng-model="auth.email" placeholder="Email Address" class="input" required autofocus on-focus email-available-validator autocomplete="off" />
-                    <p class="text-danger">
-                      {{ auth.error.registeredMail }}
-                    </p>
-                    <div ng-if="form.$submitted || form.emailReg.$touched" ng-messages="form.emailReg.$error" class="errors">
-                      <div class="text-danger" ng-message="required">Vous n'avez pas entré votre email</div>
-                      <div class="text-danger" ng-message="email">Votre adresse mail n'est pas valide</div>
-                      <div class="text-danger" ng-message="emailAvailable">Cet email a déjà été enregistré</div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordReg" minlength="5" maxlength="60" ng-model="auth.password" placeholder="Mot de passe" password-characters-validator autocomplete="off" />
-                    <div ng-if="form.$submitted || form.passwordReg.$touched" ng-messages="form.passwordReg.$error" class="errors">
-                      <div class="text-danger" ng-message="required">Vous n'avez pas entré votre mot de passe</div>
-                      <div class="text-danger" ng-message="minlength">Votre mot de passe est trop court</div>
-                      <div class="text-danger" ng-message="maxlength">Votre mot de passe est trop long</div>
-                      <div class="text-danger" ng-message="pattern">Votre mot de passe doit avoir des caractères alphanumériques</div>
-                    </div>
-                  </div>
-                  <div class="pwstrength_viewport_progress"></div>
-                  <div class="form-group">
-                    <input class="form-control" type="password" class="input" name="passwordRegRepeat" required ng-model="auth.passwordConfirmation" placeholder="Mot de passe confirmation" compare-to-validator="auth.password" autocomplete="off" />
-                    <div ng-if="form.$submitted || form.passwordRegRepeat.$touched || form.passwordReg.$touched" ng-messages="form.passwordRegRepeat.$error" class="errors">
-                      <div class="text-danger" ng-message="required">Vous devez entrer un mot de passe de confirmation</div>
-                      <div class="text-danger" ng-message="compareTo">Les mots de passe sont différents</div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="row">
-                      <div class="col-sm-6 col-sm-offset-3">
-                        <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Valider">
-                        <img ng-if="form.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
-                      </div>
-                    </div>
-                  </div>
+  </div>
+  </div>
+  <div ng-show="auth.searchField">
+  <div dir-paginate="announce in auth.announces | filter:q | itemsPerPage: auth.pageSize" current-page="auth.currentPage">
+    <div class="well">
+      <div class="media">
+        <div class="media-body">
+          <h4 class="media-heading">
+          <a ng-href="announces/{{announce._id}}">
+            <b>{{announce.title}}</b>
+          </a>
+          <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+          </h4>
+          <p class="text-right">{{announce.creator.username}}</p>
+          <p>{{announce.content }}</p>
 
-                </form>
-              </div>
-            </div>
-          </div>
+          <ul class="list-inline list-unstyled">
+            <li><span><i class="glyphicon glyphicon-calendar"></i>
+            {{announce.FORMATTED_DATE}} </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i>{{announce.nbComment}}</span>
+            <li>|</li>
+            <li>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star"></span>
+              <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>{{announce.price}} crédit(s)</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </div>
+</section>
+    <div ng-controller="OtherController">
+    <div class="text-center">
+    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/partials/dirPagination.tpl.html">
+    </dir-pagination-controls>
+    </div>
+
+  </div>
+
+
+    <v-tabs class="vTabs--default" horizontal active="activeTabIndex">
+  <v-tab ng-repeat="p in auth.pages" ng-bind="p.title"></v-tab>
+</v-tabs>
+
+<v-pages class="vPages--default" active="activeTabIndex">
+  <v-page ng-repeat="p in auth.pages" dynamic="p.content"></v-page>
+</v-pages>
+
+  </div>
+<!--   <pagination ng-hide="auth.searchField" total-items="auth.total" ng-change="auth.pageChanged(auth.bigCurrentPage)" ng-model="auth.bigCurrentPage" max-size="auth.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination> -->
+
+
+<!--
+<form id="login-form" class="form" style="display: block;" name="form" >
+  <div class="form-group">
+    <input type="text" class="form-control" tabindex="1" placeholder="Email ou pseudo" name="email_username" />
+  </div>
+  <div class="form-group">
+    <input id="password" tabindex="2" class="form-control" placeholder="Mot de passe" type="password" name="password" />
+  </div>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Se Connecter">
+
+      </div>
+    </div>
+  </div>
+</form>
+-->
+
+
+</div>
+
+
 <div ng-show="currentUser && !page">
 
   <div class="container">
     <div class="row">
       <h3>Bonjour {{currentUser.username}}</h3>
     </div>
-
-    <div class="row">
-
-      <div class="col-md-6">
-        <div class="widget-area no-padding blank">
-          <div class="status-upload">
-            <form>
-              <textarea placeholder="Que faites-vous en ce moment ?" ></textarea>
-              <ul>
-                <li>
-                  <a title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Picture"><i class="fa fa-picture-o"></i>
-                  </a>
-                </li>
-              </ul>
-              <button type="submit" class="btn btn-success green"><i class="fa fa-share"></i> Partager</button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
-
-<script type="text/javascript" src="javascript/main.js"></script>

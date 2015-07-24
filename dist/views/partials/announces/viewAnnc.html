@@ -197,8 +197,10 @@ span.tags
           <p><small>Il se fait suivre</small></p>
           <button ng-if="showAnnounce.followStatus == 3" ng-click="showAnnounce.follow(showAnnounce.announce.creator.username, showAnnounce.announce.creator._id._id)" ng-hide="currentUser.username === showAnnounce.announce.creator.username" class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Ne plus suivre </button>
           <button ng-if="showAnnounce.followStatus == 1" ng-click="showAnnounce.followUser(showAnnounce.announce.creator.username, showAnnounce.announce.creator._id._id)" ng-hide="currentUser.username === showAnnounce.announce.creator.username" class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Suivre </button>
-          <div ng-if="showAnnounce.followStatus == 2">
+          <div ng-if="showAnnounce.followStatus == 2 && currentUser.username !== showAnnounce.announce.creator.username">
             <p>En attente de confirmation </p>
+            {{showAnnounce.creator.username}}
+            {{showAnnounce.creator}}
           </div>
         </div>
         <div class="col-xs-12 col-sm-4 emphasis">

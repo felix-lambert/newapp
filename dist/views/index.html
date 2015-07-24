@@ -15,7 +15,10 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
     <link rel="shortcut icon" type="image/png" href="favicon.png"/>
     <!--     <link rel="stylesheet" href="stylesheets/main.css"/> -->
-    <link rel="stylesheet" href="stylesheets/style.css">
+
+
+
+
   </head>
   <body ng-class="{'skip-animations':disabled}">
     <div ng-include src="'views/templates/header.html'"></div>
@@ -24,7 +27,7 @@
         <div ng-include src="'views/templates/sidebar.html'"></div>
       </div>
       <div class="col-md-9">
-        <div ng-view ng-animate="{enter: 'view-enter'}"></div>
+        <div ng-view ng-animate="{enter: 'view-enter'}" ng-show='!page'></div>
       </div>
     </div>
 
@@ -40,6 +43,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
     <script src="js/intouch.min.js"></script>
     <script data-require="bootstrap@3.1.1" data-semver="3.1.1" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
