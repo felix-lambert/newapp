@@ -4,9 +4,15 @@ var autopopulate = require('mongoose-autopopulate');
 
 var elasticsearch = require("elasticsearch");
 
-var ES = new elasticsearch.Client({
-  host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
-});
+if (process.env.NODE_ENV === 'production') {
+  var ES = new elasticsearch.Client({
+    host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
+  });
+} else {
+  var ES = new elasticsearch.Client({
+    host: "localhost:9200"
+  });
+}
 
 ES.indices.create({
     index: "announce",
