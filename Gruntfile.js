@@ -34,8 +34,7 @@ module.exports = function(grunt) {
     },
 
     usemin: {
-      html: ['dist/views/index.html',
-      'frontend/views/partials/announces/createAnnc.html']
+      html: 'dist/views/index.html'
     },
 
     uglify: {
