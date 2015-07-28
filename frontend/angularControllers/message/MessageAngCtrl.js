@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('MessageAngCtrl', MessageAngCtrl);
 
-MessageAngCtrl.$inject = ['Rooms', 'Friends', 'Messages', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
+MessageAngCtrl.$inject = ['$localStorage', 'Rooms', 'Friends', 'Messages', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
 
-function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading, preGetRooms) {
+function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, socket, appLoading, preGetRooms) {
 
   var vm          = this;
   var Typing      = false;
@@ -95,8 +95,7 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
     vm.message      = '';
     vm.userRec      = user;
     Rooms.postRoom({
-      nameRec: user,
-      name: $rootScope.currentUser.username
+      nameRec: user
     }).then(function(response) {
       console.log('get messages from room');
       vm.room   = response.roomName;
@@ -111,10 +110,7 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
         console.log('room created');
       } else if (response.status === 'join') {
         console.log('JOIN');
-        socket.emit('joinRoom', {
-          roomId: response.roomId,
-          roomName: response.roomName
-        });
+        socket.emit('joinRoom', response);
       }
       return Messages.getMessagesFromRoom(response.roomId);
     }).then(function(response) {
@@ -175,10 +171,11 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
   }
 
   function joinRoom(room) {
+    console.log('join room');
     vm.messages     = [];
     vm.error.create = '';
     vm.message      = '';
-    socket.emit('joinRoom', room.id);
+    socket.emit('joinRoom', room);
   }
 
   function leaveRoom(room) {
@@ -222,7 +219,7 @@ function MessageAngCtrl(Rooms, Friends, Messages, $rootScope, socket, appLoading
 
   socket.emit('joinSocketServer', {name: $rootScope.currentUser.username});
 
-  Friends.getFriendsFromUser($rootScope.currentUser._id)
+  Friends.getFriendsFromUser()
   .then(function(usernames) {
     console.log(usernames);
     for (var i = 0; i < usernames.length; i++) {

@@ -1,10 +1,10 @@
 angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
-PictureAngCtrl.$inject = ['Actuality', '$scope', 'Images', '$rootScope',
+PictureAngCtrl.$inject = ['$localStorage', 'Actuality', '$scope', 'Images', '$rootScope',
 'FileUploader', '$http', 'appLoading', 'toaster', 'preGetImages'];
 
-function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
+function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
   FileUploader, $http, appLoading, toaster, preGetImages) {
 
   console.log('--------------UPLOAD PICTURES----------------------');
@@ -16,6 +16,7 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   vm.doDefaultImage                           = doDefaultImage;
   vm.erase                                    = erase;
   vm.noImages                                 = false;
+  vm.preview = false;
 
   appLoading.ready();
   $localStorage.searchField = null;
@@ -32,10 +33,10 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   }
 
   var uploader = $scope.uploader = new FileUploader({
-      headers: {
-        'auth-token': $rootScope.currentUser.token
-      },
-      url: '/upload'
+    headers: {
+      'auth-token': $rootScope.currentUser.token
+    },
+    url: '/upload'
   });
 
   uploader.filters.push({
@@ -53,23 +54,34 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
       name: image.name,
       _id: image._id,
       defaultImage: true
-    }).then(function() {
-      toaster.pop('success', 'L\'image de profil a bien été modifié');
-      console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-      vm.profileImages = preGetImages;
+    }).then(function() { 
+      console.log(preGetImages);
       Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
-        console.log(res);
+        
+        toaster.pop('success', 'L\'image de profil a bien été modifié');
+        Images.getImages().then(function(results) {
+          vm.profileImages = results;  
+        });
+        console.log('__AnnouncesCtrl $scope.initListAnnounce__');
       });
     });
   }
 
   function erase(image) {
-    console.log(image);
-    Images.erase(image._id).then(function() {});
-
-    toaster.pop('danger', 'L\'image a bien été supprimé');
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-    vm.profileImages = preGetImages;
+    console.log(image);
+    Images.erase(image._id).then(function(res) {
+      toaster.pop('danger', 'L\'image a bien été supprimé');
+      console.log('ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù');
+      console.log(res);
+      console.log(vm.profileImages);
+      for (var i in vm.profileImages) {
+        if (vm.profileImages[i]._id == res._id) {
+          console.log('test');
+          vm.profileImages.splice(i, 1);
+        }
+      }
+    });
   }
 
   /////////////////////////////////////////////////////////////////
@@ -102,7 +114,8 @@ function PictureAngCtrl(Actuality, $scope, Images, $rootScope,
   uploader.onSuccessItem = function(fileItem, response, status, headers) {
     console.log('results');
     vm.noImages = false;
-    vm.profileImages.push(response.images);
+    vm.preview = true;
+    vm.image = response;
     console.info('onSuccessItem', fileItem, response, status, headers);
   };
 

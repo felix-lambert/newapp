@@ -4,7 +4,6 @@
 var mongoose  = require('mongoose');
 var Like      = mongoose.model('Like');
 var Actuality = mongoose.model('Actuality');
-var ee        = require('../../config/event');
 var async     = require('async');
 
 module.exports = {

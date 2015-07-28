@@ -7,7 +7,6 @@ var path      = require('path');
 var crypto    = require('crypto');
 var User      = mongoose.model('User');
 var Images    = mongoose.model('Image');
-var ee        = require('../config/event');
 var Actuality = mongoose.model('Actuality');
 var async    = require('async');
 
@@ -39,13 +38,11 @@ module.exports = {
       }
       fs.copy(writeStream.path, destPath + hashName, function(err) {
         if (err) {
-          ee.emit('error', err);
           return res.send(err);
         }
         fs.chmodSync(destPath + hashName, '755');
         fs.remove(writeStream.path, function(err) {
           if (err) {
-            ee.emit('error', err);
             return res.error(err);
           }
         });
@@ -56,7 +53,6 @@ module.exports = {
       .sort('-created')
       .exec(function(err, result) {
         if (err) {
-          ee.emit('error', err);
           return res.status(501).json(err);
         }
         var profile = true ? result.length === 0 : false;
@@ -104,8 +100,8 @@ module.exports = {
   deleteImage: function(req, res, next) {
 
     console.log('____________get images from user__________');
-    Images.remove({'_id': req.params.imageId}, function(err, image) {
-      res.status(err ? 400 : 200).json(err ? err : null);
+    Images.findByIdAndRemove(req.params.imageId, function(err, image) {
+      res.status(err ? 400 : 200).json(err ? err : image);
     });
   },
 

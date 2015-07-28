@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
-var ee       = require('../../config/event');
 
 module.exports = {
 

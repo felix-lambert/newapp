@@ -17,7 +17,7 @@ var routes = [{
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.show]
 }, {
-    path: '/api/announces/:announceId/:content/:title',
+    path: '/api/announcesput/:announceId',
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.updateAnnounce]
 }, {
@@ -25,19 +25,19 @@ var routes = [{
     httpMethod: 'DELETE',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.deleteAnnounce]
 }, {
-    path: '/api/announces/:page/:limit/',
+    path: '/api/paginateannounces/:page',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.listPagination]
 }, {
-    path: '/api/announces/:page/:limit/:user',
+    path: '/api/userannounces/:page',
     httpMethod: 'GET',
-    middleware: [AnnouncesCtrl.listUserPagination]
+    middleware: [auth.ensureAuthenticated, AnnouncesCtrl.listUserPagination]
 }, {
     path: '/api/statusannounce/:announceId/:status',
     httpMethod: 'PUT',
     middleware: [auth.ensureAuthenticated, AnnouncesCtrl.changeStatusAnnounce]
 }, {
-    path: '/api/searchannounces/:terms/:page',
+    path: '/api/searchannounces/:terms',
     httpMethod: 'GET',
     middleware: [AnnouncesCtrl.searchAnnounces]
 }, {

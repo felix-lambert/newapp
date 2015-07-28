@@ -3,7 +3,18 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
-var ee       = require('../../config/event');
+
+var elasticsearch = require("elasticsearch");
+
+if (process.env.NODE_ENV === 'production') {
+  var ES = new elasticsearch.Client({
+    host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
+  });
+} else {
+  var ES = new elasticsearch.Client({
+    host: "localhost:9200"
+  });
+}
 
 module.exports = {
 
@@ -20,18 +31,24 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   search: function(req, res) {
     if (req.query.term) {
+      console.log('search');
       var username = req.user ? req.user.username : '';
       var search   = req.query.term.toLowerCase();
-      User.search({
-        query:{
-          'multi_match': {
-            'fields':  ['username'],
-              'query': search,
-              'fuzziness': 'AUTO'
+      console.log('search');
+      ES.search({
+      index: 'user',
+      body: {
+        'size' : 10,
+        'query': {
+          'match': {
+            'username': search
           }
-        }}, function(err, users) {
-          res.status(err ? 400 : 200).json(err ? err : users.hits.hits);
-        });
+        }
+      }
+    }).then(function (resp) {
+      console.log(resp);
+      res.status(200).json(resp.hits.hits);
+    });
     } else {
       res.status(200).end();
     }

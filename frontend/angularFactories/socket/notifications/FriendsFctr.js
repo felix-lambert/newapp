@@ -48,9 +48,9 @@ function Friends($q, $http) {
     return deferred.promise;
   }
 
-  function getFriendsFromUser(id) {
+  function getFriendsFromUser() {
     var deferred = $q.defer();
-    $http.get('/api/getfriends/' + id).success(function(data) {
+    $http.get('/api/getfriends/').success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();

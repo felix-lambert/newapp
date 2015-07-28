@@ -6,7 +6,6 @@ var Announce      = mongoose.model('Announce');
 var Comment       = mongoose.model('AnnounceComment');
 var async         = require('async');
 var moment        = require('moment');
-var ee            = require('../../config/event');
 var async         = require('async');
 var elasticsearch = require("elasticsearch");
 
@@ -108,8 +107,9 @@ module.exports = {
     function updateAnnounce(result, updateAnnounceCallback) {
       console.log('result');
       if (result.creator._id.equals(req.user._id)) {
-        result.title   = req.params.title;
-        result.content = req.params.content;
+        result.title   = req.body.title;
+        result.content = req.body.content;
+        result.price = req.body.price;
         result.save(function(err) {
           updateAnnounceCallback(err ? err : null, result);
         });
@@ -149,6 +149,8 @@ module.exports = {
     console.log('***************status announce*********************');
 
     function findOneAnnounce(findOneAnnounceCallback) {
+      console.log('findOneAnnounces');
+      console.log(req.params.announceId);
       Announce.findOne({
         '_id': req.params.announceId
       }, function(err, result) {
@@ -185,13 +187,6 @@ module.exports = {
   searchAnnounces: function(req, res) {
     console.log('_____________________search announce____________');
     var terms = req.params.terms || req.body.searchField;
-    var page;
-    if (req.params) {
-      page = req.params.page;
-      console.log(page);
-    } else {
-      page = 1;
-    }
     ES.search({
       index: 'announce',
       body: {
@@ -203,20 +198,20 @@ module.exports = {
         }
       }
     }).then(function (resp) {
-      var hits = resp.hits.hits;
-      console.log(resp.hits.hits);
+
       var announces = resp.hits.hits;
+      console.log('/////////////////////////////////////////////');
 
       var initAnnounces = function(announce, doneCallback) {
         announce.title   = announce._source.title.length > 34 ?
         announce._source.title.substring(0, 35) + '...' :
-        announce.title   = announce._source.title;
+        announce._source.title;
         announce.content = announce._source.content.length > 34 ?
         announce._source.content.substring(0, 35) + '...' :
         announce._source.content;
         announce.price   = announce._source.price;
         if (announce._source.FORMATTED_DATE) {
-          var m                       = moment(announce._source.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
+          var m                   = moment(announce._source.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
           announce.FORMATTED_DATE = m.fromNow();
         }
         var ObjectID = require('mongodb').ObjectID;
@@ -233,14 +228,13 @@ module.exports = {
       };
 
       async.map(announces, initAnnounces, function(err, result) {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log(resp);
+        console.log('ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù');
+        console.log(result);
         return res.status(err ? 400 : 200).json(err ? err : {
           total: resp.hits.total,
           announce: result
         });
       });
-
     }, function (err) {
       console.log(err);
       res.status(400).json(err.message);
@@ -270,25 +264,34 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   deleteAnnounce: function(req, res) {
     console.log('_____________________destroy announce____________');
-    Announce.remove({'_id': req.params.announceId}, function(err, announce) {
-      if (err) {
-        ee.emit('error', err);
-        res.status(400).json(err);
+
+    function deleteAnnounceMongo(deleteAnnounceMongoCallback) {
+      console.log('delete announce mongo');
+      Announce.findByIdAndRemove(req.params.announceId, function(err, announce) {
+        deleteAnnounceMongoCallback(err ? err : null, announce);
+      });
+    }
+
+    function deleteAnnounceES(announce, deleteAnnounceESCallback) {
+      ES.delete({
+        index: 'announce',
+        type: 'ann',
+        id : req.params.announceId
+      }, function(err) {
+        deleteAnnounceESCallback(err ? err : null, announce);
+      });
+    }
+    // Faire une promise
+    async.waterfall([deleteAnnounceMongo, deleteAnnounceES], function(error, announce) {
+      if (error) {
+        return res.status(400).json(error);  
       } else {
-        console.log(req.params.announceId);
-        ES.delete({
-          index: 'announce',
-          type: 'ann',
-          id : req.params.announceId
-        }, function(err) {
-          if (err) {
-            ee.emit('error', err);
-            res.status(400).json(err);
-          } else {
-            res.status(200).json();
-          }
-        });
+        console.log('result');
+        console.log(announce);
+        console.log(error);
+        return res.status(200).json(announce);
       }
+      
     });
   },
 
@@ -301,8 +304,8 @@ module.exports = {
         .find()
         .sort('-created')
         .where('activated').equals(true)
-        .skip((req.params.limit * req.params.page) - req.params.limit)
-        .limit(req.params.limit)
+        .skip((10 * req.params.page) - 10)
+        .limit(10)
         .exec(next);
     };
     var countAnnounces = function(next) {
@@ -337,20 +340,20 @@ module.exports = {
       console.log('list user pagination');
 
       Announce
-          .find({creator: req.params.user})
-          .sort('-created')
-          .select()
-          .skip((req.params.limit * req.params.page) - req.params.limit)
-          .limit(req.params.limit)
-          .sort({date_added: -1})
-          .exec(next);
+        .find({creator: req.user._id})
+        .sort('-created')
+        .select()
+        .skip((10 * req.params.page) - 10)
+        .limit(10)
+        .sort({date_added: -1})
+        .exec(next);
     };
     var countAnnounces = function(next) {
       Announce.count({creator: req.params.user}).exec(next);
     };
     async.parallel({
-        find: findAnnounces,
-        count: countAnnounces
+      find: findAnnounces,
+      count: countAnnounces
     }, function done(err, results) {
       return res.status(err ? 400 : 200).json(err ? err : {
         total: results.count,

@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////
 var mongoose     = require('mongoose');
 var Notification = mongoose.model('Notification');
-var ee           = require('../../config/event');
 
 module.exports = {
 
@@ -13,9 +12,12 @@ module.exports = {
   getNotifications: function(req, res, next) {
     console.log('___________get Notification________________________');
     if (req.user) {
+      console.log(req.user._id);
+      
       Notification.findUserNotifications({
-        creator: req.user._id
+        'creator': req.user._id
       }, function(err, notifications) {
+        console.log(err, notifications);
         return res.status(err ? 501 : 200).json(err ? err : notifications);
       });
     } else {
@@ -28,7 +30,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   deleteNotification: function(req, res) {
     console.log('deleteNotification');
-    Notification.find({_id: req.body.userToDelete}).remove()
+    Notification.find({_id: req.params.notificationToDelete}).remove()
     .exec(function(err) {
       return res.status(err ? 501 : 200).json(err ? err : 'remove notif');
     });
@@ -49,8 +51,9 @@ module.exports = {
       creator: req.body.userDesId,
       type: req.body.type
     }, {upsert: true})
-    .exec(function(err) {
-      res.status(err ? 400 : 200).json(err ? err : 'save succeeded');
+    .exec(function(err, result) {
+      console.log(err, result);
+      res.status(200).json(result);
     });
   },
 };

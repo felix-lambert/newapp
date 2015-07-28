@@ -61,7 +61,6 @@ exports = module.exports = function(mongoose) {
                 userDes: item.userDes,
                 userRec : item.userRec,
                 userId: item.userId,
-                reset: item.reset,
                 id: item._id,
                 type: item.type
               });

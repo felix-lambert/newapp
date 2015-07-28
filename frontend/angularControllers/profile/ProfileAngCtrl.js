@@ -30,7 +30,7 @@ function ProfileAngCtrl($rootScope, Status, appLoading) {
   }
 
   function getStatus() {
-    Status.getStatus($rootScope.currentUser._id)
+    Status.getStatus()
     .then(function(res) {
       console.log('GET STATUS');
       console.log(res);

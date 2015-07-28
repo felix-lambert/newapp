@@ -4,8 +4,20 @@
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
 var passport = require('passport');
-var ee       = require('../../config/event');
 var async    = require('async');
+var moment   = require('moment');
+var elasticsearch = require('elasticsearch');
+
+if (process.env.NODE_ENV === 'production') {
+  var ES = new elasticsearch.Client({
+    host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
+  });
+} else {
+  var ES = new elasticsearch.Client({
+    host: "localhost:9200"
+  });
+}
+
 
 module.exports = {
 
@@ -105,10 +117,18 @@ module.exports = {
     function registerUserES(user, registerUserESCallback) {
       console.log('registerUserES');
       console.log(user);
-      user.on('es-indexed', function(err, res) {
-        console.log('document indexed');
-        registerUserMongoCallback(error ? error : null);
-      });
+      var FORMATTED_DATE;
+      ES.create({
+        index: 'user',
+        type: 'usr',
+        id: user._id.toHexString(),
+        body: {
+          created: Date.now(),
+          username: user.username
+        }}, function(err, res) {
+          console.log(err, res);
+          registerUserESCallback(err ? err : null);
+        });
     }
 
     function createToken(createTokenCallback) {

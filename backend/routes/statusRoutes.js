@@ -19,7 +19,7 @@ var routes = [{
 }, {
     path: '/api/status/:id',
     httpMethod: 'DELETE',
-    middleware: [auth.ensureAuthenticated, StatusCtrl.removeStatus]
+    middleware: [auth.ensureAuthenticated, StatusCtrl.deleteStatus]
 }];
 
 module.exports = routes;

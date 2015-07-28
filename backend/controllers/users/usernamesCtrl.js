@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var Username = mongoose.model('Username');
-var ee       = require('../../config/event');
 
 module.exports = {
 
@@ -16,7 +15,6 @@ module.exports = {
       creator: req.user
     }, function(err, notifications) {
       if (err) {
-        ee.emit('error', err);
         return res.status(501).json(err);
       }
       res.status(200).json(notifications);
@@ -31,7 +29,6 @@ module.exports = {
     Notification.find({_id: req.body.userToDelete}).remove()
     .exec(function(err) {
       if (err) {
-        ee.emit('error', err);
         return res.status(501).json(err);
       }
       res.status(200).json('remove notif');
@@ -59,13 +56,11 @@ module.exports = {
       });
       username.save(function(err, saveUsernames) {
         if (err) {
-          ee.emit('error', err);
           res.status(400).json(err);
         } else {
           Username.createUsernameToken(req.body.username,
             function(err, usersToken) {
             if (err) {
-              ee.emit('error', err);
               res.status(400).json({error: 'Issue generating token'});
             } else {
               Username.getUsernameToken(req.body.username, usersToken,

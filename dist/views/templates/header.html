@@ -337,6 +337,7 @@ ul.dropdown-cart li .item-right button{
           </nav><!-- /.navbar -->
 
           <div ng-init="header.initListFriend()">
+
             <div class="home-doctors clearfix">
               <div class="container">
                 <div class="row">
@@ -346,12 +347,14 @@ ul.dropdown-cart li .item-right button{
                       <ul class="list-inline social-lists animate">
                         <li><button type="button" class="btn btn-danger btn-sm" ng-click="header.messageSend(suggestion.userId)">Message</button></li>
                         <li><button type="button" ng-show="suggestion.username.follow" ng-click="header.follow(suggestion.username.follow, suggestion._id)" class="btn btn-success btn-sm">Follow</button>
-                          <div ng-show="suggestion.username.notFollow" ng-repeat="username in header.usernames track by $index">
-                            <p ng-if="username.accepted === suggestion.username.notFollow">En attente de confirmation</p>
+                          
+                          <div ng-show="suggestion.username.notFollow">
+                            <div ng-if="suggestion.username.notFollow.wait">En attente de confirmation</div>
+                            <p >
+                            <div ng-if="suggestion.username.notFollow.accept">Ami</div>
                           </div>
-                          <div ng-show="suggestion.username.notFollow" ng-repeat="username in header.usernames track by $index">
-                            <p>Ami</p>
-                          </div></li>
+                          </div>
+                          </li>
                         </ul>
                         <figure ng-show='suggestion.profileImage'>
                           <img width="670" height="500" ng-src="images/{{suggestion.profileImage}}" class="doc-img animate attachment-gallery-post-single wp-post-image" alt="doctor-2">
@@ -364,7 +367,7 @@ ul.dropdown-cart li .item-right button{
 
                           <h5>{{suggestion.noAuth ||suggestion.username.follow || suggestion.username.notFollow}}</h5>
                           <!-- <div class="for-border"></div> -->
-                          <h5><small>Developer</small></h5>
+                          <h5><small>Developer {{header}}</small></h5>
                         </div>
                       </div>
                     </div>

@@ -17,7 +17,7 @@ var routes = [{
   httpMethod: 'POST',
   middleware: [auth.ensureAuthenticated, NotificationCtrl.saveNotification]
 }, {
-  path: '/api/notifications/',
+  path: '/api/notifications/:notificationToDelete',
   httpMethod: 'DELETE',
   middleware: [auth.ensureAuthenticated, NotificationCtrl.deleteNotification]
 }];

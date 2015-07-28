@@ -37,7 +37,7 @@ function Notifications($q, $http) {
 
   function updateNotification(notification) {
     var deferred = $q.defer();
-    $http.put('/api/notifications/', notification).success(function(data) {
+    $http.delete('/api/notifications/' + notification).success(function(data) {
       deferred.resolve(data);
     }).error(function() {
       deferred.reject();

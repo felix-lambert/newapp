@@ -17,12 +17,14 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
   var Announce              = $injector.get('Announce');
   var CustomerSearchService = $injector.get('CustomerSearchService');
   
+  var announce = new Announce();
+
   vm.register               = register;
   vm.Search                 = Search;
   vm.paginate               = paginate;
   vm.searchPaginate         = searchPaginate;
   vm.initListAnnounce       = initListAnnounce;
-  vm.like                   = like;
+  // vm.like                   = like;
   vm.pageChanged            = pageChanged;
 
   appLoading.ready();
@@ -42,7 +44,6 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
     }
   ];
 
-
   if ($rootScope.currentUser) {
     var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
@@ -59,38 +60,26 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
   vm.searchField = $localStorage.searchField ? $localStorage.searchField : null;
 
   if (vm.searchField) {
-    console.log('do search');
-    console.log(vm.searchField);
-    Announce.pressSearchAnnounces({searchField: vm.searchField})
-    .then(function(response) {
+    console.log('inside searchField');
+    console.log(announce);
+    announce.setSearchField({searchField : vm.searchField});
+    announce.pressSearchAnnounces()
+    .then(function() {
       vm.searchState            = true;
-      $rootScope.searchAnnonces = response.announce;
-      vm.announces = response.announce;
-      console.log(vm.announces);
-      console.log('end search');
-      vm.total = response.total;
-      console.log(vm.total);
+
+      vm.announces = announce._announces;
+      vm.total = announce._total;
     });
   }
   /////////////////////////////////////////////////////////////
 
   function pageChanged(currentPage) {
-    console.log('Page changed to: ' + currentPage);
     vm.page = currentPage;
     if (vm.searchState === false) {
       console.log('paginate');
       vm.paginate(vm.page);
-    } else if (vm.searchField) {
-      console.log('search paginate');
-
     }
   }
-
-  // for (var i = 1; i <= 100; i++) {
-  //   var dish = dishes[Math.floor(Math.random() * dishes.length)];
-  //   var side = sides[Math.floor(Math.random() * sides.length)];
-  //   $scope.meals.push('meal ' + i + ': ' + dish + ' ' + side);
-  // }
 
   vm.meals = [
     'noodles',
@@ -108,40 +97,36 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
     'avacado maki'
   ];
 
-  vm.pageChangeHandler = function(num) {
-    console.log('meals page changed to ' + num);
-  };
+  // function like(announceId, usernameDes, userDesId) {
+  //   console.log('like');
+  //   vm.suggestions = '';
+  //   Notifications.postNotification({
+  //     userDes: usernameDes,
+  //     userDesId: userDesId,
+  //     type: 'like'
+  //   }).then(function(response) {
+  //     console.log('notifications success');
+  //   });
 
-  function like(announceId, usernameDes, userDesId) {
-    console.log('like');
-    vm.suggestions = '';
-    Notifications.postNotification({
-      userDes: usernameDes,
-      userDesId: userDesId,
-      type: 'like'
-    }).then(function(response) {
-      console.log('notifications success');
-    });
+  //   Like.postLike({
+  //     id: announceId,
+  //     userDes: usernameDes,
+  //     userDesId: userDesId,
+  //     likeType: 'announce'
+  //   }).then(function(response) {
+  //     console.log('notifications success');
+  //   });
 
-    Like.postLike({
-      id: announceId,
-      userDes: usernameDes,
-      userDesId: userDesId,
-      likeType: 'announce'
-    }).then(function(response) {
-      console.log('notifications success');
-    });
-
-    vm.paginate(vm.page);
-    console.log('toaster');
-    toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
-    socket.emit('sendLike', {
-      user: $rootScope.currentUser.username,
-      userDes: usernameDes,
-      userDesId: userDesId,
-      id: $rootScope.currentUser._id
-    });
-  }
+  //   vm.paginate(vm.page);
+  //   console.log('toaster');
+  //   toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
+  //   socket.emit('sendLike', {
+  //     user: $rootScope.currentUser.username,
+  //     userDes: usernameDes,
+  //     userDesId: userDesId,
+  //     id: $rootScope.currentUser._id
+  //   });
+  // }
 
   function Search() {
     console.log('search');
@@ -152,23 +137,18 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
       console.log($scope.$storage);
       vm.searchTerm = vm.searchField;
       console.log('yes');
-      Announce.pressSearchAnnounces({searchField: vm.searchField})
-      .then(function(response) {
+      announce.setSearchField({searchField : vm.searchField});
+      announce.pressSearchAnnounces()
+      .then(function() {
         vm.searchState    = true;
-        $rootScope.searchAnnonces = response.announce;
-        for (var i = 0; i < 10; i++) {
-          vm.announces[i] = response.announce[i];
-        }
-        console.log('end search');
-        vm.total = response.total;
-        console.log(vm.total);
+        vm.announces = announce._announces;
+        vm.total = announce._total;
       });
     } else {
       vm.searchState    = false;
+      $localStorage.searchField = null;
       vm.paginate(vm.page);
     }
-
-
   }
 
   function searchPaginate() {
@@ -181,28 +161,15 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
   }
 
   function paginate(page) {
-
     vm.page = page;
-    Announce.getAnnounces({
-      page : vm.page,
-      limit : vm.maxSize
-    }).then(function(data) {
-      console.log('paginate');
-      console.log(data);
-      vm.announces   = data.announces;
-      console.log(vm.announces);
-      for (var i = 0; i < vm.announces.length; i++) {
-        if (vm.announces[i].title.length > 34) {
-          vm.announces[i].title = vm.announces[i].title.substring(0, 35) + '...';
-        }
-        if (vm.announces[i].content.length > 34) {
-          console.log(vm.announces[i].content.length);
-          vm.announces[i].content = vm.announces[i].content.substring(0, 35) + '...';
-        }
-      }
-      vm.total = data.total;
+    announce.setAnnouncePagination(vm.page);
+    announce.getAnnounces().then(function() {
+      console.log(announce._announces);
+      vm.announces = announce._announces;
+      vm.total = announce._total;
     });
   }
+  
   function initListAnnounce() {
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
     if (!vm.searchField) {
@@ -224,7 +191,6 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
     function(err) {
       vm.errors = {};
       if (!err) {
-        console.log('works');
         swal('Votre compte a été créé avec succès', '', 'success');
         $rootScope.currentUser.notificationsCount = 0;
         $location.path('/');

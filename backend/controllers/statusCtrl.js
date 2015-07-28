@@ -4,7 +4,6 @@
 var mongoose = require('mongoose');
 var Status   = mongoose.model('Status');
 var User     = mongoose.model('User');
-var ee       = require('../config/event');
 var async    = require('async');
 
 module.exports = {
@@ -15,7 +14,7 @@ module.exports = {
   getStatus: function(req, res) {
     console.log('_____GET /api/status/' + req.params.statusId);
     Status.find({
-      author: req.params.statusId
+      author: req.user._id
     })
     .sort('-date')
     .exec(function(err, status) {
@@ -59,7 +58,6 @@ module.exports = {
     async.waterfall([findOneStatus, saveStatus], function(error) {
       if (error) {
         //handle readFile error or processFile error here
-        ee.emit('error', error);
         res.status(400).json(error);
       } else {
         res.status(200).json();
@@ -71,47 +69,30 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   // DELETE COMMENT ///////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
-  removeStatus: function(req, res) {
-    console.log('______DELETE /api/statusComment___');
-    Status.findOne({
+  deleteStatus: function(req, res) {
+    console.log('______DELETE /api/status___');
+    function findOneStatus(findOneStatusCallback) {
+      Status.findOne({
         _id: req.params.id
-    }, function(err, result) {
-      if (err) {
-        res.status(501).json('Status not found.');
+      }, function(err, result) {
+        findOneStatusCallback(err ? err : null, result);
+      });
+    }
+
+    function removeStatus(result, removeStatusCallback) {
+      if (req.user._id == result.creator) {
+        Status.remove(result, function(err) {
+          removeStatusCallback(err ? err : null);
+        });
       } else {
-        User.findOne({
-            _id: result.status
-        }, function(err, status) {
-            if (req.user._id.equals(result.author)) {
-              Status.remove(result, function(err) {
-                if (err) {
-                  ee.emit('error', err);
-                  res.status(400).json(null);
-                } else {
-                  res.status(200).json(null);
-                }
-              });
-            } else if (err) {
-              ee.emit('error', err);
-              res.status(400).json({
-                'message': 'Impossible to find status'
-              });
-            } else if (req.user._id == status.creator) {
-              Status.remove(result, function(err) {
-                if (err) {
-                  ee.emit('error', err);
-                  res.status(400).json(null);
-                } else {
-                  res.status(200).json(null);
-                }
-              });
-            } else {
-              res.status(400).json({
-                  'message': 'error in remove status'
-              });
-            }
-          });
+        removeStatusCallback('error in remove actuality');
       }
+    }
+
+    // Faire une promise
+    async.waterfall([findOneStatus, removeStatus], function(error) {
+      console.log(error ? error : null);
+      res.status(error ? 400 : 200).json(error ? error : null);
     });
   },
 };

@@ -6,7 +6,7 @@ CreateAnnounceAngCtrl.$inject = ['$injector', '$timeout', '$localStorage', '$sco
 function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   $http, $rootScope, $modal) {
 
-  console.log('*************AnnounceCtrl************************');
+  console.log('****************AnnounceCtrl************************');
 
   var vm                    = this;
 
@@ -39,6 +39,8 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   vm.maxSize = 10;
 
   ////////////////////////////////////////////////////////////////////////
+
+  var announce = new Announce();
 
   function pageChanged(currentPage) {
     console.log('Page changed to: ' + currentPage);
@@ -77,23 +79,10 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     console.log('paginate user announces');
     vm.page = page;
     if ($rootScope.currentUser) {
-
-      Announce.getAnnouncesFromUser({
-        page : vm.page,
-        limit : vm.maxSize,
-        user: $rootScope.currentUser._id
-      }).then(function(data) {
-        console.log('_________paginate user____________________');
-
-        vm.announces   = data.announces;
-        console.log(vm.announces);
-        for (var i = 0; i < vm.announces.length; i++) {
-          if (vm.announces[i].title.length > 18) {
-            vm.announces[i].title = vm.announces[i].title.substring(0, 19) + '...';
-          }
-        }
-        console.log(data.total);
-        vm.total       = data.total;
+      announce.setAnnouncePagination(vm.page);
+      announce.getAnnouncesFromUser().then(function() {
+        vm.announces   = announce._announces;
+        vm.total       = announce._total;
       });
     }
   }
@@ -106,26 +95,21 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     console.log('create');
     if ($rootScope.currentUser) {
       vm = this;
-      Announce.postAnnounce({
-        title: vm.title,
-        content: vm.content,
-        type: vm.type,
-        category: vm.category,
-        price: vm.price,
-        images: vm.selectedImages,
-        activated: true,
-        tags: vm.tags
-      }).then(function(response) {
+      announce.setAnnounceField(vm.title, vm.content, vm.type, vm.category, vm.price, vm.selectedImages, true, vm.tags);
+      announce.postAnnounce().then(function() {
         Actuality.postActuality({status: 1, content:vm.content}).then(function(res) {
-          console.log(res);
+          vm.title    = '';
+          vm.content  = '';
+          vm.title    = '';
+          vm.category = '';
+          vm.type     = '';
+          vm.tags     = [];
         });
-        console.log(response);
-        vm.title    = '';
-        vm.content  = '';
-        vm.paginateUser(vm.page);
-        vm.title    = '';
-        vm.category = '';
-        vm.type     = '';
+        announce.setAnnouncePagination(vm.page);
+        announce.getAnnouncesFromUser().then(function() {
+          vm.announces   = announce._announces;
+          vm.total       = announce._total;
+        });
       });
     } else {
       var modalInstance = $modal.open({
@@ -163,9 +147,9 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     }
   }
 
-  function remove(announce) {
+  function remove(ann) {
     console.log('remove');
-    console.log(announce);
+    console.log(ann);
     swal({
       title: 'Etes-vous sur?',
       text: 'Vous allez devoir recréer une nouvelle annonce!',
@@ -178,13 +162,17 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     },
     function(isConfirm) {
       if (isConfirm) {
-        Announce.deleteAnnounce(announce._id).then(function(err) {});
-        for (var i in vm.announces) {
-          if (vm.announces[i] == announce) {
-            vm.announces.splice(i, 1);
+        announce.setId(ann._id);
+        announce.deleteAnnounce().then(function() {
+          console.log(vm.announces);
+          console.log(announce._announces);
+          for (var i in vm.announces) {
+            if (vm.announces[i] == announce._announces[i]) {
+              vm.announces.splice(i, 1);
+            }
           }
-        }
-        swal('Effacé!', 'Votre annonce a été effacée.', 'success');
+          swal('Effacé!', 'Votre annonce a été effacée.', 'success');
+        });
       } else {
         swal('Annulé', 'Votre annonce n\'a pas été effacée', 'error');
       }
@@ -192,26 +180,21 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
 
   }
 
-  function desactivate(announce) {
+  function desactivate(ann) {
     console.log('desactivate');
-    console.log(announce);
-    Announce.statusAnnounce({
-      _id: announce._id,
-      activated: false
-    }).then(function() {});
-
-    toaster.pop('warning', 'Ce service est désactivé');
-    vm.paginateUser(vm.page);
+    announce.setStatusAnnounce(ann._id, false);
+    announce.statusAnnounce().then(function() {
+      toaster.pop('warning', 'Ce service est désactivé');
+      vm.paginateUser(vm.page);
+    });
   }
 
-  function activate(announce) {
-    Announce.statusAnnounce({
-      _id: announce._id,
-      activated: true
-    }).then(function() {});
-
-    toaster.pop('success', 'Ce service est activé');
-    vm.paginateUser(vm.page);
+  function activate(ann) {
+    announce.setStatusAnnounce(ann._id, true);
+    announce.statusAnnounce().then(function() {
+      toaster.pop('success', 'Ce service est activé');
+      vm.paginateUser(vm.page);
+    });
   }
 
   function initListCreateAnnounce() {

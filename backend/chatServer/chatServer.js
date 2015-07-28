@@ -52,7 +52,8 @@ module.exports = function(server) {
     socket.on('disconnect', function() {
       console.log('disconnect');
       if (typeof people[socket.id] !== 'undefined') { //this handles the refresh of the name screen
-        purgatory.purge(socket, 'disconnect');
+        // purgatory.purge(socket, 'disconnect');
+        console.log('disconnect');
       }
     });
 

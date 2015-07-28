@@ -1,9 +1,9 @@
 angular.module('InTouch')
 .controller('ShowAnnounceAngCtrl', ShowAnnounceAngCtrl);
 
-ShowAnnounceAngCtrl.$inject = ['$injector', '$routeParams', '$rootScope'];
+ShowAnnounceAngCtrl.$inject = ['$injector', '$routeParams', '$rootScope', '$localStorage'];
 
-function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
+function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage) {
   
   var vm              = this;
   
@@ -19,7 +19,7 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
   vm.postComment      = postComment;
   vm.removeComment    = removeComment;
   vm.initViewAnnounce = initViewAnnounce;
-  vm.followUser       = followUser;
+  // vm.followUser       = followUser;
   vm.testIfFriend     = testIfFriend;
   vm.countFriends     = countFriends;
 
@@ -27,13 +27,14 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
 
   $localStorage.searchField = null;
 
+  var announce = new Announce();
+
   ///////////////////////////////////////////////////////////////////////////
 
-  function testIfFriend(announce) {
+  function testIfFriend(ann) {
     if ($rootScope.currentUser) {
       Friends.testIfFriend({
-        idUser: $rootScope.currentUser._id,
-        username: announce.creator.username
+        username: ann.creator.username
       }).then(function(response) {
 
         vm.followStatus = response;
@@ -52,48 +53,41 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope) {
   }
 
   function findOne() {
-    Announce.getAnnounceById($routeParams.announceId).then(function(res) {
+    announce.setId($routeParams.announceId);
+    announce.getAnnounceById().then(function() {
       console.log('announce found________');
-      console.log(res);
-      vm.announce = res;
-
-      if (vm.announce.title.length > 34) {
-        vm.announce.title = vm.announce.title.substring(0, 35) + '...';
-      }
-      if (vm.announce.content.length > 34) {
-        console.log(vm.announce.content.length);
-        vm.announce.content = vm.announce.content.substring(0, 35) + '...';
-      }
+      vm.announce = announce._announce;
+      console.log(vm.announce);
       vm.testIfFriend(vm.announce);
       vm.countFriends(vm.announce);
-      vm.announceRating = res.rating;
-      vm.selectedImages = res.images;
+      vm.announceRating = announce._announce.rating;
+      vm.selectedImages = announce._announce.images;
     });
   }
 
-  function followUser(userDes, idUser) {
-    console.log('_____follow_____');
-    console.log(idUser);
-    vm.suggestions = '';
-    Friends.postFriend({
-      usernameWaitFriendRequest: userDes,
-      idUser: idUser
-    }).then(function(response) {
-      console.log('friend request done');
-    });
-    console.log('toaster');
-    toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
-    if ($rootScope.currentUser) {
-      socket.emit('sendFriendRequest', {
-        user: $rootScope.currentUser.username,
-        userDes: userDes,
-        userDesId: idUser,
-        id: $rootScope.currentUser._id
-      });
+  // function followUser(userDes, idUser) {
+  //   console.log('_____follow_____');
+  //   console.log(idUser);
+  //   vm.suggestions = '';
+  //   Friends.postFriend({
+  //     usernameWaitFriendRequest: userDes,
+  //     idUser: idUser
+  //   }).then(function(response) {
+  //     console.log('friend request done');
+  //   });
+  //   console.log('toaster');
+  //   toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
+  //   if ($rootScope.currentUser) {
+  //     socket.emit('sendFriendRequest', {
+  //       user: $rootScope.currentUser.username,
+  //       userDes: userDes,
+  //       userDesId: idUser,
+  //       id: $rootScope.currentUser._id
+  //     });
 
-      vm.followStatus = 2;
-    }
-  }
+  //     vm.followStatus = 2;
+  //   }
+  // }
 
   function getComments() {
     Comments.getAnnounceComments($routeParams.announceId)

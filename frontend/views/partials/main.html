@@ -93,9 +93,6 @@ div.margin {
   border-color: #8f8f8f;
 }
 
-
-
-
 .checkbox label:after, 
 .radio label:after {
     content: '';
@@ -260,13 +257,16 @@ div.margin {
   </div>
 </div>
 </section>
-    <div ng-controller="OtherController">
+
+    <div ng-show='auth.searchField' ng-controller="OtherController">
     <div class="text-center">
     <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="views/partials/dirPagination.tpl.html">
     </dir-pagination-controls>
     </div>
 
   </div>
+
+    <pagination ng-hide="auth.searchField" total-items="auth.total" ng-change="auth.pageChanged(auth.bigCurrentPage)" ng-model="auth.bigCurrentPage" max-size="auth.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
 
 
     <v-tabs class="vTabs--default" horizontal active="activeTabIndex">
@@ -278,7 +278,7 @@ div.margin {
 </v-pages>
 
   </div>
-<!--   <pagination ng-hide="auth.searchField" total-items="auth.total" ng-change="auth.pageChanged(auth.bigCurrentPage)" ng-model="auth.bigCurrentPage" max-size="auth.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination> -->
+
 
 
 <!--

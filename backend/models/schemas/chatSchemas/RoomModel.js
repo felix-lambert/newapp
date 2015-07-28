@@ -4,10 +4,10 @@ exports = module.exports = function(mongoose) {
 
   var roomSchema = new Schema({
     name: {
-        type: String,
-        index: true,
-        required: true,
-        unique: true
+      type: String,
+      index: true,
+      required: true,
+      unique: true
     },
     people: [String],
     created: Date,

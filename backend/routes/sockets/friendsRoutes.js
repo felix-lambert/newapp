@@ -22,7 +22,7 @@ var routes = [
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.countFriends]
 }, {
-    path: '/api/getfriends/:friendId',
+    path: '/api/getfriends/',
     httpMethod: 'GET',
     middleware: [auth.ensureAuthenticated, FriendsCtrl.getFriendsFromUser]
 }, {

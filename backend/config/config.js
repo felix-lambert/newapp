@@ -29,7 +29,7 @@ exports = module.exports = function(app, express, config) {
   app.use(compress());
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({
-      extended: true
+    extended: true
   }));
 
   app.use(bodyParser.json());

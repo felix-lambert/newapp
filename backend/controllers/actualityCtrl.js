@@ -4,7 +4,6 @@
 var mongoose  = require('mongoose');
 var Actuality = mongoose.model('Actuality');
 var User      = mongoose.model('User');
-var ee        = require('../config/event');
 
 module.exports = {
 
@@ -39,35 +38,28 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   removeActuality: function(req, res) {
     console.log('______DELETE /api/actuality___');
-    Actuality.findOne({
+    function findOneActuality(findOneActualityCallback) {
+      Actuality.findOne({
         _id: req.params.id
-    }, function(err, result) {
-      if (err) {
-        res.status(501).json('Status not found.');
-      } else {
-        User.findOne({
-            _id: result.status
-        }, function(err, status) {
-          if (req.user._id.equals(result.author)) {
-            Actuality.remove(result, function(err) {
-              res.status(err ? 400 : 200).json(err ? err : null);
-            });
-          } else if (err) {
-            ee.emit('error', err);
-            res.status(400).json({
-              'message': 'Impossible to find actuality'
-            });
-          } else if (req.user._id == actuality.creator) {
-            Actuality.remove(result, function(err) {
-              res.status(err ? 400 : 200).json(err ? err : null);
-            });
-          } else {
-            res.status(400).json({
-                'message': 'error in remove status'
-            });
-          }
+      }, function(err, result) {
+        findOneActualityCallback(err ? err : null, result);
+      });
+    }
+
+    function removeActuality(result, removeActualityCallback) {
+      if (req.user._id == result.creator) {
+        Actuality.remove(result, function(err) {
+          removeActualityCallback(err ? err : null);
         });
+      } else {
+        removeActualityCallback('error in remove actuality');
       }
+    }
+
+    // Faire une promise
+    async.waterfall([findOneActuality, removeActuality], function(error) {
+      console.log(error ? error : null);
+      res.status(error ? 400 : 200).json(error ? error : null);
     });
   },
 };

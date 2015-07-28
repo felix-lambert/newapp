@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var Room     = mongoose.model('Room');
-var ee       = require('../../config/event');
 var async    = require('async');
 
 module.exports = {
@@ -14,14 +13,17 @@ module.exports = {
   create: function(req, res) {
     console.log('______CREATE ROOM TEST__________________');
 
-    var usernames = new Array(req.body.nameRec, req.body.name);
+    var usernames = new Array(req.body.nameRec, req.user.username);
 
     usernames.sort(alphabetical);
 
     roomName = usernames.join('');
+    console.log('roomname... ');
+    console.log(roomName);
     Room.find({name: roomName}, function(err, results) {
       var room = [];
-      if (!results && results.length > 0) {
+      console.log(results);
+      if (!results || results.length > 0) {
         res.status(201).json({
           roomName : results[0].name,
           roomId : results[0]._id,
@@ -31,6 +33,7 @@ module.exports = {
         room = new Room({
           name: roomName
         });
+        console.log('save room');
         room.save(function(err, saveRoom) {
           res.status(err ? 400 : 200).json(err ? err : {
             roomId: saveRoom._id,
