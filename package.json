@@ -20,7 +20,7 @@
     "crypto": "0.0.3",
     "ejs": "~2.3.3",
     "moment": "~2.10.5",
-    "mongoose": "~4.1.0",
+    "mongoose": "~4.0.0",
     "morgan": "^1.6.0",
     "node-uuid": "^1.4.3",
     "passport": "^0.2.2",
