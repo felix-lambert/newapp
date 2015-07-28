@@ -63,43 +63,6 @@ div.margin {
 
 <section ng-init="listAnnounces.initListAnnounce()">
 
-  <div class="margin">
-    <input type="text" class="form-input" ng-keydown="checkKeyDown($event)" class="" ng-model="listAnnounces.searchText" ng-change="listAnnounces.search()"placeholder="Rechercher service..">
-  </div>
-  <div ng-repeat="announceResult in listAnnounces.findResults">
-    <div class="well">
-      <div class="media">
-        <div class="media-body">
-          <h4 class="media-heading">
-          <a ng-href="announces/{{announceResult._source._id}}">
-            <b>{{announceResult._source.title}}</b>
-          </a>
-          <button ng-hide="announceResult._source.likeCreator.userSend == currentUser.username" ng-click="listAnnounces.like(announceResult._source._id, announceResult._source.creator.username, announceResult._source.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
-          </h4>
-          <p class="text-right">{{announceResult._source.creator.username}}</p>
-          <p>{{announceResult._source.content | cutFilter }}</p>
-
-          <ul class="list-inline list-unstyled">
-            <li><span><i class="glyphicon glyphicon-calendar"></i>
-            {{announceResult._source.FORMATTED_DATE}} </span></li>
-            <li>|</li>
-            <span><i class="glyphicon glyphicon-comment"></i>{{announceResult._source.nbComment}}</span>
-            <li>|</li>
-            <li>
-              <span class="glyphicon glyphicon-star"></span>
-              <span class="glyphicon glyphicon-star"></span>
-              <span class="glyphicon glyphicon-star"></span>
-              <span class="glyphicon glyphicon-star"></span>
-              <span class="glyphicon glyphicon-star-empty"></span>
-            </li>
-            <li>|</li>
-            <li>{{announceResult._source.price}} crédit(s)</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-  </div>
   <div ng-show="listAnnounces.searching === false" ng-repeat="announce in listAnnounces.announces">
     <div class="well">
       <div class="media">
@@ -108,10 +71,10 @@ div.margin {
           <a ng-href="announces/{{announce._id}}">
             <b>{{announce.title}}</b>
           </a>
-          <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+<!--           <button ng-hide="announce.likeCreator.userSend == currentUser.username" ng-click="announce.like(announce._id, announce.creator.username, announce.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button> -->
           </h4>
           <p class="text-right">{{announce.creator.username}}</p>
-          <p>{{announce.content | cutFilter }}</p>
+          <p>{{announce.content }}</p>
 
           <ul class="list-inline list-unstyled">
             <li><span><i class="glyphicon glyphicon-calendar"></i>

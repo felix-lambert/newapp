@@ -43,7 +43,7 @@ var routeObject = {
     templateUrl: 'partials/announces/createAnnc.html',
     controller: 'CreateAnnounceAngCtrl',
     controllerAs: 'createAnnounce',
-    css: '../stylesheets/createAnnc.css'
+
   },
   '/announces/:announceId/edit': {
     templateUrl: 'partials/announces/editAnnc.html',
@@ -63,8 +63,7 @@ var routeObject = {
   '/profile/:userId': {
     templateUrl: 'partials/profile/profileView.html',
     controller: 'ProfileViewAngCtrl',
-    controllerAs: 'showViewProfile',
-    css: '../stylesheets/profileView.css'
+    controllerAs: 'showViewProfile'
   },
   '/forgot': {
     templateUrl: 'partials/threads/forgot.html',
@@ -74,14 +73,12 @@ var routeObject = {
   '/actuality': {
     templateUrl: 'partials/profile/actualityPrfl.html',
     controller: 'ActualityAngCtrl',
-    controllerAs: 'actuality',
-    css: '../stylesheets/actualityPrfl.css'
+    controllerAs: 'actuality'
   },
   '/pictures': {
     templateUrl: 'partials/profile/picturePrfl.html',
     controller: 'PictureAngCtrl',
     controllerAs: 'picture',
-    css: '../stylesheets/picturePrfl.css',
     resolve: {
       preGetImages: function(Images) {
         console.log('preGetRooms');
