@@ -7,7 +7,7 @@ PictureAngCtrl.$inject = ['$localStorage', 'Actuality', '$scope', 'Images', '$ro
 function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
   FileUploader, $http, appLoading, toaster, preGetImages) {
 
-  console.log('--------------UPLOAD PICTURES----------------------');
+  console.log('----------------UPLOAD PICTURES------------------------');
 
   var vm                                      = this;
   var userToken                               = $rootScope.currentUser.token;
@@ -116,6 +116,7 @@ function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
     vm.noImages = false;
     vm.preview = true;
     vm.image = response;
+    appLoading.ready();
     console.info('onSuccessItem', fileItem, response, status, headers);
   };
 

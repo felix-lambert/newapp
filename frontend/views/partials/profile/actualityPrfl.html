@@ -13,8 +13,8 @@
           </div>
           <div class="timeline-label">
             <h2><a ng-href="#">{{act.creator.username}}</a> <span>une nouvelle annonce a été publiée</span>
-
-             <button ng-hide="act.likeCreator.userSend == currentUser.username" ng-click="actuality.like(act._id, act.creator.username, act.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button>
+<!-- 
+             <button ng-hide="act.likeCreator.userSend == currentUser.username" ng-click="actuality.like(act._id, act.creator.username, act.creator._id)" class="btn icon-btn btn-primary" href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button> -->
 
             </h2>
             <p>{{act.content}}</p>
@@ -28,7 +28,9 @@
             <i class="entypo-camera"></i>
           </div>
           <div class="timeline-label">
-            <h2><a ng-href="#">{{act.creator.username}}</a> <span>a changé sa photo de profil</span> <a ng-href="#">Photo de profil</a> <button ng-hide="act.likeCreator.userSend == currentUser.username" ng-click="actuality.like(act._id, act.creator.username, act.creator._id)" class="btn icon-btn btn-primary" ng-href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button></h2>
+            <h2><a ng-href="#">{{act.creator.username}}</a> <span>a changé sa photo de profil</span> <a ng-href="#">Photo de profil</a> 
+<!--             <button ng-hide="act.likeCreator.userSend == currentUser.username" ng-click="actuality.like(act._id, act.creator.username, act.creator._id)" class="btn icon-btn btn-primary" ng-href="#"><span class="glyphicon btn-glyphicon glyphicon-thumbs-up img-circle text-primary"></span>Like</button> -->
+            </h2>
             <img ng-src="/images/{{act.content}}" class="img-responsive img-rounded full-width">
           </div>
         </div>
