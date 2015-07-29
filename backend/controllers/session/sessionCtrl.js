@@ -47,6 +47,7 @@ module.exports = {
   // AUTHENTICATE /////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   passportAuthenticate: function(req, res, next) {
+    console.log('authentification');
     console.log(req.body);
     // function validateEmail(email) {
     //   var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
@@ -55,6 +56,7 @@ module.exports = {
   
     passport.authenticate('local', {session: false}, function(err, user, info) {
       if (user === false) {
+        console.log(err);
         return res.status(400).json({
           err: info.message
         });
