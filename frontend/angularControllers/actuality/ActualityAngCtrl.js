@@ -1,16 +1,14 @@
 angular.module('InTouch')
   .controller('ActualityAngCtrl', ActualityAngCtrl);
 
-ActualityAngCtrl.$inject = ['$localStorage', 'Like', 'socket', 'toaster', 'Notifications', 'Actuality', '$rootScope', '$location', 'appLoading'];
+ActualityAngCtrl.$inject = ['Like', 'socket', 'toaster', 'Notifications', 'Actuality', '$rootScope', '$location', 'appLoading'];
 
-function ActualityAngCtrl($localStorage, Like, socket, toaster, Notifications, Actuality, $rootScope, $location, appLoading) {
+function ActualityAngCtrl(Like, socket, toaster, Notifications, Actuality, $rootScope, $location, appLoading) {
   appLoading.ready();
 
   var vm = this;
   vm.actualities = [];
   vm.like = like;
-
-  $localStorage.searchField = null;
 
   Like.getLikesFromUser()
   .then(function(response) {
