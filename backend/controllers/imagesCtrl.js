@@ -9,6 +9,17 @@ var User      = mongoose.model('User');
 var Images    = mongoose.model('Image');
 var Actuality = mongoose.model('Actuality');
 var async    = require('async');
+var elasticsearch = require('elasticsearch');
+
+if (process.env.NODE_ENV === 'production') {
+  var ES = new elasticsearch.Client({
+    host: "http://paas:f669a84c8a68e09959b4e8e88df26bf5@dwalin-us-east-1.searchly.com"
+  });
+} else {
+  var ES = new elasticsearch.Client({
+    host: "localhost:9200"
+  });
+}
 
 module.exports = {
 
@@ -65,12 +76,25 @@ module.exports = {
           User.findOne({_id: req.user._id}).exec(function(err, resultForSave) {
             resultForSave.profileImage = hashName;
             resultForSave.save();
-            var actuality     = new Actuality();
-            actuality.content = hashName;
-            actuality.status  = 2;
-            actuality.creator = req.user._id;
-            actuality.save();
-          });
+            ES.index({
+              index: 'user',
+              type: 'usr',
+              id: resultForSave._id.toHexString(),
+              body: {
+                username: resultForSave.username,
+                profileImage: hashName
+              }
+            }, function (error, response) {
+                console.log('put in elasticsearch');
+                console.log(error);
+                console.log(response);
+                var actuality     = new Actuality();
+                actuality.content = hashName;
+                actuality.status  = 2;
+                actuality.creator = req.user._id;
+                actuality.save();
+              });
+            });
         }
         image.save(function(err, result) {
           return res.status(err ? 400 : 200).json(err ? err : {
@@ -119,7 +143,17 @@ module.exports = {
       if (result !== null) {
         result.profileImage = false;
         result.save(function(err) {
-          saveImageCallback(err ? err : null);
+          client.index({
+              index: 'user',
+              type: 'usr',
+              id: result._id,
+              body: {
+                profileImage: false
+              }
+            }, function (error, response) {
+              saveImageCallback(error ? error : null);      
+            });
+          
         });
       } else {
         saveImageCallback(null);

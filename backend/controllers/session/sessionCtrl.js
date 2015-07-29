@@ -131,7 +131,8 @@ module.exports = {
         id: user._id.toHexString(),
         body: {
           created: Date.now(),
-          username: user.username
+          username: user.username,
+          profileImage: null
         }}, function(err, res) {
           console.log(err, res);
           registerUserESCallback(err ? err : null);

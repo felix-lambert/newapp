@@ -351,11 +351,11 @@ ul.dropdown-cart li .item-right button{
                   <div ng-show="suggestion.username.notFollow.accept">Ami
                   </div></li>
                 </ul>
-                <figure ng-show='suggestion.profileImage'>
-                  <img width="670" height="500" ng-src="images/{{suggestion.profileImage}}" class="doc-img animate attachment-gallery-post-single wp-post-image" alt="doctor-2">
+                <figure ng-show='suggestion._source.profileImage'>
+                  <img width="670" height="500" ng-src="images/{{suggestion._source.profileImage}}" class="doc-img animate attachment-gallery-post-single wp-post-image" alt="doctor-2">
                 </figure>
 
-                <figure ng-show='!suggestion.profileImage'>
+                <figure ng-show='!suggestion._source.profileImage'>
                   <img width="670" height="500" ng-src="images/default.jpeg" class="doc-img animate attachment-gallery-post-single wp-post-image" alt="doctor-2">
                 </figure>
                 <div class="text-content">
