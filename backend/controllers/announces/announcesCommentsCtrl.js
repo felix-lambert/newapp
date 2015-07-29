@@ -73,7 +73,7 @@ module.exports = {
         console.log('inside comment');
         console.log(comment);
         console.log(comment._id);
-        Comment.remove(comment._id, function(error) {
+        Comment.remove({'_id': comment._id}, function(error) {
           console.log('___callback___');
           removeCommentCallback(error ? error : null);
         });
