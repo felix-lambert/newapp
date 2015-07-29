@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('ActualityAngCtrl', ActualityAngCtrl);
 
-ActualityAngCtrl.$inject = ['$localStorage', 'Like', 'socket', 'toaster', 'Notifications', 'Actuality', '$rootScope', '$location', 'appLoading'];
+ActualityAngCtrl.$inject = ['Like', 'socket', 'toaster', 'Notifications', 'Actuality', '$rootScope', '$location', 'appLoading', '$localStorage'];
 
-function ActualityAngCtrl($localStorage, Like, socket, toaster, Notifications, Actuality, $rootScope, $location, appLoading) {
+function ActualityAngCtrl(Like, socket, toaster, Notifications, Actuality, $rootScope, $location, appLoading, $localStorage) {
   appLoading.ready();
 
   var vm = this;
