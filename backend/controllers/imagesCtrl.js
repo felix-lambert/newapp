@@ -135,55 +135,62 @@ module.exports = {
       Images.findOne({'creator': req.user._id})
       .where('profileImage').equals(true)
       .exec(function(err, result) {
+        console.log('find one user image');
+        console.log(result);
         findOneUserImageCallback(err ? err : null, result);
       });
     }
 
     function saveImage(result, saveImageCallback) {
       if (result !== null) {
+        console.log('save image...');
+        console.log(result);
         result.profileImage = false;
         result.save(function(err) {
-          client.index({
-              index: 'user',
-              type: 'usr',
-              id: result._id,
-              body: {
-                profileImage: false
-              }
-            }, function (error, response) {
-              saveImageCallback(error ? error : null);      
-            });
-          
+          console.log('save done...');
+          console.log(err);
+          console.log('find one image');
+          console.log(req.params.imageId);
+          Images.findOne({
+            '_id': req.params.imageId
+          }, function(err, doProfile) {
+            saveImageCallback(err ? err : null, doProfile);
+          });
         });
       } else {
+        console.log('error ?????????????????????????');
         saveImageCallback(null);
       }
     }
 
-    function findOneImage(findOneImageCallback) {
-      console.log('find one image');
-      console.log(req.params.imageId);
-      Images.findOne({
-        '_id': req.params.imageId
-      }, function(err, doProfile) {
-        findOneImageCallback(err ? err : null, doProfile);
-      });
-    }
-
     function saveOneProfileUserImage(doProfile, saveOneProfileUserImageCallback) {
-      User.findOne({'_id': req.user._id}).exec(function(err, res) {
+      console.log('save one profileImage');
+      console.log(doProfile);
+      User.findOne({'_id': req.user._id}).exec(function(err, result) {
         console.log(req.params.imageName);
-        res.profileImage = req.params.imageName;
-        res.save(function(err, res) {
+        result.profileImage = req.params.imageName;
+        result.save(function(err, res) {
           if (err) {
             saveOneProfileUserImageCallback(err);
           } else {
-            doProfile.profileImage = true;
-            doProfile.save(function(err, response) {
-              saveOneProfileUserImageCallback(err ? err : null);
-            });
-          }
-        });
+            ES.index({
+              index: 'user',
+              type: 'usr',
+              id: res._id.toHexString(),
+              body: {
+                username: res.username,
+                profileImage: req.params.imageName
+              }
+            }, function (error, response) {
+                console.log('put in elasticsearch');
+                console.log(error);
+                doProfile.profileImage = true;
+                doProfile.save(function(err, response) {
+                  saveOneProfileUserImageCallback(err ? err : null);
+                });
+              });
+            }
+          });
       });
 
     }
@@ -191,9 +198,10 @@ module.exports = {
     async.waterfall([
       findOneUserImage,
       saveImage,
-      findOneImage,
       saveOneProfileUserImage
     ], function(error) {
+      console.log('test error');
+      console.log(error);
       res.status(error ? 400 : 200).json(error ? error : null);
     });
   }
