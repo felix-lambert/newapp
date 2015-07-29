@@ -210,6 +210,7 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
       $http.defaults.headers.common['auth-token'] = userToken;
     }
     if (vm.name === 'Utilisateurs') {
+      console.log('Utilisateurs');
       $http.get('/search/' + '?term=' + vm.searchText)
         .success(function(data) {
           if (data.length > 0) {
