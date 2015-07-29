@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('HistoricAngCtrl', ActualityAngCtrl);
 
-ActualityAngCtrl.$inject = ['$rootScope', '$location', 'appLoading'];
+HistoricAngCtrl.$inject = ['$rootScope', '$location', 'appLoading', '$localStorage'];
 
-function ActualityAngCtrl($rootScope, $location, appLoading) {
+function HistoricAngCtrl($rootScope, $location, appLoading, $localStorage) {
   appLoading.ready();
   $localStorage.searchField = null;
 }
