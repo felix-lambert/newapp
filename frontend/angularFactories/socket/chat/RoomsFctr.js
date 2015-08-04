@@ -1,57 +1,42 @@
 angular.module('InTouch')
 
-.factory('Rooms', Rooms);
+.factory('Room', Room);
 
-Rooms.$inject = ['$q', '$http'];
+Room.$inject = ['$q', '$http'];
 
-function Rooms($q, $http) {
+function Room($q, $http) {
 
-  var roomsFnct = {
-    postRoom: postRoom,
-    getRooms: getRooms,
-    deleteRoom: deleteRoom
+  var Room = function() {
+    this._id = '';
+    this._roomField = null;
   };
 
-  return roomsFnct;
+  Room.prototype = {
+    setRoomField: setRoomField,
+    postRoom: postRoom,
+    getRooms: getRooms
+  };
 
-  function postRoom(room) {
-    var deferred = $q.defer();
-    $http.post('/api/rooms/', room).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  return Room;
+
+  function setRoomField(name) {
+    this._roomField = {
+      nameRec: name  
+    };
+  }
+
+  function postRoom() {
+    var self = this;
+    $http.post('/api/rooms/', self._roomField).then(function(response) {
+      return response;
     });
-    return deferred.promise;
+    
   }
 
   function getRooms() {
-    console.log('get rooms');
-    var deferred = $q.defer();
-    $http.get('/api/rooms/').success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+    var self = this;
+    $http.get('/api/rooms/').then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
-
-  function deleteRoom(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/rooms/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
-  }
-
-  // return $resource('/api/rooms/:roomId', {
-  //   roomId: '@_id'
-  // }, {
-  //   'save': {
-  //     method: 'POST',
-  //     isArray: false
-  //   },
-
-  // });
 }

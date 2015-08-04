@@ -3,33 +3,50 @@ var assert  = require('chai').assert;
 var request = require('supertest');
 var server  = require('./myapp');
 var app     = server();
+var mongoose = require('mongoose');
 
-it('get / return a 200 response', function(done) {
-  request(app).get('/').expect(200, done);
-});
 
-it('get /search return a 200 response (search)', function(done) {
+before(function (done) {   
+  mongoose.connect('mongodb://localhost/intouchdevtest', function(){
+    mongoose.connection.db.dropDatabase(function(){
+      done()
+    })    
+  })
+})
+
+it('get /search', function(done) {
   request(app)
     .get('/search')
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
     .expect(200, done);
 });
 
-it('get /api/notifications/ return a 400 response', function(done) {
+it('get /api/notifications/', function(done) {
   request(app)
     .get('/api/notifications/')
-    .expect(400, done);
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect('"There is no token"', done);
 });
 
-it('get /auth/username-exists return a 400 response', function(done) {
+it('get /auth/username-exists', function(done) {
   request(app)
     .get('/auth/username-exists')
-    .expect(400, done);
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect('"No username is typed"', done);
 });
 
-it('get /auth/email-exists return a 400 response', function(done) {
+it('get /auth/email-exists', function(done) {
   request(app)
     .get('/auth/email-exists')
-    .expect(400, done);
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect('"No email is typed"', done);
 });
 
 it('should return the correct HTML', function(done) {
@@ -41,70 +58,83 @@ it('should return the correct HTML', function(done) {
     });
 });
 
-it('Sign in user', function(done) {
-  request(app).post('/auth/login')
+it('Sign in user with incorrect email', function(done) {
+  request(app)
+  .post('/auth/login')
     .send({
       email : 'frepirtjiupghtr',
       password : 'frejrpijgtripjgtr'
     })
-    .expect(400, done);
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect('{"err":"Incorrect username"}', done);
 });
 
-it('Sign in user', function(done) {
-  request(app).post('/auth/login')
+it('Normal registration', function(done) {
+  request(app)
+  .post('/auth/register')
       .send({
-        email : 'frepirtjiupghtr@gmail.com',
-        password : 'frejrpijgtripjgtr'
-      })
-      .expect(400, done)
-});
-
-it('Sign in user', function(done) {
-  request(app).post('/auth/login')
-      .send({
+        username: 'felix',
         email : 'lambertfelix8@gmail.com',
-        password : 'lebarbarelemelon'
+        password : 'lebarbarelemelon',
+        repeatPassword: 'lebarbarelemelon'
       })
-      .expect(200, done)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200, done);
 });
 
-it('Sign in user', function(done) {
-  request(app).post('/auth/login')
-      .send({
-        email : 'lambertfelix8@gmail.com',
-        password : 'lebarbarelemelodn'
-      })
-      .expect(400, done)
-});
-
-it('Register', function(done) {
-  request(app).post('/auth/register')
-      .send({
-        email : 'lambertfelix8@gmail.com',
-        password : 'lebarbarelemelodn',
-        passwordConf: 'frergtrgtrtgr'
-      })
-      .expect(400, done);
-});
-
-it('Register', function(done) {
-  request(app).post('/auth/register')
+it('Registration with no username', function(done) {
+  request(app)
+  .post('/auth/register')
       .send({
         email : 'lambertfelix8@gmail.com',
         password : 'lebarbarelemelon',
-        passwordConf: 'lebarbarelemelon'
+        repeatPassword: 'lebarbarelemelon'
       })
-      .expect(400, done);
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect('"There is no username or email"', done);
 });
 
-it('Register', function(done) {
-  request(app).post('/auth/register')
+it('Registration with no email', function(done) {
+  request(app)
+  .post('/auth/register')
       .send({
-        email : 'lambertfelix8@gmail.com',
+        username: 'felix',
         password : 'lebarbarelemelon',
-        confPassword: 'lebarbarelemelon'
+        repeatPassword: 'lebarbarelemelon'
       })
-      .expect(400, done);
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect('"There is no username or email"', done);
+});
+
+it('Normal authentification', function(done) {
+  request(app)
+  .post('/auth/login')
+  .send({
+    email : 'lambertfelix8@gmail.com',
+    password : 'lebarbarelemelon'
+  })
+  .set('Accept', 'application/json')
+  .expect('Content-Type', /json/)
+  .expect(200, done);
+});
+
+it('Wrong password', function(done) {
+  request(app).post('/auth/login')
+      .send({
+        email : 'premier@gmail.com',
+        password : 'premiere'
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect('{"err":"Incorrect username"}', done);
 });
 
 it('Register not same password', function(done) {
@@ -112,19 +142,12 @@ it('Register not same password', function(done) {
       .send({
         email : 'lambertfelix8@gmail.com',
         password : 'lebarbarelemelodn',
-        confPassword: 'frergtrgtrtgr'
+        repeatPassword: 'frergtrgtrtgr'
       })
-      .expect(400, done);
-});
-
-it('Register again', function(done) {
-  request(app).post('/auth/register')
-      .send({
-        email : 'lambertfelix8@gmail.com',
-        password : 'lebarbarelemelon',
-        confPassword: 'lebarbarelemelon'
-      })
-      .expect(400, done);
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect('"The confirm password does not match"', done);
 });
 
 it('Register other time', function(done) {
@@ -134,7 +157,10 @@ it('Register other time', function(done) {
         password : 'lebarbarelemelon',
         confPassword: 'lebarbarelemelon'
       })
-      .expect(400, done);
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect('"The confirm password does not match"', done);
 });
 
 // it('should return the correct HTML', function(done) {

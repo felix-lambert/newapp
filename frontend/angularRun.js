@@ -117,8 +117,7 @@ function appRun($localStorage, $rootScope, $location, appLoading) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {
     console.log('________ROUTE TEST_________________');
     appLoading.loading();
-    var currentUser        = $localStorage.currentUser;
-    $rootScope.currentUser = currentUser;
+    $rootScope.currentUser = $localStorage.currentUser;
     console.log($rootScope.currentUser);
     for (var i in routeObject) {
       if (next.originalPath == i) {

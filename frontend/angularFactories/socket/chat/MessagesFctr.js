@@ -1,58 +1,58 @@
 angular.module('InTouch')
 
-.factory('Messages', Messages);
+.factory('Message', Message);
 
-Messages.$inject = ['$q', '$http'];
+Message.$inject = ['$q', '$http'];
 
-function Messages($q, $http) {
+function Message($q, $http) {
 
-  var messagesFnct = {
+  var Message = function() {
+    this._id = '';
+    this._messageField = null;
+    this._username = '';
+  };
+
+  Message.prototype = {
+    setMessageField: setMessageField,
     postMessage: postMessage,
     getMessagesFromRoom: getMessagesFromRoom,
     deleteMessage: deleteMessage,
-    getMessagesFromUser: getMessagesFromUser
   };
 
-  return messagesFnct;
+  return Message;
 
-  function postMessage(message) {
-    var deferred = $q.defer();
-    $http.post('/api/messages/', message).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setId(id) {
+    this._id = id;
   }
 
-  function getMessagesFromUser(username) {
-    var deferred = $q.defer();
-    $http.get('/api/messages/user/' + username).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setMessageField(content, user, userRec, roomCreator) {
+    this._messageField = {
+      content: content,
+      user: user,
+      userRec: userRec,
+      roomCreator: roomCreator
+    };
   }
 
-  function getMessagesFromRoom(id) {
-    var deferred = $q.defer();
-    $http.get('/api/messages/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function postMessage() {
+    var self = this;
+    $http.post('/api/messages/', self._messageField)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 
-  function deleteMessage(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/messages/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function getMessagesFromRoom() {
+    var self = this;
+    $http.get('/api/messages/' + self._id).then(function(response) {
+      return response;
     });
-    return deferred.promise;
+  }
+
+  function deleteMessage() {
+    $http.delete('/api/messages/' + self._id).then(function(response) {
+      return response;
+    });
   }
 
 }

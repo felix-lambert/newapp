@@ -23,13 +23,12 @@ function Announce($http, $rootScope) {
     setAnnouncePagination: setPage,
     setSearchField: setSearchField,
     setSearch: setSearch,
-    setAnnounceField: setAnnounceField,
+    setField: setField,
     setAnnounceFieldForEdit: setAnnounceFieldForEdit,
     setId: setId,
     setStatusAnnounce: setStatusAnnounce,
     deleteAnnounce: deleteAnnounce,
     getAnnounces: getAnnounces,
-    getAnnouncesFromUser: getAnnouncesFromUser,
     statusAnnounce: statusAnnounce,
     pressSearchAnnounces: pressSearchAnnounces,
     postAnnounce: postAnnounce,
@@ -62,7 +61,7 @@ function Announce($http, $rootScope) {
     };
   }
 
-  function setAnnounceField(title, content, type, category, price, selectedImages, activated, tags) {
+  function setField(title, content, type, category, price, selectedImages, activated, tags) {
     this._announceField = {
       title: title,
       content: content,
@@ -86,23 +85,19 @@ function Announce($http, $rootScope) {
 
   function getAnnounces() {
     var self = this;
-    console.log(self);
     return $http.get('/api/paginateannounces/' + self._page)
-    .then(function(announcesData) {
-      console.log(announcesData);
-      announcesData.data.announces.forEach(function(announce) {
-        console.log(announce);
+    .then(function(response) {
+      response.data.announces.forEach(function(announce) {
         if (announce.title.length > 34) {
           announce.title = announce.title.substring(0, 35) + '...';
         }
         if (announce.content.length > 34) {
-          console.log(announce.content.length);
           announce.content = announce.content.substring(0, 35) + '...';
         }
       });
-      self._announces = announcesData.data.announces;
-      self._total = announcesData.data.total;
-      return announcesData;
+      self._announces = response.data.announces;
+      self._total = response.data.total;
+      return response;
     });
   }
 
@@ -126,32 +121,17 @@ function Announce($http, $rootScope) {
     }); 
   }
 
-  function getAnnouncesFromUser() {
-    var self = this;
-    return $http.get('/api/userannounces/' + self._page)
-    .then(function(response) {
-      response.data.announces.forEach(function(announce) {
-        if (announce.title.length > 18) {
-          announce.title = announce.title.substring(0, 19) + '...';
-        }
-      });
-      self._announces = response.data.announces;
-      self._total = response.data.announces;
-      return response;
-    });
-  }
-
   function getAnnounceById() {
     var self = this;
-    return $http.get('/api/announces/' + self._id).success(function(data) {
-      if (data.title.length > 34) {
-        data.title = data.title.substring(0, 35) + '...';
+    return $http.get('/api/announces/' + self._id).success(function(response) {
+      if (response.title.length > 34) {
+        response.title = response.title.substring(0, 35) + '...';
       }
-      if (data.content.length > 34) {
-        data.content = data.content.substring(0, 35) + '...';
+      if (response.content.length > 34) {
+        response.content = response.content.substring(0, 35) + '...';
       }
-      self._announce = data;
-      return data;
+      self._announce = response;
+      return response;
     });
     
   }
@@ -159,17 +139,15 @@ function Announce($http, $rootScope) {
   function deleteAnnounce() {
     var self = this;
     return $http.delete('/api/announces/' + self._id).then(function(response) {
-      console.log(response);
-      this._announce = response.data;
+      self._announce = response.data;
       return response;
     });
   }
 
   function putAnnounce() {
     var self = this;
-    console.log(self._announceField);
-    console.log(self._id);
-    return $http.put('/api/announcesput/' + self._id, self._announceField).then(function(response) {
+    return $http.put('/api/announcesput/' + self._id, self._announceField)
+    .then(function(response) {
       self._id = response._id;
       return response;
     });
@@ -178,32 +156,15 @@ function Announce($http, $rootScope) {
   function statusAnnounce() {
     var self = this;
     return $http.put('/api/statusannounce/' + self._activated + '/' + self._id)
-    .then(function(data) {
-      return data;
-    });;
+    .then(function(response) {
+      return response;
+    });
   }
 
   function postAnnounce() {
     var self = this;
-    return $http.post('/api/announces/', this._announceField).then(function(data) {
-      return data;
+    return $http.post('/api/announces/', self._announceField).then(function(response) {
+      return response;
     });
   }
 }
-  
-
-  // 
-
-
-
-  // 
-  //   console.log(announce);
-  //   var deferred = $q.defer();
-  //   .success(function(data) {
-  //       deferred.resolve(data);
-  //     }).error(function() {
-  //       deferred.reject();
-  //     });
-  //   return deferred.promise;
-  // }
-// }

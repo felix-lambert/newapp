@@ -12,13 +12,11 @@ module.exports = {
   getNotifications: function(req, res, next) {
     console.log('___________get Notification________________________');
     if (req.user) {
-      console.log(req.user._id);
-      
       Notification.findUserNotifications({
         'creator': req.user._id
       }, function(err, notifications) {
         console.log(err, notifications);
-        return res.status(err ? 501 : 200).json(err ? err : notifications);
+        res.status(200).json(notifications);
       });
     } else {
       return res.status(400).json('User is not recognized');

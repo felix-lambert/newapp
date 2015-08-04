@@ -17,16 +17,16 @@ exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
     if (decoded && decoded.email) {
       User.getUserToken(decoded.email, incomingToken, function(err, user) {
         if (err) {
-          return res.status(400).json({error: 'Issue finding user.'});
+          return res.status(400).json('Issue finding user');
         } else {
           req.user = user;
           next();
         }
       });
     } else {
-      res.status(400).json({error: 'Issue decoding incoming token.'});
+      res.status(400).json('Issue decoding incoming token');
     }
   } else {
-    next();
+    res.status(400).json('There is no token');
   }
 };

@@ -1,47 +1,62 @@
 angular.module('InTouch')
 
-.factory('Comments', Comments);
+.factory('Comment', Comment);
 
-Comments.$inject = ['$q', '$http'];
+Comment.$inject = ['$q', '$http'];
 
-function Comments($q, $http) {
+function Comment($q, $http) {
 
-  var commentsFnct = {
+  var Comment = function() {
+    this._id = '';
+    this._commentField = {};
+    this.comments = {};
+    this.comment = {};
+  };
+
+  Comment.prototype = {
+    constructor: Comment,
+    setId: setId,
+    setField: setField,
     postComment: postComment,
     getAnnounceComments: getAnnounceComments,
     deleteComment: deleteComment
   };
 
-  return commentsFnct;
+  return Comment;
 
-  function postComment(comment, id) {
-    var deferred = $q.defer();
-    $http.post('/api/announceComment/' + id, comment).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setId(id) {
+    this._id = id;
   }
 
-  function getAnnounceComments(id) {
-    var deferred = $q.defer();
-    $http.get('/api/announceComment/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setField(comment) {
+    this._commentField = {
+      announceComment: comment
+    };
   }
 
-  function deleteComment(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/announceComment/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function postComment() {
+    var self = this;
+    return $http.post('/api/announceComment/' + self._id, self._commentField)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
+  }
+
+  function getAnnounceComments() {
+    var self = this;
+    return $http.get('/api/announceComment/' + self._id).then(function(response) {
+      self._comments = response;
+      return response;
+    });
+  }
+
+  function deleteComment() {
+    var self = this;
+    return $http.delete('/api/announceComment/' + self._id)
+    .then(function(response) {
+      self._comment = response;
+      return response;
+    });
   }
 
 }

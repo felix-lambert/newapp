@@ -15,6 +15,7 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   var Announce              = $injector.get('Announce');
   var toaster               = $injector.get('toaster');
   var appLoading            = $injector.get('appLoading');
+  var AnnounceService       = $injector.get('AnnounceService');
 
   vm.paginateUser           = paginateUser;
   vm.listUsers              = listUsers;
@@ -80,6 +81,7 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     vm.page = page;
     if ($rootScope.currentUser) {
       announce.setAnnouncePagination(vm.page);
+
       announce.getAnnouncesFromUser().then(function() {
         vm.announces   = announce._announces;
         vm.total       = announce._total;
@@ -94,22 +96,20 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   function create() {
     console.log('create');
     if ($rootScope.currentUser) {
-      vm = this;
-      announce.setAnnounceField(vm.title, vm.content, vm.type, vm.category, vm.price, vm.selectedImages, true, vm.tags);
-      announce.postAnnounce().then(function() {
-        Actuality.postActuality({status: 1, content:vm.content}).then(function(res) {
-          vm.title    = '';
-          vm.content  = '';
-          vm.title    = '';
-          vm.category = '';
-          vm.type     = '';
-          vm.tags     = [];
-        });
-        announce.setAnnouncePagination(vm.page);
-        announce.getAnnouncesFromUser().then(function() {
-          vm.announces   = announce._announces;
-          vm.total       = announce._total;
-        });
+      var vm = this;
+      var announce = AnnounceService.create(vm.title, vm.content, vm.type, vm.category, vm.price, vm.selectedImages, true, vm.tags);
+      announce.getAnnouncesFromUser().then(function () {
+          vm.title      = '';
+          vm.content    = '';
+          vm.title      = '';
+          vm.category   = '';
+          vm.type       = '';
+          vm.tags       = [];
+          vm.announces  = announce._announces;
+          vm.total      = announce._total;
+        }); 
+      Actuality.postActuality({status: 1, content:vm.content}).then(function(result) {
+        
       });
     } else {
       var modalInstance = $modal.open({

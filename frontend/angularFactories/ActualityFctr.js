@@ -6,41 +6,54 @@ Actuality.$inject = ['$q', '$http'];
 
 function Actuality($q, $http) {
 
-  var actualityFnct = {
-    postActuality: postActuality,
-    getActualities: getActualities,
-    removeActuality: removeActuality
+  var Actuality = function() {
+    this._id = '';
+    this._actuality = '';
+    this._actualityField = null;
+    this._actualities = null;
   };
 
-  return actualityFnct;
+  Actuality.prototype = {
+    setId: setId,
+    setActualityField: setActualityField,
+    postActuality: postActuality,
+    getActualities: getActualities,
+    deleteActuality: deleteActuality
+  };
 
-  function postActuality(actuality) {
-    var deferred = $q.defer();
-    $http.post('/api/actuality', actuality).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  return Actuality;
+
+  function setId(id) {
+    this._id = id;
+  }
+
+  function setActualityField(status, content) {
+    this._actualityField = {
+      status: status,
+      content: content
+    };
+  }
+
+  function postActuality() {
+    var self = this;
+    return $http.post('/api/actuality', self._actualityField)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 
   function getActualities() {
-    var deferred = $q.defer();
-    $http.get('/api/actuality/').success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+    var self = this;
+    return $http.get('/api/actuality/').then(function(response) {
+      self._actualities = response.data;
+      return response;
     });
-    return deferred.promise;
   }
 
-  function removeActuality(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/actuality/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function deleteActuality() {
+    var self = this;
+    return $http.delete('/api/actuality/' + self._id).then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 }

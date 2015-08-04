@@ -1,103 +1,90 @@
 angular.module('InTouch')
   .factory('Auth', Auth);
 
-Auth.$inject = ['socket', '$q', '$rootScope', 'Session', 'User', '$http', 'Notifications', '$localStorage'];
+Auth.$inject = ['$rootScope', 'Session', 'User', '$http', 'Notification', '$localStorage'];
 
-function Auth(socket, $q, $rootScope, Session, User, $http, Notifications, $localStorage) {
-  return {
-    login: function(user, callback) {
-      var cb = callback || angular.noop;
-      console.log(user);
-
-      Session.save({
-        email: user.email_username,
-        password: user.password
-      }, function(user) {
-        console.log('________________RESPONSE LOGIN____________');
-        $localStorage.currentUser = user;
-        $rootScope.currentUser = $localStorage.currentUser;
-        var userToken = $rootScope.currentUser.token;
-        $http.defaults.headers.common['auth-token'] = userToken;
-        Notifications.getNotifications().then(function(response) {
-          $rootScope.currentUser.notifications = response;
-          $rootScope.currentUser.notificationsCount = response.length;
-        });
-        return cb();
-      }, function(err) {
-        console.log(err);
-        return cb(err.data);
-      });
-
-    },
-
-    deleteSession: function() {
-      console.log('deleteSession');
-      var scope = this;
-      var userToken = $localStorage.currentUser.token;
-      var deferred = $q.defer();
-      $http.defaults.headers.common['auth-token'] = userToken;
-      $http.delete('/auth/logout/').success(function(data) {
-        deferred.resolve(data);
-      }).error(function() {
-        deferred.reject();
-      });
-    },
-
-    resetSession: function() {
-      $rootScope.currentUser = null;
-      $localStorage.currentUser = null;
-    },
-
-    createUser: function(userinfo, callback) {
-      console.log('************createUser********************');
-      var cb = callback || angular.noop;
-      User.save(userinfo, function(user) {
-        console.log('Create user');
-        console.log(user);
-        $localStorage.currentUser = user;
-        $rootScope.currentUser = $localStorage.currentUser;
-        var userToken = $rootScope.currentUser.token;
-        $http.defaults.headers.common['auth-token'] = userToken;
-        return cb();
-      },
-      function(err) {
-        return cb(err.data);
-      });
-    },
-
-    currentUser: function() {
-      console.log('************currentUser********************');
-      Session.get(function(user) {
-        $rootScope.currentUser = user;
-      });
-    },
-
-    changePassword: function(email, oldPassword, newPassword, callback) {
-      console.log('************changePassword********************');
-      var cb = callback || angular.noop;
-      User.update({
-          email: email,
-          oldPassword: oldPassword,
-          newPassword: newPassword
-      }, function(user) {
-        console.log('password changed');
-        return cb();
-      }, function(err) {
-        return cb(err.data);
-      });
-    },
-
-    removeUser: function(email, password, callback) {
-      console.log('****************removeUser****************');
-      var cb = callback || angular.noop;
-      User.delete({
-          email: email,
-          password: password
-      }, function(user) {
-        return cb();
-      }, function(err) {
-        return cb(err.data);
-      });
-    }
+function Auth($rootScope, Session, User, $http, Notification, $localStorage) {
+  
+  var Auth = function(email, password) {
+    // this._username = username;
+    // this._name = '';
+    // this._profile = {};
+    this._loginField = null;
+    this._registerField = null;
+    this._profile = null;
+    this._error = null;
   };
+
+  Auth.prototype = {
+    constructor: Auth,
+    setLoginField: setLoginField,
+    setRegisterField: setRegisterField,
+    login: login,
+    createUser: createUser,
+    currentUser: currentUser
+  };
+
+  return Auth;
+
+  function setProfile(name) {
+    this._name = name;
+  }
+
+  function setLoginField(email, password) {
+    this._loginField = {
+      email: email,
+      password: password
+    };
+  }
+
+  function setRegisterField(username, email, password, repeatPassword) {
+    this._registerField = {
+      username: username,
+      email: email,
+      password: password,
+      repeatPassword: repeatPassword
+    };
+  }
+
+  function login() {
+    var self = this;
+    return $http.post('/auth/login', self._loginField).then(function(response) {
+      console.log('________________RESPONSE LOGIN____________');
+      console.log(response.data);
+      self._profile = response.data;
+      return response;
+    }, function(response) {
+      console.log('test error');
+      console.log(response);
+      console.log(response.data.err);
+      self._error = response.data.err;
+      return response;
+    });
+
+  }
+
+  function createUser() {
+    console.log('************createUser********************');
+    var self = this;
+    return $http.post('/auth/register', self._registerField).then(function(response) {
+      console.log('Create user');
+      self._profile = response.data;
+      $localStorage.currentUser = self._profile;
+      $rootScope.currentUser = self._profile;
+      return response;
+    }, function(response) {
+      console.log('ERROR');
+      console.log(response);
+      self._error = response.data;
+      return response;
+    });
+  }
+
+  function currentUser() {
+    console.log('************currentUser********************');
+    Session.get(function(user) {
+      $rootScope.currentUser = user;
+    });
+  }
+
 }

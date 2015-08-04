@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('ProfileViewAngCtrl', ProfileViewAngCtrl);
 
-ProfileViewAngCtrl.$inject = ['$localStorage', '$routeParams', 'Images', '$rootScope', '$location', 'appLoading'];
+ProfileViewAngCtrl.$inject = ['$localStorage', '$routeParams', 'Image', '$rootScope', '$location', 'appLoading'];
 
-function ProfileViewAngCtrl($localStorage, $routeParams, Images, $rootScope, $location, appLoading) {
+function ProfileViewAngCtrl($localStorage, $routeParams, Image, $rootScope, $location, appLoading) {
   appLoading.ready();
 
   var vm           = this;

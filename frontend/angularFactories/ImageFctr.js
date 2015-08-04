@@ -1,58 +1,59 @@
-angular.module('InTouch').factory('Images', Images);
+angular.module('InTouch').factory('Image', Image);
 
-Images.$inject = ['$q', '$http', '$rootScope'];
+Image.$inject = ['$q', '$http', '$rootScope'];
 
-function Images($q, $http, $rootScope) {
+function Image($q, $http, $rootScope) {
 
-  var imagesFnct = {
-    getImages: getImages,
-    changeImageStatus: changeImageStatus,
-    getImagesById: getImagesById,
-    erase: erase
+  var Image = function() {
+    this._id = '';
+    this._actuality = '';
+    this._imageName = '';
+    this._imageField = null;
+    this._images = null;
+    this._image = null;
+    this._defaultImage = '';
   };
 
-  return imagesFnct;
+  Image.prototype = {
+    setId: setId,
+    deleteImage: deleteImage,
+    getImages: getImages,
+    changeImageStatus: changeImageStatus
+  };
+
+  return Image;
+
+  function setId(id) {
+    this._id = id;
+  }
+
+  function setImage() {
+    this._imageName = imageName;
+    this._defaultImage = defaultImage;
+  }
 
   function getImages() {
-    var userToken  = $rootScope.currentUser.token;
-    $http.defaults.headers.common['auth-token'] = userToken;
-    var deferred = $q.defer();
-    $http.get('/api/images/').success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+    var self = this;
+    $http.get('/api/images/')
+    .then(function(response) {
+      this._images = response.data;
+      return response;
     });
-    return deferred.promise;
   }
 
-  function erase(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/images/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function deleteImage() {
+    var self = this;
+    $http.delete('/api/images/' + self._id)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 
-  function getImagesById(id) {
-    var deferred = $q.defer();
-    $http.get('/api/images/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function changeImageStatus() {
+    $http.put('/api/images/' + this._imageName + '/' + this._id + '/' + this._defaultImage)
+    .then(function(response) {
+      this._image = response.data;
+      return response;
     });
-    return deferred.promise;
-  }
-
-  function changeImageStatus(image) {
-    var deferred = $q.defer();
-    $http.put('/api/images/' + image.name + '/' + image._id + '/' + image.defaultImage)
-    .success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
   }
 }

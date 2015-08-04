@@ -11,8 +11,8 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
   var Announce        = $injector.get('Announce');
   var toaster         = $injector.get('toaster');
   var appLoading      = $injector.get('appLoading');
-  var Friends         = $injector.get('Friends');
-  var Comments        = $injector.get('Comments');
+  var Friend         = $injector.get('Friend');
+  var Comment        = $injector.get('Comment');
   
   vm.findOne          = findOne;
   vm.getComments      = getComments;
@@ -28,27 +28,25 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
   $localStorage.searchField = null;
 
   var announce = new Announce();
+  var comment  = new Comment();
+  var friend = new Friend();
 
   ///////////////////////////////////////////////////////////////////////////
 
-  function testIfFriend(ann) {
+  function testIfFriend(announce) {
     if ($rootScope.currentUser) {
-      Friends.testIfFriend({
-        username: ann.creator.username
-      }).then(function(response) {
-
-        vm.followStatus = response;
+      friend.setFriend(announce.creator.username);
+      friend.testIfFriend().then(function() {
+        vm.followStatus = friend._status;
         console.log(vm.followStatus);
-        console.log(response);
       });
     }
   }
 
   function countFriends(announce) {
-    Friends.countFriends({
-      idUser: announce.creator._id._id
-    }).then(function(response) {
-      vm.nbFriend = response;
+    friend.setId(announce.creator._id._id);
+    friend.countFriend().then(function() {
+      vm.nbFriend = friend._nbFriend;
     });
   }
 
@@ -90,32 +88,29 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
   // }
 
   function getComments() {
-    Comments.getAnnounceComments($routeParams.announceId)
-    .then(function(res) {
+
+    comment.setId($routeParams.announceId);
+    comment.getAnnounceComments()
+    .then(function() {
       console.log('GET COMMENTS');
-      vm.comments = res;
+      vm.comments = comment.commments;
       console.log(vm.comments);
     });
   }
 
   function postComment() {
-
-    Comments.postComment({
-      content: vm.AnnounceComment,
-      rating: vm.rating,
-    }, $routeParams.announceId).then(function(res) {
-      if (res.newRating !== null) {
-        vm.announceRating = res.newRating;
-      }
+    comment.setField(vm.AnnounceComment);
+    comment.postComment().then(function() {
       vm.AnnounceComment = '';
       vm.getComments();
     });
   }
 
   function removeComment(comment) {
-    Comments.deleteComment(comment._id).then(function(res) {
+    comment.setId(comment._id);
+    Comments.deleteComment().then(function() {
       for (var i in vm.comments) {
-        if (vm.comments[i] == comment) {
+        if (vm.comments[i] == comment.comment) {
           vm.comments.splice(i, 1);
         }
       }

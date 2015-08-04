@@ -1,10 +1,10 @@
 angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
-PictureAngCtrl.$inject = ['$localStorage', 'Actuality', '$scope', 'Images', '$rootScope',
+PictureAngCtrl.$inject = ['$localStorage', 'ImageService', 'Actuality', '$scope', 'Image', '$rootScope',
 'FileUploader', '$http', 'appLoading', 'toaster', 'preGetImages'];
 
-function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
+function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Images, $rootScope,
   FileUploader, $http, appLoading, toaster, preGetImages) {
 
   console.log('----------------UPLOAD PICTURES------------------------');
@@ -19,6 +19,10 @@ function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
   vm.preview = false;
 
   appLoading.ready();
+
+  var actuality = new Actuality();
+  var image = new Image();
+
   $localStorage.searchField = null;
   
   if ($rootScope.currentUser) {
@@ -50,18 +54,13 @@ function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
 
   function doDefaultImage(image) {
     console.log(image);
-    Images.changeImageStatus({
-      name: image.name,
-      _id: image._id,
-      defaultImage: true
-    }).then(function() { 
+    var status = ImageService.changeStatus(image.name, image._id, true);
+    status.postImage().then(function() {
       console.log(preGetImages);
-      Actuality.postActuality({status: 2, content:image.name}).then(function(res) {
-        
+      vm.profileImages = status._profileImages;
+      actuality.setActualityField(2, image.name);
+      actuality.postActuality().then(function() {
         toaster.pop('success', 'L\'image de profil a bien été modifié');
-        Images.getImages().then(function(results) {
-          vm.profileImages = results;  
-        });
         console.log('__AnnouncesCtrl $scope.initListAnnounce__');
       });
     });
@@ -70,13 +69,11 @@ function PictureAngCtrl($localStorage, Actuality, $scope, Images, $rootScope,
   function erase(image) {
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
     console.log(image);
-    Images.erase(image._id).then(function(res) {
+    image.setImage(image._id);
+    image.deleteImage().then(function() {
       toaster.pop('danger', 'L\'image a bien été supprimé');
-      console.log('ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù');
-      console.log(res);
-      console.log(vm.profileImages);
       for (var i in vm.profileImages) {
-        if (vm.profileImages[i]._id == res._id) {
+        if (vm.profileImages[i]._id == image._id) {
           console.log('test');
           vm.profileImages.splice(i, 1);
         }

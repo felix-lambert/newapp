@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('MessageAngCtrl', MessageAngCtrl);
 
-MessageAngCtrl.$inject = ['$localStorage', 'Rooms', 'Friends', 'Messages', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
+MessageAngCtrl.$inject = ['$localStorage', 'RoomService', 'Room', 'Friend', 'Message', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
 
-function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, socket, appLoading, preGetRooms) {
+function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $rootScope, socket, appLoading, preGetRooms) {
 
   var vm          = this;
   var Typing      = false;
@@ -44,6 +44,10 @@ function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, soc
   $localStorage.searchField = null;
 
   /////////////////////////////////////////////////////////////
+
+  var room = new Room();
+  var message = new Message();
+  var friend = new Friend();
 
   function Timeout() {
     Typing = false;
@@ -94,30 +98,15 @@ function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, soc
     vm.error.create = '';
     vm.message      = '';
     vm.userRec      = user;
-    Rooms.postRoom({
-      nameRec: user
-    }).then(function(response) {
-      console.log('get messages from room');
-      vm.room   = response.roomName;
-      vm.roomId = response.roomId;
-      console.log('___________________ROOMS_____________________');
-      if (response.status === 'create') {
-        console.log('CREATE');
-        socket.emit('createRoom', {
-          roomId: response.roomId,
-          roomName: response.roomName
-        });
-        console.log('room created');
-      } else if (response.status === 'join') {
-        console.log('JOIN');
-        socket.emit('joinRoom', response);
-      }
-      return Messages.getMessagesFromRoom(response.roomId);
-    }).then(function(response) {
-      for (var i = 0; i < response.length; i++) {
+    var room = roomService.create(user);
+    room.postRoomAndSendSocket().then(function() {
+      var message = message.getMessagesFromRoom(room._roomId);
+      return message;
+    }).then(function() {
+      for (var i = 0; i < message._messages.length; i++) {
         vm.messages.push({
-          message: response[i].content,
-          name: response[i].user
+          message: message._messages[i].content,
+          name: message._messages[i].user
         });
       }
     });
@@ -126,8 +115,6 @@ function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, soc
   }
 
   socket.on('updateUserDetail', function(data) {
-    console.log('///update user data//////');
-    console.log(data);
     $rootScope.users = data;
   });
 
@@ -219,14 +206,13 @@ function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, soc
 
   socket.emit('joinSocketServer', {name: $rootScope.currentUser.username});
 
-  Friends.getFriendsFromUser()
-  .then(function(usernames) {
-    console.log(usernames);
-    for (var i = 0; i < usernames.length; i++) {
-      if (usernames[i].accepted) {
-        vm.usernames.push(usernames[i].accepted);
+  friend.getFriendsFromUser()
+  .then(function() {
+    console.log();
+    for (var i = 0; i < friend._usernames.length; i++) {
+      if (friends._usernames[i].accepted) {
+        vm.usernames.push(friends._usernames[i].accepted);
       }
-      console.log(vm.usernames);
     }
     vm.nbFriends = vm.usernames.length;
   });
@@ -241,19 +227,8 @@ function MessageAngCtrl($localStorage, Rooms, Friends, Messages, $rootScope, soc
         vm.message.length === 0)) {
       vm.error.send = 'Please enter a message';
     } else {
-      Messages.postMessage({
-        content: vm.message,
-        user: username,
-        userRec: userRec,
-        roomCreator: vm.roomId
-      }).then(function(usernames) {
-        console.log('save success');
-      });
-      socket.emit('sendMessage', {
-        name: username,
-        message: vm.message,
-        roomId: vm.roomId
-      });
+      var message = messageService.create(user);
+      message.postMessageAndSendSocket();
       vm.message    = '';
       vm.error.send = '';
     }

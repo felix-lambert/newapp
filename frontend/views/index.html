@@ -12,14 +12,24 @@
     <link href="stylesheets/jquery-ui.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/index.css"/>
     <link rel="stylesheet" type="text/css" href="stylesheets/toaster.css"/>
-    <link rel="stylesheet" type="text/css" href="stylesheets/sweetalert.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/createAnnc.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/profileView.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/actualityPrfl.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/picturePrfl.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/sweetalert.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/createAnnc.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/profileView.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/actualityPrfl.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/picturePrfl.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/listAnnc.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/viewAnnc.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/historicPrfl.css"/>
 
-    <link href="stylesheets/v-tabs.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/load.css"/>
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/v-tabs.css"/>
+
+
+
     <!-- endbuild -->
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
@@ -397,8 +407,6 @@ body.skip-animations * {
     <script type="text/javascript" src="angularControllers/MainHeaderAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/actuality/ActualityAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/announces/CreateAnnounceAngCtrl.js"></script>
-
-
     <script type="text/javascript" src="angularControllers/announces/ListAnnouncesAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/message/SendMessageAngCtrl.js"></script>
 
@@ -407,8 +415,6 @@ body.skip-animations * {
 
     <script type="text/javascript" src="angularControllers/profile/ProfileAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/profile/ProfileViewAngCtrl.js"></script>
-
-
     <script type="text/javascript" src="angularControllers/modal/AboutModalAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/actuality/HistoricAngCtrl.js"></script>
 
@@ -417,6 +423,7 @@ body.skip-animations * {
     <script type="text/javascript" src="angularControllers/profile/ReputationAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/profile/SettingsAngCtrl.js"></script>
     <script type="text/javascript" src="angularControllers/profile/JournalAngCtrl.js"></script>
+    <script type="text/javascript" src="angularFactories/auth/authAngSrvc.js"></script>
     <script type="text/javascript" src="angularDirectives/validator/pswCompareToValidatorDrct.js"></script>
     <script type="text/javascript" src="angularDirectives/filters/ratingDrct.js"></script>
     <script type="text/javascript" src="angularDirectives/chat/onBlurDrct.js"></script>
@@ -430,22 +437,35 @@ body.skip-animations * {
     <script type="text/javascript" src="angularDirectives/dirPaginationDrct.js"></script>
 
     <script type="text/javascript" src="angularFactories/StatusFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/auth/AuthInterfaceFctr.js"></script>
     <script type="text/javascript" src="angularFactories/ActualityFctr.js"></script>
     <script type="text/javascript" src="angularFactories/auth/AuthFctr.js"></script>
     <script type="text/javascript" src="angularFactories/auth/SessionFctr.js"></script>
     <script type="text/javascript" src="angularFactories/auth/user/UserFctr.js"></script>
     <script type="text/javascript" src="angularFactories/auth/user/UsersFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/auth/authAngSrvc.js"></script>
     <script type="text/javascript" src="angularFactories/announces/AnnouncesFctr.js"></script>
-
+    <script type="text/javascript" src="angularFactories/announces/AnnouncesFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/notifications/NotificationsFctr.js"></script>
     <script type="text/javascript" src="angularFactories/announces/CommentsFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/notifications/FriendsFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/socket/notifications/FriendInterface.js"></script>
     <script type="text/javascript" src="angularFactories/socket/chat/MessagesFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/chat/RoomsFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/SocketFctr.js"></script>
     <script type="text/javascript" src="angularFactories/socket/notifications/LikeFctr.js"></script>
     <script type="text/javascript" src="angularFactories/ImageFctr.js"></script>
-    <script type="text/javascript" src="angularFactories/SearchServiceFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/SearchInterfaceFctr.js"></script>
+    <script type="text/javascript" src="angularFactories/SearchFctr.js"></script>
+    <script type="text/javascript" src="angularControllers/announces/AnnounceInterfaceFctr.js"></script>
+    <script type="text/javascript" src="angularService/friendAngSrvc.js"></script>
+    <script type="text/javascript" src="angularService/imageAngSrvc.js"></script>
+    <script type="text/javascript" src="angularService/messageAngSrvc.js"></script>
+    <script type="text/javascript" src="angularService/notificationAngSrvc.js"></script>
+    <script type="text/javascript" src="angularFactories/socket/notifications/NotificationInterfaceFctr.js"></script>
+    <script type="text/javascript" src="angularService/roomAngSrvc.js"></script>
+    <script type="text/javascript" src="angularService/searchAngSrvc.js"></script>
+    <script type="text/javascript" src="angularService/announceAngSrvc.js"></script>
     <script type="text/javascript" src="angularFilters/starsFltr.js"></script>
     <!-- <script type="text/javascript" src="angularFilters/cutFltr.js"></script> -->
     <script type="text/javascript" src="angularFilters/searchForFltr.js"></script>

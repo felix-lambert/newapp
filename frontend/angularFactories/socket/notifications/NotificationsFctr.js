@@ -1,58 +1,63 @@
 angular.module('InTouch')
 
-.factory('Notifications', Notifications);
+.factory('Notification', Notification);
 
-Notifications.$inject = ['$q', '$http'];
+Notification.$inject = ['$q', '$http'];
 
-function Notifications($q, $http) {
+function Notification($q, $http) {
 
-  var notificationsFnct = {
+  var Notification = function() {
+    this._id = '';
+    this._notification = '';
+    this._notificationField = null;
+    this._notifications = null;
+  };
+
+  Notification.prototype = {
+    setId: setId,
+    setField: setField,
     postNotification: postNotification,
     getNotifications: getNotifications,
-    updateNotification: updateNotification,
     deleteNotification: deleteNotification
   };
 
-  return notificationsFnct;
+  return Notification;
 
-  function postNotification(notification) {
-    var deferred = $q.defer();
-    $http.post('/api/notifications/', notification).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function setId(id) {
+    this._id = id;
+  }
+
+  function setField(userDes, userDesId, type) {
+    this._notificationField = {
+      userDes: userDes,
+      userDesId: userDesId,
+      type: type
+    };
+  }
+
+  function postNotification() {
+    var self = this;
+    return $http.post('/api/notifications/', self._notificationField)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 
   function getNotifications() {
-    var deferred = $q.defer();
-    $http.get('/api/notifications/').success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+    var self = this;
+    return $http.get('/api/notifications/')
+    .then(function(response) {
+      console.log(response.data);
+      self._notifications = response.data;
+      return response;
     });
-    return deferred.promise;
   }
 
-  function updateNotification(notification) {
-    var deferred = $q.defer();
-    $http.delete('/api/notifications/' + notification).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function deleteNotification() {
+    var self = this;
+    return $http.delete('/api/notifications/' + self._id)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
-
-  function deleteNotification(id) {
-    var deferred = $q.defer();
-    $http.delete('/api/notifications/' + id).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
-  }
-
 }

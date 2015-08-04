@@ -30,11 +30,11 @@ module.exports = {
   // SEARCH USER //////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   search: function(req, res) {
+    console.log(req.params);
     if (req.query.term) {
       console.log('search');
       var username = req.user ? req.user.username : '';
       var search   = req.query.term.toLowerCase();
-      console.log('search');
       ES.search({
       index: 'user',
       body: {
@@ -71,7 +71,7 @@ module.exports = {
         }, 400);
       });
     } else {
-      res.status(400).json();
+      res.status(400).json('No username is typed');
     }
   },
 
@@ -93,7 +93,7 @@ module.exports = {
         }, 500);
       });
     } else {
-      res.status(400).json();
+      res.status(400).json('No email is typed');
     }
   }
 

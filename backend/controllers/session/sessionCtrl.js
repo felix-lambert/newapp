@@ -49,16 +49,13 @@ module.exports = {
   passportAuthenticate: function(req, res, next) {
     console.log('authentification');
     console.log(req.body);
-    // function validateEmail(email) {
-    //   var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-    //   return re.test(email);
-    // }
   
-    passport.authenticate('local', {session: false}, function(err, user, info) {
+    User.authenticate()(req.body.email, req.body.password, function(err, user, message) {
+      console.log(err, user, message);
       if (user === false) {
         console.log(err);
         return res.status(400).json({
-          err: info.message
+          err: message.message
         });
       } else {
         console.log('user === true');
@@ -66,7 +63,7 @@ module.exports = {
         req.user = user;
         next();
       }
-    })(req, res);
+    });
   },
 
   authenticate: function(req, res) {
@@ -107,7 +104,13 @@ module.exports = {
     console.log('**********************Register***********************');
 
     function registerUserMongo(registerUserMongoCallback) {
-      if (req.body.password === req.body.confPassword) {
+      console.log('register user mongo');
+      console.log(req.body);
+      if (req.body.password === req.body.repeatPassword) {
+        console.log(req.body.username);
+        if (req.body.username === undefined || req.body.email === undefined) {
+          return registerUserMongoCallback('There is no username or email');
+        }
         var user = new User({
           username: req.body.username,
           email: req.body.email,

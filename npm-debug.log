@@ -1,0 +1,130 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'install', 'mocha-mongoose' ]
+2 info using npm@1.3.10
+3 info using node@v0.10.25
+4 verbose readDependencies using package.json deps
+5 verbose cache add [ 'mocha-mongoose', null ]
+6 verbose cache add name=undefined spec="mocha-mongoose" args=["mocha-mongoose",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: 'mocha-mongoose',
+7 verbose parsed url   path: 'mocha-mongoose',
+7 verbose parsed url   href: 'mocha-mongoose' }
+8 silly lockFile 38f4cae6-mocha-mongoose mocha-mongoose
+9 verbose lock mocha-mongoose /home/lemelon/.npm/38f4cae6-mocha-mongoose.lock
+10 silly lockFile 38f4cae6-mocha-mongoose mocha-mongoose
+11 silly lockFile 38f4cae6-mocha-mongoose mocha-mongoose
+12 verbose addNamed [ 'mocha-mongoose', '' ]
+13 verbose addNamed [ null, '*' ]
+14 silly lockFile 7b0c4148-mocha-mongoose mocha-mongoose@
+15 verbose lock mocha-mongoose@ /home/lemelon/.npm/7b0c4148-mocha-mongoose.lock
+16 silly addNameRange { name: 'mocha-mongoose', range: '*', hasData: false }
+17 verbose registry.get mocha-mongoose not expired, no request
+18 silly addNameRange number 2 { name: 'mocha-mongoose', range: '*', hasData: true }
+19 silly addNameRange versions [ 'mocha-mongoose',
+19 silly addNameRange   [ '0.0.1',
+19 silly addNameRange     '0.0.3',
+19 silly addNameRange     '0.0.4',
+19 silly addNameRange     '0.1.0',
+19 silly addNameRange     '0.1.1',
+19 silly addNameRange     '0.1.2',
+19 silly addNameRange     '0.1.4',
+19 silly addNameRange     '0.1.5',
+19 silly addNameRange     '1.0.0',
+19 silly addNameRange     '1.0.1',
+19 silly addNameRange     '1.0.2',
+19 silly addNameRange     '1.0.3',
+19 silly addNameRange     '1.0.4' ] ]
+20 verbose addNamed [ 'mocha-mongoose', '1.0.4' ]
+21 verbose addNamed [ '1.0.4', '1.0.4' ]
+22 silly lockFile 89ce8793-mocha-mongoose-1-0-4 mocha-mongoose@1.0.4
+23 verbose lock mocha-mongoose@1.0.4 /home/lemelon/.npm/89ce8793-mocha-mongoose-1-0-4.lock
+24 silly lockFile 89ce8793-mocha-mongoose-1-0-4 mocha-mongoose@1.0.4
+25 silly lockFile 89ce8793-mocha-mongoose-1-0-4 mocha-mongoose@1.0.4
+26 silly lockFile 7b0c4148-mocha-mongoose mocha-mongoose@
+27 silly lockFile 7b0c4148-mocha-mongoose mocha-mongoose@
+28 silly resolved [ { author: { name: 'Elliot Foster', email: 'github@firetaco.com' },
+28 silly resolved     name: 'mocha-mongoose',
+28 silly resolved     description: 'Test helpers for using mongodb with mocha',
+28 silly resolved     version: '1.0.4',
+28 silly resolved     repository:
+28 silly resolved      { type: 'git',
+28 silly resolved        url: 'https://github.com/elliotf/mocha-mongoose' },
+28 silly resolved     scripts: { test: 'make test' },
+28 silly resolved     license: 'MIT',
+28 silly resolved     peerDependencies: { mongodb: '~1', mocha: '>=1.0.0' },
+28 silly resolved     devDependencies:
+28 silly resolved      { mocha: '>= 1.0.0',
+28 silly resolved        mongodb: '~1',
+28 silly resolved        mongoose: '~3',
+28 silly resolved        nodemon: '~0',
+28 silly resolved        chai: '~1' },
+28 silly resolved     optionalDependencies: {},
+28 silly resolved     engines: { node: '*', npm: '>= 1.2' },
+28 silly resolved     readme: 'mocha-mongoose\n==============\n\nTest helpers for using mongoose with mocha.\n\nSee the example spec (copied below) for more details.\n\n[![Travis-CI Build Status](https://secure.travis-ci.org/elliotf/mocha-mongoose.png)](http://travis-ci.org/elliotf/mocha-mongoose)\n[![Drone.io Build Status](https://drone.io/github.com/elliotf/mocha-mongoose/status.png)](https://drone.io/github.com/elliotf/mocha-mongoose/latest)\n\n## Installation\n\n1. install via npm\n\n    $ npm install mocha-mongoose\n\n1. require mocha-mongoose in your spec helper (easier) or in each spec file\n\n    require(\'mocha-mongoose\')(\'mongodb://your-mongodb-url-here\');\n\n1. mocha-mongoose will automatically clear all of your collections before each spec run\n\n## Example usage of automatically clearing the DB between specs:\n\nThis is a copy of example/test.js\n\n    var dbURI    = \'mongodb://localhost/demo-app-clearing-db\'\n      , should   = require(\'chai\').should()\n      , mongoose = require(\'mongoose\')\n      , Dummy    = mongoose.model(\'Dummy\', new mongoose.Schema({a:Number}))\n      , clearDB  = require(\'mocha-mongoose\')(dbURI)\n    ;\n\n    describe("Example spec for a model", function() {\n      beforeEach(function(done) {\n        if (mongoose.connection.db) return done();\n\n        mongoose.connect(dbURI, done);\n      });\n\n      it("can be saved", function(done) {\n        new Dummy({a: 1}).save(done);\n      });\n\n      it("can be listed", function(done) {\n        new Dummy({a: 1}).save(function(err, model){\n          if (err) return done(err);\n\n          new Dummy({a: 2}).save(function(err, model){\n            if (err) return done(err);\n\n            Dummy.find({}, function(err, docs){\n              if (err) return done(err);\n\n              // without clearing the DB between specs, this would be 3\n              docs.length.should.equal(2);\n              done();\n            });\n          });\n        });\n      });\n\n      it("can clear the DB on demand", function(done) {\n        new Dummy({a: 5}).save(function(err, model){\n          if (err) return done(err);\n\n          clearDB(function(err){\n            if (err) return done(err);\n\n            Dummy.find({}, function(err, docs){\n              if (err) return done(err);\n\n              console.log(docs);\n\n              docs.length.should.equal(0);\n              done();\n            });\n          });\n        });\n      });\n    });\n\n## Example usage of manually clearing the DB:\n\nThis is a copy of example/manual.js\n\n    var dbURI    = \'mongodb://localhost/demo-app-clearing-db\'\n      , expect   = require(\'chai\').expect\n      , mongoose = require(\'mongoose\')\n      , Dummy    = mongoose.model(\'Dummy\', new mongoose.Schema({a:Number}))\n      , clearDB  = require(\'mocha-mongoose\')(dbURI, {noClear: true})\n    ;\n\n    describe("Example spec for a model", function() {\n      before(function(done) {\n        if (mongoose.connection.db) return done();\n\n        mongoose.connect(dbURI, done);\n      });\n\n      before(function(done) {\n        clearDB(done);\n      });\n\n      it("can be saved", function(done) {\n        Dummy.create({a: 1}, done);\n      });\n\n      it("can save another", function(done) {\n        Dummy.create({a: 2}, done);\n      });\n\n      it("can be listed", function(done) {\n         Dummy.find({}, function(err, models){\n          expect(err).to.not.exist;\n          expect(models).to.have.length(2);\n\n          done();\n         });\n      });\n\n      it("can clear the DB on demand", function(done) {\n        Dummy.count(function(err, count){\n          expect(err).to.not.exist;\n          expect(count).to.equal(2);\n\n          clearDB(function(err){\n            expect(err).to.not.exist;\n\n            Dummy.find({}, function(err, docs){\n              expect(err).to.not.exist;\n\n              expect(docs.length).to.equal(0);\n              done();\n            });\n          });\n        });\n      });\n    });\n',
+28 silly resolved     readmeFilename: 'README.md',
+28 silly resolved     bugs: { url: 'https://github.com/elliotf/mocha-mongoose/issues' },
+28 silly resolved     dependencies: {},
+28 silly resolved     _id: 'mocha-mongoose@1.0.4',
+28 silly resolved     _from: 'mocha-mongoose@' } ]
+29 info install mocha-mongoose@1.0.4 into /home/lemelon/EIPmaster/newapp
+30 info installOne mocha-mongoose@1.0.4
+31 info /home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose unbuild
+32 info preuninstall mocha-mongoose@1.0.4
+33 info uninstall mocha-mongoose@1.0.4
+34 verbose true,/home/lemelon/EIPmaster/newapp/node_modules,/home/lemelon/EIPmaster/newapp/node_modules unbuild mocha-mongoose@1.0.4
+35 info postuninstall mocha-mongoose@1.0.4
+36 verbose tar unpack /home/lemelon/.npm/mocha-mongoose/1.0.4/package.tgz
+37 silly lockFile 3242d7c7-wapp-node-modules-mocha-mongoose tar:///home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose
+38 verbose lock tar:///home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose /home/lemelon/.npm/3242d7c7-wapp-node-modules-mocha-mongoose.lock
+39 silly lockFile 4236e62f-mocha-mongoose-1-0-4-package-tgz tar:///home/lemelon/.npm/mocha-mongoose/1.0.4/package.tgz
+40 verbose lock tar:///home/lemelon/.npm/mocha-mongoose/1.0.4/package.tgz /home/lemelon/.npm/4236e62f-mocha-mongoose-1-0-4-package-tgz.lock
+41 silly gunzTarPerm modes [ '755', '644' ]
+42 silly gunzTarPerm extractEntry package.json
+43 silly gunzTarPerm extractEntry .npmignore
+44 silly gunzTarPerm extractEntry README.md
+45 silly gunzTarPerm extractEntry LICENSE
+46 silly gunzTarPerm extractEntry index.js
+47 silly gunzTarPerm extractEntry .travis.yml
+48 silly gunzTarPerm extractEntry Makefile
+49 silly gunzTarPerm extractEntry example/manual.js
+50 silly gunzTarPerm extractEntry example/test.js
+51 silly gunzTarPerm extractEntry test/index.js
+52 silly lockFile 3242d7c7-wapp-node-modules-mocha-mongoose tar:///home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose
+53 silly lockFile 3242d7c7-wapp-node-modules-mocha-mongoose tar:///home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose
+54 silly lockFile 4236e62f-mocha-mongoose-1-0-4-package-tgz tar:///home/lemelon/.npm/mocha-mongoose/1.0.4/package.tgz
+55 silly lockFile 4236e62f-mocha-mongoose-1-0-4-package-tgz tar:///home/lemelon/.npm/mocha-mongoose/1.0.4/package.tgz
+56 info preinstall mocha-mongoose@1.0.4
+57 verbose readDependencies using package.json deps
+58 verbose readDependencies using package.json deps
+59 silly resolved []
+60 verbose about to build /home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose
+61 info build /home/lemelon/EIPmaster/newapp/node_modules/mocha-mongoose
+62 verbose linkStuff [ false,
+62 verbose linkStuff   false,
+62 verbose linkStuff   false,
+62 verbose linkStuff   '/home/lemelon/EIPmaster/newapp/node_modules' ]
+63 info linkStuff mocha-mongoose@1.0.4
+64 verbose linkBins mocha-mongoose@1.0.4
+65 verbose linkMans mocha-mongoose@1.0.4
+66 verbose rebuildBundles mocha-mongoose@1.0.4
+67 info install mocha-mongoose@1.0.4
+68 info postinstall mocha-mongoose@1.0.4
+69 verbose readDependencies using package.json deps
+70 verbose already installed skipping mongodb@~1 /home/lemelon/EIPmaster/newapp
+71 silly resolved []
+72 error peerinvalid The package mongodb does not satisfy its siblings' peerDependencies requirements!
+73 error System Linux 3.16.0-38-generic
+74 error command "/usr/bin/nodejs" "/usr/bin/npm" "install" "mocha-mongoose"
+75 error cwd /home/lemelon/EIPmaster/newapp
+76 error node -v v0.10.25
+77 error npm -v 1.3.10
+78 error code EPEERINVALID
+79 verbose exit [ 1, true ]

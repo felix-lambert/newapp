@@ -4,6 +4,7 @@ angular.module('InTouch')
   if (socket.connected === false) {
     $rootScope.status = 'offline';
   }
+
   var disconnect = false;
 
   return {
@@ -33,4 +34,5 @@ angular.module('InTouch')
       socket.disconnect();
     }
   };
+
 }]);

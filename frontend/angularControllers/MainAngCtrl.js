@@ -15,9 +15,9 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
   var Auth                  = $injector.get('Auth');
   var appLoading            = $injector.get('appLoading');
   var Announce              = $injector.get('Announce');
-  var CustomerSearchService = $injector.get('CustomerSearchService');
   
   var announce = new Announce();
+  var auth = new Auth();
 
   vm.register               = register;
   vm.Search                 = Search;
@@ -69,22 +69,6 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
       vm.paginate(vm.page);
     }
   }
-
-  vm.meals = [
-    'noodles',
-    'sausage',
-    'beans on toast',
-    'cheeseburger',
-    'battered mars bar',
-    'crisp butty',
-    'yorkshire pudding',
-    'wiener schnitzel',
-    'sauerkraut mit ei',
-    'salad',
-    'onion soup',
-    'bak choi',
-    'avacado maki'
-  ];
 
   // function like(announceId, usernameDes, userDesId) {
   //   console.log('like');
@@ -171,15 +155,11 @@ function MainAngCtrl($http, $scope, $injector, $location, $rootScope, $localStor
     console.log(this);
     var vm = this;
     vm.dataLoading = true;
-    Auth.createUser({
-      email: vm.email,
-      username: vm.username,
-      password: vm.password,
-      confPassword: vm.passwordConfirmation
-    },
-    function(err) {
-      vm.errors = {};
-      if (!err) {
+    auth.setRegisterField(vm.username, vm.email, vm.password, vm.passwordConfirmation);
+    auth.createUser().then(function() {
+      if (auth._error) {
+        swal(auth._error, 'Try again', 'warning');
+      } else {
         swal('Votre compte a été créé avec succès', '', 'success');
         $rootScope.currentUser.notificationsCount = 0;
         $location.path('/');

@@ -56,8 +56,9 @@ function ActualityAngCtrl(Actuality, appLoading, $localStorage) {
   //   });
   // }
 
-  Actuality.getActualities().then(function(res) {
-    console.log(res);
-    vm.actualities = res;
+  var actuality = new Actuality();
+
+  actuality.getActualities().then(function() {
+    vm.actualities = actuality._actualities;
   });
 }

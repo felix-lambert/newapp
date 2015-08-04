@@ -210,7 +210,8 @@ exports = module.exports = function(mongoose) {
 };
 
   UserSchema.plugin(passportLocalMongoose, {
-    usernameField: 'email',
+    iterations : 1, 
+    usernameQueryFields : ['email'],
     usernameLowerCase: true
   });
 

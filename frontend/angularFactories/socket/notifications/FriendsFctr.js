@@ -1,71 +1,93 @@
 angular.module('InTouch')
 
-.factory('Friends', Friends);
+.factory('Friend', Friend);
 
-Friends.$inject = ['$q', '$http'];
+Friend.$inject = ['$q', '$http'];
 
-function Friends($q, $http) {
+function Friend($q, $http) {
 
-  var friendsFnct = {
+  var Friend = function() {
+    this._id = '';
+    this._friend = '';
+    this._friendField = null;
+    this._friends = null;
+    this._nbFriend = 0;
+  };
+
+  Friend.prototype = {
+    setId: setId,
+    setField: setField,
+    setFriend: setFriend,
+    setFriendToDelete: setFriendToDelete,
     postFriend: postFriend,
     getFriendsFromUser: getFriendsFromUser,
     deleteFriend: deleteFriend,
-    testIfFriend:testIfFriend,
-    countFriends: countFriends
+    testIfFriend: testIfFriend,
+    countFriend: countFriend
   };
 
-  return friendsFnct;
+  return Friend;
 
-  function testIfFriend(friend) {
-    var deferred = $q.defer();
-    $http.get('/api/friends/' + friend.username)
-    .success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setId(id) {
+    this._id = id;
   }
 
-  function countFriends(friend) {
-    var deferred = $q.defer();
-    $http.get('/api/countfriends/' + friend.idUser)
-    .success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
-    });
-    return deferred.promise;
+  function setFriend(friend) {
+    this._friend = friend;
   }
 
-  function postFriend(friend) {
-    var deferred = $q.defer();
-    $http.post('/api/friends/', friend).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function setField(userDes, userId) {
+    this._friendField = {
+      usernameWaitFriendRequest: userDes,
+      idUser: userId
+    };
+  }
+
+  function setFriendToDelete(id, user) {
+    this._id = id;
+    this._friend = user;
+  }
+
+  function testIfFriend() {
+    var self = this;
+    return $http.get('/api/friends/' + this._friend)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
+  }
+
+  function countFriend() {
+    var self = this;
+    return $http.get('/api/countfriends/' + this._id)
+    .then(function(response) {
+      self._nbFriends = response.data;
+      return response;
+    });
+  }
+
+  function postFriend() {
+    var self = this;
+    return $http.post('/api/friends/', this._friendField)
+    .then(function(response) {
+      return response;
+    });
   }
 
   function getFriendsFromUser() {
-    var deferred = $q.defer();
-    $http.get('/api/getfriends/').success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+    var self = this;
+    return $http.get('/api/getfriends/')
+    .then(function(response) {
+      self._friends = response.data;
+      return response;
     });
-    return deferred.promise;
   }
 
-  function deleteFriend(id, user) {
-    var deferred = $q.defer();
-    $http.delete('/api/friends/' + id + '/' + user).success(function(data) {
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject();
+  function deleteFriend() {
+    var self = this;
+    return $http.delete('/api/friends/' + self._id + '/' + self._friend)
+    .then(function(response) {
+      return response;
     });
-    return deferred.promise;
   }
 
 }
