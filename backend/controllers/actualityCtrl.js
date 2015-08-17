@@ -4,6 +4,7 @@
 var mongoose  = require('mongoose');
 var Actuality = mongoose.model('Actuality');
 var User      = mongoose.model('User');
+var chalk     = require('chalk');
 
 module.exports = {
 
@@ -11,7 +12,7 @@ module.exports = {
   // GET STATUS ///////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   getActualities: function(req, res) {
-    console.log('_____GET /api/actuality');
+    console.log(chalk.blue('_____GET /api/actuality____'));
     Actuality.find()
     .sort('-date')
     .exec(function(err, actualities) {
@@ -23,7 +24,7 @@ module.exports = {
   // CREATE COMMENT ///////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   addActuality: function(req, res) {
-    console.log('_______ADD Actuality_____');
+    console.log(chalk.blue('_______ADD Actuality_____'));
     var actuality     = new Actuality();
     actuality.content = req.body.content;
     actuality.status  = req.body.status;
@@ -37,7 +38,7 @@ module.exports = {
   // DELETE ACTUALITY /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   removeActuality: function(req, res) {
-    console.log('______DELETE /api/actuality___');
+    console.log(chalk.blue('______DELETE /api/actuality___'));
     function findOneActuality(findOneActualityCallback) {
       Actuality.findOne({
         _id: req.params.id

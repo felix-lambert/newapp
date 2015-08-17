@@ -1,3 +1,4 @@
+var chalk     = require('chalk');
 var autopopulate = require('mongoose-autopopulate');
 
 exports = module.exports = function(mongoose) {
@@ -22,7 +23,7 @@ exports = module.exports = function(mongoose) {
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   imageSchema.pre('save', function(next, req, callback) {
-    console.log('***************presave image*****************');
+     console.log(chalk.blue('***************presave image*****************'));
     if (this.isNew) {
       this.created = Date.now();
     }

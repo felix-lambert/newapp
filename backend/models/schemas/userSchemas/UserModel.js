@@ -1,3 +1,4 @@
+var chalk     = require('chalk');
 var elasticsearch = require('elasticsearch');
 
 exports = module.exports = function(mongoose) {
@@ -39,7 +40,7 @@ exports = module.exports = function(mongoose) {
     }
     }
 }, function(err,resp,respcode){
-    console.log('create index...');
+   console.log(chalk.blue('create index...'));
     console.log(err,resp,respcode);
     
     ES.indices.putMapping({
@@ -54,8 +55,7 @@ exports = module.exports = function(mongoose) {
             }
         }
       } }, function(err, resp, respcode) {
-        console.log('put mapping...');
-        console.log(err,resp,respcode);
+        console.log(chalk.blue('create index...'));
     });
 });
 
@@ -161,7 +161,7 @@ exports = module.exports = function(mongoose) {
     
     getUserToken: function(email, token, cb) {
       var self = this;
-      this.findOne({email: email})
+      self.findOne({email: email})
       .exec(function(err, usr) {
         if (err || !usr) {
           console.log('ERROR');
@@ -180,8 +180,28 @@ exports = module.exports = function(mongoose) {
       return jwt.encode(data, tokenSecret);
     },
 
-    decode: function(data) {
-      return jwt.decode(data, tokenSecret);
+    decode: function(data, cb) {
+      try {
+        var decoded = jwt.decode(data, tokenSecret);
+        var self = this;
+        self.findOne({email: decoded.email})
+        .exec(function(err, user) {
+          console.log('test response');
+          console.log(user);
+          if (err || !user) {
+            console.log('ERROR');
+            cb(err, null);
+          } else if (user.token && user.token.token) {
+            FORMATTED_DATE     = moment(user.DATE_CREATED).format('DD/MM/YYYY');
+            user.FORMATTED_DATE = FORMATTED_DATE;
+            cb(false, user);
+          } else {
+            cb(false, user);
+          }
+        });
+      } catch (err) {
+        return cb('Invalide Token');
+      }
     },
 
     emailExist: function(email, cb) {

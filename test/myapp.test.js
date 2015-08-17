@@ -14,6 +14,8 @@ before(function (done) {
   })
 })
 
+var token = '';
+
 it('get /search', function(done) {
   request(app)
     .get('/search')
@@ -161,6 +163,45 @@ it('Register other time', function(done) {
       .expect('Content-Type', /json/)
       .expect(400)
       .expect('"The confirm password does not match"', done);
+});
+
+it('Init token and authenticate', function(done) {
+  request(app).post('/auth/register')
+    .send({
+      username: 'bambam',
+      email : 'bambam@gmail.com',
+      password : 'lebarbarelemelon',
+      repeatPassword: 'lebarbarelemelon'
+    })
+    .end(function(err, res) {
+      var result = JSON.parse(res.text);
+      token = result.token;
+      done();
+    });
+});
+
+it('Send announce', function(done) {
+  request(app).post('/api/announces')
+    .set('auth-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJhbWJhbUBnbWFpbC5jb20ifQ.IjTtiDaOTLu4Uay219v2-NWIqfTKo1-1FoyFgZ6HVzk')
+    .send({
+      title: 'bambam',
+      content : 'bambam@gmail.com',
+      category : 'lebarbarelemelon',
+      type: 'lebarbarelemelon'
+    })
+    .expect(200, done)
+});
+
+it('Send announce but wrong token', function(done) {
+  request(app).post('/api/announces')
+    .set('auth-token', 'edJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJhbWJhbUBnbWFpbC5jb20ifQ.IjTtiDaOTLu4Uay219v2-NWIqfTKo1-1FoyFgZ6HVzk')
+    .send({
+      title: 'bambam',
+      content : 'bambam@gmail.com',
+      category : 'lebarbarelemelon',
+      type: 'lebarbarelemelon'
+    })
+    .expect(400, done);
 });
 
 // it('should return the correct HTML', function(done) {

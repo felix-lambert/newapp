@@ -13,7 +13,6 @@ function AnnounceInterface($http, Announce, $rootScope, Notification, Session, $
   AnnounceInterface.prototype.constuctor = AnnounceInterface;
 
   AnnounceInterface.prototype.getAnnouncesFromUser =  function() {
-    console.log('test 3');
     var announce = Announce.prototype.postAnnounce.apply(this, arguments);
 
     var self = this;
@@ -28,7 +27,6 @@ function AnnounceInterface($http, Announce, $rootScope, Notification, Session, $
   return AnnounceInterface;
 
   function getAnnouncesFromUser() {
-    console.log('test 22');
     var self = this;
     return $http.get('/api/userannounces/' + self._page)
     .then(function(response) {

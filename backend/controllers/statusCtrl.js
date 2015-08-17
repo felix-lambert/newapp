@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Status   = mongoose.model('Status');
 var User     = mongoose.model('User');
 var async    = require('async');
+var chalk     = require('chalk');
 
 module.exports = {
 

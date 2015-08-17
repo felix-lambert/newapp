@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
+var chalk     = require('chalk');
 
 var elasticsearch = require("elasticsearch");
 
@@ -19,7 +20,6 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
 
   show: function(req, res, next) {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     var userId = req.params.id;
     User.findById(userId, function(err, user) {
       res.status(err ? 400 : 200).json(err ? 'Failed to load User' : user);
@@ -32,7 +32,8 @@ module.exports = {
   search: function(req, res) {
     console.log(req.params);
     if (req.query.term) {
-      console.log('search');
+      console.log(chalk.blue('search'));
+
       var username = req.user ? req.user.username : '';
       var search   = req.query.term.toLowerCase();
       ES.search({
@@ -46,7 +47,7 @@ module.exports = {
         }
       }
     }).then(function (resp) {
-      console.log(resp);
+      console.log(chalk.green(resp.hits.hits));
       res.status(200).json(resp.hits.hits);
     });
     } else {
@@ -79,7 +80,6 @@ module.exports = {
   // CHECK EMAIL EXIST ////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   emailExist: function(req, res) {
-    console.log('test');
     if (req.query.u) {
       var email = req.query.u;
       User.find({

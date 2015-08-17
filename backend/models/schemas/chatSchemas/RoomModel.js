@@ -1,3 +1,5 @@
+var chalk     = require('chalk');
+
 exports = module.exports = function(mongoose) {
 
   var Schema = mongoose.Schema;
@@ -18,7 +20,7 @@ exports = module.exports = function(mongoose) {
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   roomSchema.pre('save', function(next, done) {
-    console.log('***************presave room*****************');
+    console.log(chalk.blue('***************presave room*****************'));
     if (this.isNew) {
       this.created = Date.now();
     }
@@ -31,13 +33,12 @@ exports = module.exports = function(mongoose) {
    */
   roomSchema.statics = {
     load: function(id, cb) {
-      console.log('*****************load room******************');
+      console.log(chalk.blue('***************load room*****************'));
       this.findOne({
           _id: id
       }).populate('creator').exec(cb);
     },
     findByTitle: function(title, callback) {
-      console.log('find room by title');
       return this.find({
           title: title
       }, callback);

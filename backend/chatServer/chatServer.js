@@ -6,6 +6,7 @@ var people  = {};
 var _       = require('underscore')._;
 var sockets = [];
 var Room    = require('./room');
+var chalk     = require('chalk');
 
 module.exports = function(server) {
 
@@ -36,28 +37,24 @@ module.exports = function(server) {
     });
 
     socket.on('sendAcceptFriendRequest', function(user) {
-      console.log('receiveAcceptFriendRequest');
+      console.log(chalk.green('receiveAcceptFriendRequest'));
       io.sockets.emit('receiveAcceptFriendRequest', user);
     });
 
     socket.on('sendMessage', function(data) {
-      console.log('SEND MESSAGE');
-      console.log(socket.room);
+      console.log(chalk.green('Send Message'));
       io.sockets.in(socket.room).emit('sendChatMessage', data);
     });
 
     socket.on('typing', function(data) {
-      console.log(data);
-      console.log(socket.room);
+      console.log(chalk.green(data));
       io.sockets.in(socket.room).emit('isTyping',
         {isTyping: data.isTyping, person: data.user});
     });
 
     socket.on('disconnect', function() {
-      console.log('disconnect');
       if (typeof people[socket.id] !== 'undefined') { //this handles the refresh of the name screen
         // purgatory.purge(socket, 'disconnect');
-        console.log('disconnect');
       }
     });
 
@@ -87,7 +84,7 @@ module.exports = function(server) {
     });
 
     socket.on('joinRoom', function(roomId, roomName) {
-      console.log('________________JOIN ROOM_______________');
+      console.log(chalk.green('________________JOIN ROOM_______________'));
       var room = rooms[roomId];
       socket.room = roomName;
       socket.join(socket.room);
@@ -96,8 +93,7 @@ module.exports = function(server) {
     });
 
     socket.on('createRoom', function(roomId, roomName) {
-      console.log('NEW ROOM_________ CRETA ROOOM');
-      console.log('createRoom');
+      console.log(chalk.green('NEW ROOM'));
 
       var room = new Room(roomName, roomID, socket.id);
 

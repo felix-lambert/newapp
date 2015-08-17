@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose     = require('mongoose');
 var config       = require('./database');
+var chalk     = require('chalk');
 	
 var mongoOptions = {
 	db: {
@@ -15,8 +16,9 @@ var mongoOptions = {
 /////////////////////////////////////////////////////////////////
 module.exports = mongoose.connect(config.db, mongoOptions, function(err, res) {
   if (err) {
-    console.log('ERROR connecting to: ' + config.db + '. ' + err);
+  	console.log(chalk.red('ERROR connecting to: ' + config.db + '. ' + err));
+    console.log();
   } else {
-    console.log('Successfully connected to: ' + config.db);
+  	console.log(chalk.green('Successfully connected to: ' + config.db));
   }
 });

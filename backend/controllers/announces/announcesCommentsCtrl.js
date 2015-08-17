@@ -6,6 +6,7 @@ var Comment  = mongoose.model('AnnounceComment');
 var Announce = mongoose.model('Announce');
 var moment   = require('moment');
 var async    = require('async');
+var chalk     = require('chalk');
 
 module.exports = {
 
@@ -13,7 +14,7 @@ module.exports = {
   // CREATE COMMENT ///////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   addComment: function(req, res) {
-    console.log('_______ADD COMMENT_____');
+    console.log(chalk.blue('_______ADD COMMENT_____'));
 
     function findOneAnnounce(findOneAnnounceCallback) {
       Announce.findOne({
@@ -34,7 +35,7 @@ module.exports = {
     }
     // Faire une promise
     async.waterfall([findOneAnnounce, saveComment], function(error) {
-      console.log(error);
+      console.log(chalk.red(error));
       res.status(error ? 400 : 200).json(error);
     });
   },
@@ -43,42 +44,32 @@ module.exports = {
   // DELETE COMMENT ///////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   removeComment: function(req, res) {
-    console.log('______DELETE /api/announceComment___');
+    console.log(chalk.blue('______DELETE /api/announceComment___'));
 
     function checkRemove(announce) {
       if (announce.creator && req.user._id.equals(announce.creator._id) ||
               req.user._id === announce.creator._id) {
-        console.log('true');
         return true;
       } else {
-        console.log('false');
         return false;
       }
     }
 
     function findAnnounce(findAnnounceCallback) {
-      console.log('find announce');
-      console.log(req.params.id);
       Comment.findOne({
         _id: req.params.id
       }, function(error, result) {
-        console.log('test');
         findAnnounceCallback(error ? error : null, result);
       });
     }
 
     function removeComment(comment, removeCommentCallback) {
-      console.log('remove comment');
       if (checkRemove(comment)) {
-        console.log('inside comment');
-        console.log(comment);
-        console.log(comment._id);
         Comment.remove({'_id': comment._id}, function(error, response) {
-          console.log('___callback___');
           removeCommentCallback(error ? error : null, comment);
         });
       } else {
-        console.log('___no callback___');
+        console.log(chalk.red('you can\'t remove this announce'));
         removeCommentCallback('you can\'t remove this announce');
       }
     }
@@ -93,7 +84,7 @@ module.exports = {
   // GET COMMENTS /////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   getComments: function(req, res) {
-    console.log('_____GET /api/announceComment/' + req.params.announceId);
+    console.log(chalk.blue('______DELETE /api/announceComment___ '));
 
     function getComments(comments) {
       var retComments = [];

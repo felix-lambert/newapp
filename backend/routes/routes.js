@@ -1,6 +1,7 @@
 /*
  * Module dependencies
  */
+var chalk     = require('chalk');
 var _             = require('underscore');
 var path          = require('path');
 var express       = require('express');
@@ -23,7 +24,7 @@ var indexRoutes = [
   httpMethod: 'GET',
   middleware: [
     function(req, res) {
-      console.log('_____________get /partials/_____');
+      console.log(chalk.blue('_____________get /partials/_____'));
       var requestedView = path.join('./', req.url);
       res.render(requestedView);
     }
@@ -39,8 +40,8 @@ var indexRoutes = [
 ];
 
 module.exports = function(app) {
-  console.log('********************************routes*************************************');
-
+  console.log(chalk.blue('********************************routes*************************************'));
+  
   var announceRoutes          = require('./announces/announceRoutes');
   var messageRoutes           = require('./sockets/messageRoutes');
   var roomsRoutes             = require('./sockets/roomsRoutes');

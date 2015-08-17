@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose     = require('mongoose');
 var Notification = mongoose.model('Notification');
+var chalk     = require('chalk');
 
 module.exports = {
 
@@ -10,15 +11,15 @@ module.exports = {
   // GET NOTIFICATION /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   getNotifications: function(req, res, next) {
-    console.log('___________get Notification________________________');
+    console.log(chalk.blue('___________get Notification________________________'));
     if (req.user) {
       Notification.findUserNotifications({
         'creator': req.user._id
       }, function(err, notifications) {
-        console.log(err, notifications);
         res.status(200).json(notifications);
       });
     } else {
+      console.log(chalk.red('User is not recognized'));
       return res.status(400).json('User is not recognized');
     }
   },
@@ -27,7 +28,8 @@ module.exports = {
   // DELETE NOTIFICATION //////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   deleteNotification: function(req, res) {
-    console.log('deleteNotification');
+    console.log(chalk.blue('deleteNotification'));
+
     Notification.find({_id: req.params.notificationToDelete}).remove()
     .exec(function(err) {
       return res.status(err ? 501 : 200).json(err ? err : 'remove notif');
@@ -38,8 +40,7 @@ module.exports = {
   // SAVE NOTIFICATION ////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   saveNotification: function(req, res, next) {
-    console.log('saveNotification');
-    console.log(req.body);
+     console.log(chalk.blue('saveNotification'));
     Notification.findOneAndUpdate({
       'creator': req.body.userDesId
     }, {
@@ -50,7 +51,6 @@ module.exports = {
       type: req.body.type
     }, {upsert: true})
     .exec(function(err, result) {
-      console.log(err, result);
       res.status(200).json(result);
     });
   },

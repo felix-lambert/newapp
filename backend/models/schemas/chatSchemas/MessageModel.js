@@ -1,3 +1,5 @@
+var chalk     = require('chalk');
+
 exports = module.exports = function(mongoose) {
 
   var Schema = mongoose.Schema;
@@ -37,7 +39,7 @@ exports = module.exports = function(mongoose) {
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   messageSchema.pre('save', function(next, done) {
-    console.log('_________________presave message____________________');
+    console.log(chalk.blue('***************presave message*****************'));
     if (this.isNew) {
       this.created = Date.now();
     }

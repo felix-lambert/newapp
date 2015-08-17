@@ -1,3 +1,5 @@
+var chalk     = require('chalk');
+
 exports = module.exports = function(mongoose) {
 
   var Schema = mongoose.Schema;
@@ -28,7 +30,7 @@ exports = module.exports = function(mongoose) {
    * Pre hook.
    */
   notificationSchema.pre('save', function(next, done) {
-    console.log('***************presave friend*****************');
+    console.log(chalk.blue('***************presave notifications*****************'));
     if (this.isNew) {
       this.created = Date.now();
     }
@@ -41,6 +43,7 @@ exports = module.exports = function(mongoose) {
    */
   notificationSchema.statics = {
     load: function(id, cb) {
+      
       console.log('*****************load notification******************');
       this.findOne({
           _id: id

@@ -1,6 +1,7 @@
 var Q            = require('q');
 var moment       = require('moment');
 var autopopulate = require('mongoose-autopopulate');
+var chalk     = require('chalk');
 
 var elasticsearch = require("elasticsearch");
 
@@ -40,9 +41,8 @@ ES.indices.create({
         }
     }
     }
-}, function(err,resp,respcode){
-    console.log('create index...');
-    console.log(err,resp,respcode);
+}, function(err,resp,respcode) {
+  console.log(chalk.blue('create index...'));
     
     ES.indices.putMapping({
       index: 'announce', 
@@ -118,7 +118,7 @@ exports = module.exports = function(mongoose) {
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   announceSchema.pre('save', function(next, req, callback) {
-    console.log('***************presave announce*****************');
+    console.log(chalk.blue('***************presave announce*****************'));
     var FORMATTED_DATE;
     if (this.isNew) {
       this.created        = Date.now();

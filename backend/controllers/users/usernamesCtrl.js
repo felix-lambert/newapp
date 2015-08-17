@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////
 var mongoose = require('mongoose');
 var Username = mongoose.model('Username');
+var chalk     = require('chalk');
 
 module.exports = {
 

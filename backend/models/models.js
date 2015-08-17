@@ -1,5 +1,7 @@
+var chalk     = require('chalk');
+
 exports = module.exports = function(mongoose) {
-  console.log('**********************models******************************');
+  console.log(chalk.blue('**********************models******************************'));
   require('./schemas/notificationSchemas/NotificationModel')(mongoose);
   require('./schemas/notificationSchemas/LikeModel')(mongoose);
   require('./schemas/userSchemas/TokenModel')(mongoose);

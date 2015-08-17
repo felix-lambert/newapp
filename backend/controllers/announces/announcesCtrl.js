@@ -8,6 +8,7 @@ var async         = require('async');
 var moment        = require('moment');
 var async         = require('async');
 var elasticsearch = require("elasticsearch");
+var chalk     = require('chalk');
 
 if (process.env.NODE_ENV === 'production') {
   var ES = new elasticsearch.Client({
@@ -25,29 +26,31 @@ module.exports = {
   // CREATE AN ANNOUNCE ///////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   postAnnounce: function(req, res) {
-    console.log('_____________POST /api/announces_____');
+
+    console.log(chalk.blue('_____________POST /api/announces_____'));
 
     function saveAnnounceMongo(saveAnnounceMongoCallback) {
-      var announce = new Announce({
-        title: req.body.title,
-        content: req.body.content,
-        type: req.body.type,
-        price: req.body.price,
-        creator : req.user._id,
-        activated: req.body.activated,
-        category: req.body.category,
-        tags: req.body.tags,
-        nbComment: 0,
-      });
-      announce.save(function(err, saveItem) {
-        saveAnnounceMongoCallback(err ? err : null, announce, saveItem);
-      });
+      if (req.body.title && req.body.content) {
+        var announce = new Announce({
+          title: req.body.title,
+          content: req.body.content,
+          type: req.body.type,
+          price: req.body.price,
+          creator : req.user._id,
+          activated: req.body.activated,
+          category: req.body.category,
+          tags: req.body.tags,
+          nbComment: 0,
+        });
+        announce.save(function(err, saveItem) {
+          saveAnnounceMongoCallback(err ? err : null, announce, saveItem);
+        });
+      } else {
+        saveAnnounceMongoCallback('You need to have a title or a content in the announces');
+      }
     }
 
     function saveAnnounceES(announce, saveItem, saveAnnounceESCallback) {
-      console.log('_____save item_____');
-      console.log(saveItem._id.toHexString());
-      console.log('ID : ' + saveItem._id.toHexString());
       var FORMATTED_DATE;
       if (announce.isNew) {
         announce.created        = Date.now();
@@ -71,14 +74,12 @@ module.exports = {
           FORMATTED_DATE: moment(announce.DATE_CREATED).format('DD/MM/YYYY, hA:mm')
         }
       }, function(err, res) {
-        console.log(err, res);
         saveAnnounceESCallback(err ? err : null, announce);
       });
     }
 
     // Faire une promise
     async.waterfall([saveAnnounceMongo, saveAnnounceES], function(error, announce) {
-      console.log(error ? error : null, announce);
       res.status(error ? 400 : 200).json(error ? error : announce);
     });
   },
@@ -88,8 +89,7 @@ module.exports = {
   /////////////////////////////////////////////////////////////////
   updateAnnounce: function(req, res) {
 
-    console.log('*****************Update announce*******************');
-    console.log(req.params);
+    console.log(chalk.blue('*****************Update announce*******************'));
 
     function findOneAnnounce(findOneAnnounceCallback) {
       Announce.findOne({
@@ -105,7 +105,6 @@ module.exports = {
     }
 
     function updateAnnounce(result, updateAnnounceCallback) {
-      console.log('result');
       if (result.creator._id.equals(req.user._id)) {
         result.title   = req.body.title;
         result.content = req.body.content;
@@ -114,7 +113,7 @@ module.exports = {
           updateAnnounceCallback(err ? err : null, result);
         });
       } else {
-        updateAnnounceCallback('You can only update your own announce.');
+        console.log(chalk.red('You can only update your own announce.'));
       }
     }
 
@@ -128,11 +127,12 @@ module.exports = {
   // SHOW AN ANNOUNCE /////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   show: function(req, res) {
-    console.log('***************load announce*********************');
-    console.log(req.params.announceId);
+    console.log(chalk.blue('***************load announce*********************'));
+
     Announce.findOne({'_id': req.params.announceId},
       function(err, announce) {
       if (err || !announce) {
+        console.log(chalk.red('There is no announce to load'));
         res.status(400).json(err ? err : 'There is no announce to load');
       } else {
         Announce.organizeAnnounceData(announce, function(result) {
@@ -143,18 +143,17 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////
-  // CHANGE STATUS OF ANNOUNCE /////////////////////////////////////////////
+  // CHANGE STATUS OF ANNOUNCE ////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   changeStatusAnnounce: function(req, res) {
-    console.log('***************status announce*********************');
+    console.log(chalk.blue('***************status announce*********************'));
 
     function findOneAnnounce(findOneAnnounceCallback) {
-      console.log('findOneAnnounces');
-      console.log(req.params.announceId);
       Announce.findOne({
         '_id': req.params.announceId
       }, function(err, result) {
         if (err || !result) {
+          console.log(chalk.red('There is no announce to change status'));
           findOneAnnounceCallback(err ? err : 'There is no announce to change status');
         } else {
           findOneAnnounceCallback(null, result);
@@ -163,7 +162,6 @@ module.exports = {
     }
 
     function updateAnnounceStatus(announce, updateAnnounceStatusCallback) {
-      console.log('update announce status');
 
       if (announce.creator._id.equals(req.user._id)) {
         announce.activated = req.params.status;
@@ -171,6 +169,7 @@ module.exports = {
           updateAnnounceStatusCallback(err ? err : null, announce);
         });
       } else {
+        console.log(chalk.red('You can only update your own announce.'));
         updateAnnounceStatusCallback('You can only update your own announce.');
       }
     }
@@ -200,7 +199,6 @@ module.exports = {
     }).then(function (resp) {
 
       var announces = resp.hits.hits;
-      console.log('/////////////////////////////////////////////');
 
       var initAnnounces = function(announce, doneCallback) {
         announce.title   = announce._source.title.length > 34 ?
@@ -228,15 +226,13 @@ module.exports = {
       };
 
       async.map(announces, initAnnounces, function(err, result) {
-        console.log('ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù');
-        console.log(result);
         return res.status(err ? 400 : 200).json(err ? err : {
           total: resp.hits.total,
           announce: result
         });
       });
     }, function (err) {
-      console.log(err);
+      console.log(chalk.red(err));
       res.status(400).json(err.message);
     });
     // Announce.search({
@@ -263,7 +259,7 @@ module.exports = {
   // DELETE AN ANNOUNCE ///////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   deleteAnnounce: function(req, res) {
-    console.log('_____________________destroy announce____________');
+    console.log(chalk.blue('_____________________destroy announce____________'));
 
     function deleteAnnounceMongo(deleteAnnounceMongoCallback) {
       console.log('delete announce mongo');
@@ -284,11 +280,9 @@ module.exports = {
     // Faire une promise
     async.waterfall([deleteAnnounceMongo, deleteAnnounceES], function(error, announce) {
       if (error) {
+        console.log(chalk.red(error));
         return res.status(400).json(error);  
       } else {
-        console.log('result');
-        console.log(announce);
-        console.log(error);
         return res.status(200).json(announce);
       }
       
@@ -336,8 +330,10 @@ module.exports = {
   },
 
   listUserPagination: function(req, res) {
+    console.log(chalk.blue('list user pagination'));
+    
     var findAnnounces = function(next) {
-      console.log('list user pagination');
+      
 
       Announce
         .find({creator: req.user._id})

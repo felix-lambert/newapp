@@ -13,6 +13,8 @@ It includes a server built in node.js and a html client built with AngularJS.
   <li>underscore</li>
 </ul>
 
+InTouch uses [PassportJS](http://passportjs.org) for authentication.
+
 ### Frontend
 <ul>
   <li>AngularJS</li>
@@ -39,7 +41,7 @@ sites do much better than what we could do ourselves:
 
 For a live demo go to:
 
-  http://intouchdev.herokuapp.com
+  https://enigmatic-tor-8169.herokuapp.com/
 
 ##Signing up, and deploying to Heroku
 
@@ -63,6 +65,8 @@ Git deploy your app:
 
     git push heroku master
 
+The program will automatically minify the files with grunt.
+
 Assign a dyno to your app:
 
     heroku ps:scale web=1
@@ -73,16 +77,19 @@ Open the app (same as opening it in the browser):
 
 And your app should be up on Heroku.
 
-
 ### Install InTouch
 
 If you have these 2 tools installed, go to terminal and type:
     npm install
 
-Go to terminal and run `grunt`.
+Point your browser to `http://127.0.0.1:3000`
 
-Point your browser to `http://127.0.0.1:8000` 
+### Testing your app
 
-InTouch uses [PassportJS](http://passportjs.org) for authentication with Google, LinkedIn and Facebook.
+Run `sudo mocha`
+
+### Minification
+
+Run `grunt`.
 
 Enjoy!

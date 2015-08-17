@@ -1,4 +1,5 @@
 var autopopulate = require('mongoose-autopopulate');
+var chalk     = require('chalk');
 
 
 exports = module.exports = function(mongoose) {
@@ -28,7 +29,7 @@ exports = module.exports = function(mongoose) {
   // PRE SAVE /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   actualitySchema.pre('save', function(next, req, callback) {
-    console.log('***************presave announce*****************');
+    console.log(chalk.blue('***************presave Actuality*****************'));
     if (this.isNew) {
       this.created = Date.now();
     }

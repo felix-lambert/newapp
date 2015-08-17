@@ -1,3 +1,5 @@
+var chalk     = require('chalk');
+
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 

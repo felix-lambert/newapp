@@ -7,6 +7,7 @@ var passport = require('passport');
 var async    = require('async');
 var moment   = require('moment');
 var elasticsearch = require('elasticsearch');
+var chalk     = require('chalk');
 
 if (process.env.NODE_ENV === 'production') {
   var ES = new elasticsearch.Client({
@@ -25,7 +26,7 @@ module.exports = {
   // LOGOUT ///////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   logout: function(req, res) {
-    console.log('******************logout******************');
+    console.log(chalk.blue('******************logout******************'));
     var incomingToken = req.headers['auth-token'];
     if (incomingToken) {
       var decoded = User.decode(incomingToken);
@@ -38,6 +39,7 @@ module.exports = {
               true);
           });
       } else {
+        console.log(chalk.red('Issue decoding incoming token.'));
         res.status(400).json({error: 'Issue decoding incoming token.'});
       }
     }
@@ -47,19 +49,17 @@ module.exports = {
   // AUTHENTICATE /////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   passportAuthenticate: function(req, res, next) {
-    console.log('authentification');
-    console.log(req.body);
-  
+    console.log(chalk.blue('Authenticate'));
+
     User.authenticate()(req.body.email, req.body.password, function(err, user, message) {
       console.log(err, user, message);
       if (user === false) {
-        console.log(err);
+        console.log(chalk.red(err));
         return res.status(400).json({
           err: message.message
         });
       } else {
-        console.log('user === true');
-        console.log(user);
+        console.log(chalk.green(user));
         req.user = user;
         next();
       }
@@ -84,7 +84,6 @@ module.exports = {
 
     // Faire une promise
     async.waterfall([createToken, getToken], function(error, result) {
-      console.log(result);
       res.status(error ? 400 : 200).json(error ? error : {
         _id: result._id,
         email: result.email,
@@ -101,14 +100,12 @@ module.exports = {
   // REGISTER /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   register: function(req, res, next) {
-    console.log('**********************Register***********************');
+    console.log(chalk.blue('**********************Register***********************'));
 
     function registerUserMongo(registerUserMongoCallback) {
-      console.log('register user mongo');
-      console.log(req.body);
       if (req.body.password === req.body.repeatPassword) {
-        console.log(req.body.username);
         if (req.body.username === undefined || req.body.email === undefined) {
+          console.log(chalk.red('There is no username or email'));
           return registerUserMongoCallback('There is no username or email');
         }
         var user = new User({
@@ -120,13 +117,12 @@ module.exports = {
           registerUserMongoCallback(error ? error : null, result);
         });
       } else {
+        console.log(chalk.red('The confirm password does not match'));
         registerUserMongoCallback('The confirm password does not match');
       }
     }
 
     function registerUserES(user, registerUserESCallback) {
-      console.log('registerUserES');
-      console.log(user);
       var FORMATTED_DATE;
       ES.create({
         index: 'user',

@@ -10,6 +10,7 @@ var Images    = mongoose.model('Image');
 var Actuality = mongoose.model('Actuality');
 var async    = require('async');
 var elasticsearch = require('elasticsearch');
+var chalk     = require('chalk');
 
 if (process.env.NODE_ENV === 'production') {
   var ES = new elasticsearch.Client({
@@ -27,7 +28,7 @@ module.exports = {
   // UPLOAD IMAGE /////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   upload: function(req, res) {
-    console.log('//////File caracteristics/////////');
+    console.log(chalk.blue('//////File caracteristics/////////'));
     var destPath;
     destPath = process.env.NODE_ENV === 'production' ?
     path.join(__dirname, '../../dist/images/') :
@@ -64,6 +65,7 @@ module.exports = {
       .sort('-created')
       .exec(function(err, result) {
         if (err) {
+          console.log(chalk.red(err));
           return res.status(501).json(err);
         }
         var profile = true ? result.length === 0 : false;
@@ -85,9 +87,6 @@ module.exports = {
                 profileImage: hashName
               }
             }, function (error, response) {
-                console.log('put in elasticsearch');
-                console.log(error);
-                console.log(response);
                 var actuality     = new Actuality();
                 actuality.content = hashName;
                 actuality.status  = 2;
@@ -103,13 +102,13 @@ module.exports = {
         });
       });
     } else {
+      console.log(chalk.red('No images'));
       res.status(400).json('No images');
     }
   },
 
   getImages: function(req, res, next) {
-
-    console.log('____________get images from user__________');
+    console.log(chalk.blue('____________get images from user__________'));
     var sendImages = [];
     Images.find({
       creator: req.user._id
@@ -122,8 +121,7 @@ module.exports = {
   },
 
   deleteImage: function(req, res, next) {
-
-    console.log('____________get images from user__________');
+    console.log(chalk.blue('____________delete image__________'));
     Images.findByIdAndRemove(req.params.imageId, function(err, image) {
       res.status(err ? 400 : 200).json(err ? err : image);
     });
@@ -135,8 +133,6 @@ module.exports = {
       Images.findOne({'creator': req.user._id})
       .where('profileImage').equals(true)
       .exec(function(err, result) {
-        console.log('find one user image');
-        console.log(result);
         findOneUserImageCallback(err ? err : null, result);
       });
     }
@@ -147,10 +143,6 @@ module.exports = {
         console.log(result);
         result.profileImage = false;
         result.save(function(err) {
-          console.log('save done...');
-          console.log(err);
-          console.log('find one image');
-          console.log(req.params.imageId);
           Images.findOne({
             '_id': req.params.imageId
           }, function(err, doProfile) {
@@ -158,7 +150,6 @@ module.exports = {
           });
         });
       } else {
-        console.log('error ?????????????????????????');
         saveImageCallback(null);
       }
     }

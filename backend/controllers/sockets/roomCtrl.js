@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var Room     = mongoose.model('Room');
 var async    = require('async');
+var chalk     = require('chalk');
 
 module.exports = {
 
@@ -11,15 +12,15 @@ module.exports = {
   // CREATE ROOM //////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   create: function(req, res) {
-    console.log('______CREATE ROOM TEST__________________');
+
+    console.log(chalk.blue('______CREATE ROOM TEST__________________'));
 
     var usernames = new Array(req.body.nameRec, req.user.username);
 
     usernames.sort(alphabetical);
 
     roomName = usernames.join('');
-    console.log('roomname... ');
-    console.log(roomName);
+
     Room.find({name: roomName}, function(err, results) {
       var room = [];
       console.log(results);
@@ -33,7 +34,6 @@ module.exports = {
         room = new Room({
           name: roomName
         });
-        console.log('save room');
         room.save(function(err, saveRoom) {
           res.status(err ? 400 : 200).json(err ? err : {
             roomId: saveRoom._id,
@@ -50,7 +50,8 @@ module.exports = {
   // UPDATE ROOM //////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   update: function(req, res) {
-    console.log('*****************Update room*******************');
+    console.log(chalk.blue('______Update ROOM TEST__________________'));
+
     function findOneRoom(findOneRoomCallback) {
       Room.findOne({
         '_id': req.room._id
