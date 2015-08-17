@@ -10,17 +10,13 @@ It includes a server built in node.js and a html client built with AngularJS.
   <li>node.js</li>
   <li>socket.io</li>
   <li>Express</li>
-  <li>node-uuid</li>
   <li>underscore</li>
-  <li>ejs</li>
-  <li>shrinkwrap</li>
 </ul>
 
 ### Frontend
 <ul>
   <li>AngularJS</li>
   <li>Angular-Bootsrap (angular-ui)</li>
-  <li>Bootstrap (Yeti theme)</li>
   <li>Font Awesome</li>
 </ul>
 

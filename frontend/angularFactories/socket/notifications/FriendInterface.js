@@ -26,6 +26,20 @@ function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notificatio
 
   }
 
+  FriendInterface.prototype.postAcceptNotification =  function() {
+
+    var friend = Friend.prototype.postFriend.apply(this, arguments);
+
+    var self = this;
+    return friend.then(function() {
+      // before returning the result,
+      // call our new private method and bind "this" to "self"
+      // we need to do this because the method is not part of the prototype
+      return postAcceptNotification.call(self);
+    });
+
+  }
+
   return FriendInterface;
 
   function postNotification() {
@@ -45,6 +59,29 @@ function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notificatio
       socket.emit('sendFriendRequest', {
         user: $rootScope.currentUser.username,
         userDes: self._friendField.usernameWaitFriendRequest,
+        userDesId: self._friendField.idUser,
+        id: $rootScope.currentUser._id
+      });
+    });
+  }
+
+  function postAcceptNotification() {
+    // $localStorage.currentUser = this._profile;
+    // $rootScope.currentUser = $localStorage.currentUser;
+    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
+    var self = this;
+
+    console.log(self);
+    var notification = new Notification();
+
+    notification.setField(self._friendField.usernameAcceptedFriendRequest, self._friendField.idUser, 'accept');
+    notification.postNotification().then(function() {
+      console.log('notifications success');
+      console.log('toaster');
+      toaster.pop('success', 'Vous avez accepté la requête d\'amitié');
+      socket.emit('sendAcceptFriendRequest', {
+        userRec: $rootScope.currentUser.username,
+        userDes: self._friendField.usernameAcceptedFriendRequest,
         userDesId: self._friendField.idUser,
         id: $rootScope.currentUser._id
       });

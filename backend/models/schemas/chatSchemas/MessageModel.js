@@ -49,12 +49,6 @@ exports = module.exports = function(mongoose) {
   // STATICS //////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////
   messageSchema.statics = {
-    load: function(id, cb) {
-      console.log('*****************load message******************');
-      this.findOne({
-          _id: id
-      }).populate('userCreator roomCreator').exec(cb);
-    },
 
     findByContent: function(content, callback) {
       return this.find({

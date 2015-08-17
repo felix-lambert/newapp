@@ -25,7 +25,7 @@ module.exports = {
 
     function saveComment(announce, saveCommentCallback) {
       var comment      = new Comment();
-      comment.content  = req.body.content;
+      comment.content  = req.body.announceComment;
       comment.creator  = req.user._id;
       comment.announce = announce;
       comment.save(function(error, comments) {
@@ -46,7 +46,7 @@ module.exports = {
     console.log('______DELETE /api/announceComment___');
 
     function checkRemove(announce) {
-      if (req.user._id.equals(announce.creator._id) ||
+      if (announce.creator && req.user._id.equals(announce.creator._id) ||
               req.user._id === announce.creator._id) {
         console.log('true');
         return true;
@@ -73,9 +73,9 @@ module.exports = {
         console.log('inside comment');
         console.log(comment);
         console.log(comment._id);
-        Comment.remove({'_id': comment._id}, function(error) {
+        Comment.remove({'_id': comment._id}, function(error, response) {
           console.log('___callback___');
-          removeCommentCallback(error ? error : null);
+          removeCommentCallback(error ? error : null, comment);
         });
       } else {
         console.log('___no callback___');
@@ -84,8 +84,8 @@ module.exports = {
     }
 
     // Faire une promise
-    async.waterfall([findAnnounce, removeComment], function(error) {
-      res.status(error ? 400 : 200).json(error);
+    async.waterfall([findAnnounce, removeComment], function(error, response) {
+      res.status(error ? 400 : 200).json(error ? error : response);
     });
   },
 

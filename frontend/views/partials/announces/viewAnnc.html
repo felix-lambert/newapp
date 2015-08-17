@@ -80,12 +80,15 @@
     <form class="postComment" ng-submit="showAnnounce.postComment()">
       <div class="form-group col-md-4 ">
         <label id="messageLabel" for="message">Commenter </label>
-        <textarea ng-model="showAnnounce.AnnounceComment" class="form-control input-sm " type="textarea" id="message" placeholder="Message" maxlength="140" rows="1"></textarea>
-        <span class="help-block"><p id="characterLeft" class="help-block ">Vous avez atteint la limite</p></span>
+        <textarea class="form-control input-sm " type="textarea" id="message" placeholder="Message" ng-model="showAnnounce.AnnounceComment" ng-trim="false" maxlength="140" rows="1"></textarea>
+          <span class="help-block"><p class="help-block">{{140 - showAnnounce.AnnounceComment.length}} characters left</span>
+          <span class="help-block">
+            <p ng-if="showAnnounce.AnnounceComment.length === 140" class="help-block ">Vous avez atteint la limite</p>
+          </span>
       </div>
       <br style="clear:both">
       <div class="form-group col-md-2">
-        <button class="form-control input-sm btn btn-success disabled" id="btnSubmit" name="btnSubmit" type="submit" type="button" style="height:35px"> Envoyer</button>
+        <button class="form-control input-sm btn btn-success" id="btnSubmit" name="btnSubmit" type="submit" type="button" style="height:35px"> Envoyer</button>
       </div>
     </form>
   </div>
@@ -123,25 +126,3 @@
     </div>
   </div>
 </section>
-
-<script>
-  $(document).ready(function(){ 
-    $('#characterLeft').text('140 characters left');
-    $('#message').keydown(function () {
-        var max = 140;
-        var len = $(this).val().length;
-        if (len >= max) {
-          $('#characterLeft').text('You have reached the limit');
-          $('#characterLeft').addClass('red');
-          $('#btnSubmit').addClass('disabled');
-        } 
-        else {
-          var ch = max - len;
-          $('#characterLeft').text(ch + ' characters left');
-          $('#btnSubmit').removeClass('disabled');
-          $('#characterLeft').removeClass('red');            
-        }
-    });    
-});
-
-</script>

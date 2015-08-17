@@ -18,7 +18,8 @@ function Image($q, $http, $rootScope) {
     setId: setId,
     deleteImage: deleteImage,
     getImages: getImages,
-    changeImageStatus: changeImageStatus
+    changeStatus: changeStatus,
+    setImage: setImage
   };
 
   return Image;
@@ -27,32 +28,38 @@ function Image($q, $http, $rootScope) {
     this._id = id;
   }
 
-  function setImage() {
+  function setImage(imageName, id, defaultImage) {
     this._imageName = imageName;
     this._defaultImage = defaultImage;
+    this._id = id;
   }
 
   function getImages() {
     var self = this;
-    $http.get('/api/images/')
+    if ($rootScope.currentUser) {
+      var userToken                               = $rootScope.currentUser.token;
+      $http.defaults.headers.common['auth-token'] = userToken;
+    }
+    return $http.get('/api/images/')
     .then(function(response) {
       this._images = response.data;
-      return response;
+      return response.data;
     });
   }
 
   function deleteImage() {
     var self = this;
-    $http.delete('/api/images/' + self._id)
+    return $http.delete('/api/images/' + self._id)
     .then(function(response) {
       return response;
     });
   }
 
-  function changeImageStatus() {
-    $http.put('/api/images/' + this._imageName + '/' + this._id + '/' + this._defaultImage)
+  function changeStatus() {
+    var self = this;
+    return $http.put('/api/images/' + this._imageName + '/' + this._id + '/' + this._defaultImage)
     .then(function(response) {
-      this._image = response.data;
+      self._image = response.data;
       return response;
     });
   }

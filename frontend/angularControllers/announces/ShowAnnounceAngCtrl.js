@@ -1,9 +1,9 @@
 angular.module('InTouch')
 .controller('ShowAnnounceAngCtrl', ShowAnnounceAngCtrl);
 
-ShowAnnounceAngCtrl.$inject = ['$injector', '$routeParams', '$rootScope', '$localStorage'];
+ShowAnnounceAngCtrl.$inject = ['$scope', '$injector', '$routeParams', '$rootScope', '$localStorage'];
 
-function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage) {
+function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $localStorage) {
   
   var vm              = this;
   
@@ -50,6 +50,10 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
     });
   }
 
+  vm.user = {
+    dateOfBirth: new Date(1970, 0, 1)
+   }
+
   function findOne() {
     announce.setId($routeParams.announceId);
     announce.getAnnounceById().then(function() {
@@ -88,17 +92,17 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
   // }
 
   function getComments() {
-
     comment.setId($routeParams.announceId);
     comment.getAnnounceComments()
     .then(function() {
-      console.log('GET COMMENTS');
-      vm.comments = comment.commments;
-      console.log(vm.comments);
+      console.log(comment._comments);
+      vm.comments = comment._comments;
     });
   }
 
   function postComment() {
+    var vm = this;
+    console.log(vm);
     comment.setField(vm.AnnounceComment);
     comment.postComment().then(function() {
       vm.AnnounceComment = '';
@@ -106,11 +110,11 @@ function ShowAnnounceAngCtrl($injector, $routeParams, $rootScope, $localStorage)
     });
   }
 
-  function removeComment(comment) {
-    comment.setId(comment._id);
-    Comments.deleteComment().then(function() {
+  function removeComment(com) {
+    comment.setId(com._id);
+    comment.deleteComment().then(function() {
       for (var i in vm.comments) {
-        if (vm.comments[i] == comment.comment) {
+        if (vm.comments[i]._id == comment._comment._id) {
           vm.comments.splice(i, 1);
         }
       }

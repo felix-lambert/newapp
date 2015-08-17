@@ -1,16 +1,19 @@
-RoomInterface.$inject = ['$http', 'Room', '$rootScope', 'Notification', 'Session', '$localStorage'];
+angular.module('InTouch')
+  .factory('RoomInterface', RoomInterface);
 
-function RoomInterface($http, Room, $rootScope, Notification, Session, $localStorage) {
+RoomInterface.$inject = ['socket', '$http', 'Room', '$rootScope', 'Notification', 'Session', '$localStorage'];
+
+function RoomInterface(socket, $http, Room, $rootScope, Notification, Session, $localStorage) {
   
   var RoomInterface = function() {
-    Room.apply(this, arguments);
+    Room.prototype.setField.apply(this, arguments);
   };
 
   RoomInterface.prototype = Object.create(Room.prototype);
-  RoomInterface.prototype.constuctor = AnnounceInterface;
+  RoomInterface.prototype.constuctor = RoomInterface;
 
   RoomInterface.prototype.postRoomAndSendSocket =  function() {
-
+    
     var room = Room.prototype.postRoom.apply(this, arguments);
 
     var self = this;
@@ -22,24 +25,18 @@ function RoomInterface($http, Room, $rootScope, Notification, Session, $localSto
     });
   }
 
-  return AuthInterface;
+  return RoomInterface;
 
   function sendRoomSockets() {
     console.log('get messages from room');
-    var self  this;
-    vm.room   = self._roomName;
-    vm.roomId = self._id;
+    var self = this;
+    console.log(self);
     if (self._status === 'create') {
       console.log('CREATE');
-      socket.emit('createRoom', {
-        roomId: self._roomId,
-        roomName: self._roomName
-      });
+      socket.emit('createRoom', self._id, self._roomName);
       console.log('room created');
     } else if (self._status === 'join') {
-      console.log('JOIN');
-      socket.emit('joinRoom', response);
+      socket.emit('joinRoom', self._id, self._roomName);
     }
-    return ;
   }
 }

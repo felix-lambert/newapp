@@ -38,6 +38,7 @@ function Search($q, $http, $rootScope) {
 
   function getUsers() {
     var self = this;
+    console.log(self._searchText);
     return $http.get('/search/' + '?term=' + self._searchText).then(function(response) {
       if (response.data.length > 0) {
         $rootScope.page = true;

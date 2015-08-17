@@ -4,7 +4,7 @@ angular.module('InTouch')
 PictureAngCtrl.$inject = ['$localStorage', 'ImageService', 'Actuality', '$scope', 'Image', '$rootScope',
 'FileUploader', '$http', 'appLoading', 'toaster', 'preGetImages'];
 
-function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Images, $rootScope,
+function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Image, $rootScope,
   FileUploader, $http, appLoading, toaster, preGetImages) {
 
   console.log('----------------UPLOAD PICTURES------------------------');
@@ -27,6 +27,7 @@ function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Images, 
   
   if ($rootScope.currentUser) {
     vm.profileImages = preGetImages;
+    console.log(vm.profileImages);
   }
 
   if ($rootScope.currentUser.images &&
@@ -53,11 +54,9 @@ function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Images, 
   });
 
   function doDefaultImage(image) {
-    console.log(image);
     var status = ImageService.changeStatus(image.name, image._id, true);
-    status.postImage().then(function() {
-      console.log(preGetImages);
-      vm.profileImages = status._profileImages;
+    status.putImage().then(function() {
+      vm.profileImages = status._images;
       actuality.setActualityField(2, image.name);
       actuality.postActuality().then(function() {
         toaster.pop('success', 'L\'image de profil a bien été modifié');
@@ -66,10 +65,10 @@ function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Images, 
     });
   }
 
-  function erase(image) {
+  function erase(img) {
     console.log('__AnnouncesCtrl $scope.initListAnnounce__');
-    console.log(image);
-    image.setImage(image._id);
+    console.log(img);
+    image.setId(img._id);
     image.deleteImage().then(function() {
       toaster.pop('danger', 'L\'image a bien été supprimé');
       for (var i in vm.profileImages) {

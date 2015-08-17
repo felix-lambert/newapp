@@ -36,11 +36,18 @@ function Friend($q, $http) {
     this._friend = friend;
   }
 
-  function setField(userDes, userId) {
-    this._friendField = {
-      usernameWaitFriendRequest: userDes,
-      idUser: userId
-    };
+  function setField(userDes, userId, type) {
+    if (type === 'wait') {
+      this._friendField = {
+        usernameWaitFriendRequest: userDes,
+        idUser: userId
+      };
+    } else {
+      this._friendField = {
+        usernameAcceptedFriendRequest: userDes,
+        idUser: userId
+      };
+    }
   }
 
   function setFriendToDelete(id, user) {

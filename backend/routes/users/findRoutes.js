@@ -17,7 +17,7 @@ var routes = [
 {
     path: '/search',
     httpMethod: 'GET',
-    middleware: [auth.ensureAuthenticated, FindCtrl.search]
+    middleware: [FindCtrl.search]
 }, {
     path: '/auth/username-exists',
     httpMethod: 'GET',

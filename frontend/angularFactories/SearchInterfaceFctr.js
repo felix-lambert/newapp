@@ -3,6 +3,17 @@ angular.module('InTouch')
 
 SearchInterface.$inject = ['appLoading', '$http', 'Search', 'Friend', '$rootScope', 'Notification', 'Session', '$localStorage'];
 
+
+function arrayIndexOf(myArray, searchTerm) {
+  for (var i = 0, len = myArray.length; i < len; i++) {
+    if (myArray[i] === searchTerm) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+
 function SearchInterface(appLoading, $http, Search, Friend, $rootScope, Notification, Session, $localStorage) {
   
   var SearchInterface = function() {
@@ -44,39 +55,39 @@ function SearchInterface(appLoading, $http, Search, Friend, $rootScope, Notifica
     console.log(self);
     if ($rootScope.currentUser) {
       console.log('inside currentuser');
-      friend.getFriendsFromUser()
+      return friend.getFriendsFromUser()
       .then(function() {
-        var usernames = friend._friends;
+        var usernames = [];
         console.log(friend._friends); 
-          for (var i = 0; i < usernames.length; i++) {
-            usernames[i] = usernames[i].accepted ?
-            usernames[i].accepted : usernames[i].wait;
-          }
-          console.log(usernames);
-          
-          console.log('test data follow');
-          for (var j = 0; j < self._searchResult.length; j++) {
-            self._searchResult[j].username = arrayIndexOf(usernames, self._searchResult[j]._source.username) < 0 ?
-            {
-              'follow': self._searchResult[j]._source.username,
-              'friendId': self._searchResult[j]._id,
-            } : {
-              'notFollow': self._searchResult[j]._source.username
-            };
-            if (self._searchResult[j].username.notFollow) {
-              for (var k = 0; k < usernames.length; k++) {
-                if (self._searchResult[j].username.notFollow === usernames[k].wait) {
-                  console.log('wait result');
-                  self._searchResult[j].username.notFollow = {'wait' : usernames[k].wait};
-                } else if (self._searchResult[j].username.notFollow === usernames[k].accepted) {
-                  console.log('accepted result');
-                  self._searchResult[j].username.notFollow = {'accept' : usernames[k].accepted};
-                }
+        for (var i = 0; i < friend._friends.length; i++) {
+          usernames[i] = friend._friends[i].accepted ?
+          friend._friends[i].accepted : friend._friends[i].wait;
+        }
+        console.log(usernames);
+        
+        console.log('test data follow');
+        for (var j = 0; j < self._searchResult.length; j++) {
+          self._searchResult[j].username = arrayIndexOf(usernames, self._searchResult[j]._source.username) < 0 ?
+          {
+            'follow': self._searchResult[j]._source.username,
+            'friendId': self._searchResult[j]._id,
+          } : {
+            'notFollow': self._searchResult[j]._source.username
+          };
+          if (self._searchResult[j].username.notFollow) {
+            for (var k = 0; k < friend._friends.length; k++) {
+              console.log(self._searchResult[j].username.notFollow);
+              console.log(friend._friends[k]);
+              if (self._searchResult[j].username.notFollow === friend._friends[k].wait) {
+                self._searchResult[j].username.notFollow = {'wait' : friend._friends[k].wait};
+              } else if (self._searchResult[j].username.notFollow === friend._friends[k].accepted) {
+                console.log('accepted result');
+                self._searchResult[j].username.notFollow = {'accept' : friend._friends[k].accepted};
               }
             }
           }
-          self._usernameStatus   = usernames;
-          appLoading.ready();
+        }
+        appLoading.ready();
       });
     } else {
       console.log('_______tester le data___');

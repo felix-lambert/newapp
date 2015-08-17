@@ -1,7 +1,7 @@
 angular.module('InTouch')
   .service('SearchService', SearchService);
 
-RoomService.$inject = ['SearchInterface'];
+SearchService.$inject = ['SearchInterface'];
 
 function SearchService(SearchInterface) {
   this.search = function search(search) {

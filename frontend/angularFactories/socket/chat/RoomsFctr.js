@@ -2,24 +2,26 @@ angular.module('InTouch')
 
 .factory('Room', Room);
 
-Room.$inject = ['$q', '$http'];
+Room.$inject = ['$q', '$http', '$rootScope'];
 
-function Room($q, $http) {
+function Room($q, $http, $rootScope) {
 
   var Room = function() {
     this._id = '';
     this._roomField = null;
+    this._status;
+    this._roomName;
   };
 
   Room.prototype = {
-    setRoomField: setRoomField,
+    setField: setField,
     postRoom: postRoom,
     getRooms: getRooms
   };
 
   return Room;
 
-  function setRoomField(name) {
+  function setField(name) {
     this._roomField = {
       nameRec: name  
     };
@@ -27,7 +29,12 @@ function Room($q, $http) {
 
   function postRoom() {
     var self = this;
-    $http.post('/api/rooms/', self._roomField).then(function(response) {
+    return $http.post('/api/rooms/', self._roomField).then(function(response) {
+      console.log('POST ROOOM CHECK');
+      console.log(response);
+      self._status = response.data.status;
+      self._id = response.data.roomId;
+      self._roomName = response.data.roomName;
       return response;
     });
     
@@ -35,7 +42,8 @@ function Room($q, $http) {
 
   function getRooms() {
     var self = this;
-    $http.get('/api/rooms/').then(function(response) {
+    $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
+    return $http.get('/api/rooms/').then(function(response) {
       return response;
     });
   }

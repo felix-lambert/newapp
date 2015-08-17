@@ -80,9 +80,10 @@ var routeObject = {
     controller: 'PictureAngCtrl',
     controllerAs: 'picture',
     resolve: {
-      preGetImages: function(Images) {
-        console.log('preGetRooms');
-        return Images.getImages();
+      preGetImages: function(Image) {
+        console.log('preGetImages');
+        var image = new Image();
+        return image.getImages();
       }
     }
   },
@@ -96,9 +97,10 @@ var routeObject = {
     controller: 'MessageAngCtrl',
     controllerAs: 'message',
     resolve: {
-      preGetRooms: function(Rooms) {
+      preGetRooms: function(Room) {
         console.log('preGetRooms');
-        return Rooms.getRooms();
+        var room = new Room();
+        return room.getRooms();
       }
     }
   },

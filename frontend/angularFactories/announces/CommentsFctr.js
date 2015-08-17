@@ -9,8 +9,8 @@ function Comment($q, $http) {
   var Comment = function() {
     this._id = '';
     this._commentField = {};
-    this.comments = {};
-    this.comment = {};
+    this._comments = {};
+    this._comment = {};
   };
 
   Comment.prototype = {
@@ -45,7 +45,7 @@ function Comment($q, $http) {
   function getAnnounceComments() {
     var self = this;
     return $http.get('/api/announceComment/' + self._id).then(function(response) {
-      self._comments = response;
+      self._comments = response.data;
       return response;
     });
   }
@@ -54,9 +54,9 @@ function Comment($q, $http) {
     var self = this;
     return $http.delete('/api/announceComment/' + self._id)
     .then(function(response) {
-      self._comment = response;
+      console.log(response.data);
+      self._comment = response.data;
       return response;
     });
   }
-
 }

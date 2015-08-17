@@ -1,9 +1,12 @@
-MessageInterface.$inject = ['$http', 'Message', '$rootScope', 'Notification', 'Session', '$localStorage'];
+angular.module('InTouch')
+  .factory('MessageInterface', MessageInterface);
 
-function MessageInterface($http, Message, $rootScope, Notification, Session, $localStorage) {
+MessageInterface.$inject = ['socket', '$http', 'Message', '$rootScope', 'Notification', 'Session', '$localStorage'];
+
+function MessageInterface(socket, $http, Message, $rootScope, Notification, Session, $localStorage) {
   
   var MessageInterface = function() {
-    Message.apply(this, arguments);
+    Message.prototype.setField.apply(this, arguments);
   };
 
   MessageInterface.prototype = Object.create(Message.prototype);
@@ -25,14 +28,11 @@ function MessageInterface($http, Message, $rootScope, Notification, Session, $lo
   return MessageInterface;
 
   function sendMessageSockets() {
-    console.log('get messages from room');
-    var self  this;
-    console.log('save success');
+    var self = this;
+    console.log(self)
     socket.emit('sendMessage', {
-      name: self._username,
-      message: self._message,
-      roomId: self._roomId
+      name: self._messageField.user,
+      message: self._messageField.content
     });
-    return ;
   }
 }

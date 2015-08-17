@@ -4,7 +4,7 @@ angular.module('InTouch')
 FriendService.$inject = ['FriendInterface'];
 
 function FriendService(FriendInterface) {
-  this.follow = function follow(usernameWaitFriendRequest, userId) {
-    return new FriendInterface(usernameWaitFriendRequest, userId);
+  this.sendRequest = function sendRequest(usernameFriendRequest, userId, type) {
+    return new FriendInterface(usernameFriendRequest, userId, type);
   }
 }

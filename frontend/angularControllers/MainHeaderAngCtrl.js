@@ -1,17 +1,6 @@
 angular.module('InTouch')
   .controller('MainHeaderAngCtrl', MainHeaderAngCtrl);
 
-function arrayIndexOf(myArray, searchTerm) {
-  console.log(myArray);
-  console.log(searchTerm);
-  for (var i = 0, len = myArray.length; i < len; i++) {
-    if (myArray[i] === searchTerm) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 MainHeaderAngCtrl.$inject = ['$scope', '$injector', '$localStorage', '$window',
 '$route', '$modal', '$http', '$rootScope', '$location'];
 
@@ -200,10 +189,8 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     console.log(vm.searchText);
     appLoading.loading();
     if (!vm.searchText) {
-      console.log('good');
       $rootScope.page = false;
     } else {
-      console.log('bad');
       $rootScope.page = true;
     }
     if ($rootScope.currentUser) {
@@ -215,8 +202,8 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
       var search = SearchService.search(vm.searchText);
 
       search.getSearch().then(function() {
+        console.log(search._searchResult);
         vm.suggestions = search._searchResult;
-        vm.usernameStatuses = search._usernameStatus;
       });
         
     } else {
@@ -239,19 +226,19 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     console.log(userDes);
     console.log(userId);
     vm.suggestions = '';
-    var friend = FriendService.follow(userDes, userId);
+    var friend = FriendService.sendRequest(userDes, userId, 'wait');
     friend.postNotification();
   }
 
-  function refuseFriendRequest(user) {
+  function refuseFriendRequest(notification) {
     console.log('_____refuse friends request_____________________');
     var userToken                               = $rootScope.currentUser.token;
     $http.defaults.headers.common['auth-token'] = userToken;
-    if (user.type === 'friendRequest') {
-      friend.setFriendToDelete(user.userId, user.userRec);
+    if (notification.type === 'friendRequest') {
+      friend.setFriendToDelete(notification.userId, notification.userRec);
       friend.deleteFriend();
       console.log('delete friend request done');
-      toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + user.userRec);
+      toaster.pop('warning', 'Vous avez refusé la demande d\'amitié de ' + notification.userRec);
     }
 
     var notification = NotificationService.update(user.id);
@@ -262,22 +249,12 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
   function acceptFriendRequest(notification) {
     console.log('_____accept friends request_____________________');
     console.log(notification);
+    var userToken                               = $rootScope.currentUser.token;
+    $http.defaults.headers.common['auth-token'] = userToken;
+    var friend = FriendService.sendRequest(notification.userRec, notification.userId, 'accept');
+    friend.postAcceptNotification();
     var notification = NotificationService.update(notification.id);
-
-    notification.postNotification().then(function() {
-      
-      var userToken                               = $rootScope.currentUser.token;
-      $http.defaults.headers.common['auth-token'] = userToken;
-      var friend = FriendService.follow(notification.userRec, notification.userId);
-      friend.postNotification().then(function() {
-        socket.emit('sendAcceptFriendRequest', {
-          userRec: notification.userRec,
-          userDes: notification.userDes,
-          userDesId: notification.userId,
-          id: $rootScope.currentUser._id
-        });
-      });
-    });
+    notification.updateNotification();
   }
 
   function open(size) {

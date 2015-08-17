@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .controller('MessageAngCtrl', MessageAngCtrl);
 
-MessageAngCtrl.$inject = ['$localStorage', 'RoomService', 'Room', 'Friend', 'Message', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
+MessageAngCtrl.$inject = ['$localStorage', 'RoomService', 'MessageService', 'Room', 'Friend', 'Message', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
 
-function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $rootScope, socket, appLoading, preGetRooms) {
+function MessageAngCtrl($localStorage, RoomService, MessageService, Room, Friend, Message, $rootScope, socket, appLoading, preGetRooms) {
 
   var vm          = this;
   var Typing      = false;
@@ -12,8 +12,7 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
   vm.focus        = focus;
   vm.typing       = typing;
   vm.startChat    = startChat;
-  vm.createRoom   = createRoom;
-  vm.joinRoom     = joinRoom;
+  // vm.createRoom   = createRoom;
   vm.leaveRoom    = leaveRoom;
   vm.deleteRoom   = deleteRoom;
   vm.send         = send;
@@ -33,8 +32,6 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
   
   vm.user         = '';
   
-  
-  
   var get         = preGetRooms
   
   vm.rooms        = get[0];
@@ -46,7 +43,7 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
   /////////////////////////////////////////////////////////////
 
   var room = new Room();
-  var message = new Message();
+  
   var friend = new Friend();
 
   function Timeout() {
@@ -62,7 +59,6 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
     if (event.which !== 13) {
       if (Typing === false && vm.focussed) {
         Typing = true;
-        console.log(event);
         console.log(user);
         socket.emit('typing', {
           isTyping: true,
@@ -77,9 +73,7 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
 
   socket.on('isTyping', function(data) {
     console.log('________________ISTYPING____');
-    console.log(data);
     if (data.isTyping === true) {
-      console.log('IS TYPING :' + data.person);
       vm.isTyping = data.isTyping;
       vm.typingPeople.push(data.person);
     } else {
@@ -92,26 +86,27 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
 
   function startChat(user) {
     console.log('_______________joinROOM______________');
-    console.log(user);
     vm.messages     = [];
     vm.showChat     = true;
     vm.error.create = '';
     vm.message      = '';
     vm.userRec      = user;
-    var room = roomService.create(user);
+    var room = RoomService.create(user);
     room.postRoomAndSendSocket().then(function() {
-      var message = message.getMessagesFromRoom(room._roomId);
-      return message;
-    }).then(function() {
-      for (var i = 0; i < message._messages.length; i++) {
-        vm.messages.push({
-          message: message._messages[i].content,
-          name: message._messages[i].user
-        });
-      }
+      var message = new Message();
+      vm.roomId = room._id;
+      message.setId(room._id);
+      message.getMessagesFromRoom().then(function() {
+        for (var i = 0; i < message._messages.length; i++) {
+          vm.messages.push({
+            message: message._messages[i].content,
+            name: message._messages[i].user
+          });  
+        }
+        vm.user   = user;
+        vm.joined = true;
+      });
     });
-    vm.user   = user;
-    vm.joined = true;
   }
 
   socket.on('updateUserDetail', function(data) {
@@ -127,43 +122,36 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
     rating: null
   };
 
-  function createRoom() {
-    var roomExists = false;
-    var room       = this.roomname;
-    if (typeof room === 'undefined' ||
-      (typeof room === 'string' &&
-        room.length === 0)) {
-      vm.error.create = 'Please enter a room name';
-    } else {
-      Rooms.postRoom({
-        name: this.roomname
-      }).then(function(response) {
-        vm.room   = response.roomName;
-        vm.roomId = response.roomId;
-      });
-      socket.emit('checkUniqueRoomName', room, function(data) {
-        roomExists = data.result;
-        if (roomExists) {
-          vm.error.create = 'Room ' + room + ' already exists.';
-        } else {
-          socket.emit('createRoom', room);
-          vm.error.create = '';
-          if (!vm.user.inroom) {
-            vm.messages = [];
-            vm.roomname = '';
-          }
-        }
-      });
-    }
-  }
-
-  function joinRoom(room) {
-    console.log('join room');
-    vm.messages     = [];
-    vm.error.create = '';
-    vm.message      = '';
-    socket.emit('joinRoom', room);
-  }
+  // function createRoom() {
+  //   var roomExists = false;
+  //   var room       = this.roomname;
+  //   if (typeof room === 'undefined' ||
+  //     (typeof room === 'string' &&
+  //       room.length === 0)) {
+  //     vm.error.create = 'Please enter a room name';
+  //   } else {
+  //     room.setRoom
+  //     Rooms.postRoom({
+  //       name: this.roomname
+  //     }).then(function(response) {
+  //       vm.room   = response.roomName;
+  //       vm.roomId = response.roomId;
+  //     });
+  //     socket.emit('checkUniqueRoomName', room, function(data) {
+  //       roomExists = data.result;
+  //       if (roomExists) {
+  //         vm.error.create = 'Room ' + room + ' already exists.';
+  //       } else {
+  //         socket.emit('createRoom', room);
+  //         vm.error.create = '';
+  //         if (!vm.user.inroom) {
+  //           vm.messages = [];
+  //           vm.roomname = '';
+  //         }
+  //       }
+  //     });
+  //   }
+  // }
 
   function leaveRoom(room) {
     vm.message = '';
@@ -209,12 +197,12 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
   friend.getFriendsFromUser()
   .then(function() {
     console.log();
-    for (var i = 0; i < friend._usernames.length; i++) {
-      if (friends._usernames[i].accepted) {
-        vm.usernames.push(friends._usernames[i].accepted);
+    for (var i = 0; i < friend._friends.length; i++) {
+      if (friend._friends[i].accepted) {
+        vm.usernames.push(friend._friends[i].accepted);
       }
     }
-    vm.nbFriends = vm.usernames.length;
+    vm.nbFriends = friend._friends.length;
   });
 
   function send(username, userRec) {
@@ -227,10 +215,16 @@ function MessageAngCtrl($localStorage, RoomService, Room, Friend, Message, $root
         vm.message.length === 0)) {
       vm.error.send = 'Please enter a message';
     } else {
-      var message = messageService.create(user);
+      
+      var message = MessageService.create(vm.message, username, userRec, vm.roomId);
       message.postMessageAndSendSocket();
-      vm.message    = '';
-      vm.error.send = '';
+      // vm.messages.push({
+      //   name: username,
+      //   message: vm.message, 
+      //   roomId: vm.roomId
+      // });
+      vm.joined = true;
+      vm.message = '';
     }
   }
 

@@ -6,15 +6,15 @@ ImageInterface.$inject = ['$http', 'Image', '$rootScope', 'Notification', 'Sessi
 function ImageInterface($http, Image, $rootScope, Notification, Session, $localStorage) {
   
   var ImageInterface = function() {
-    Image.apply(this, arguments);
+    Image.prototype.setImage.apply(this, arguments);
   };
 
   ImageInterface.prototype = Object.create(Image.prototype);
   ImageInterface.prototype.constuctor = ImageInterface;
 
-  ImageInterface.prototype.postImage =  function() {
+  ImageInterface.prototype.putImage =  function() {
 
-    var image = Image.prototype.login.apply(this, arguments);
+    var image = Image.prototype.changeStatus.apply(this, arguments);
 
     var self = this;
     return image.then(function() {
@@ -29,13 +29,12 @@ function ImageInterface($http, Image, $rootScope, Notification, Session, $localS
   return ImageInterface;
 
   function getImages() {
-    // $localStorage.currentUser = this._profile;
-    // $rootScope.currentUser = $localStorage.currentUser;
-    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
+    $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
     var self = this;
-    $http.get('/api/images/')
+    return $http.get('/api/images/')
     .then(function(response) {
-      this._images = response.data;
+      console.log(response.data);
+      self._images = response.data;
       return response;
     });
   }

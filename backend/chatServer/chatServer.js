@@ -11,6 +11,7 @@ module.exports = function(server) {
 
   var io = require('socket.io').listen(server);
 
+
   io.sockets.on('connection', function(socket) {
 
     totalPeopleOnline = _.size(people);
@@ -41,10 +42,13 @@ module.exports = function(server) {
 
     socket.on('sendMessage', function(data) {
       console.log('SEND MESSAGE');
+      console.log(socket.room);
       io.sockets.in(socket.room).emit('sendChatMessage', data);
     });
 
-    socket.on('typing', function(data, user) {
+    socket.on('typing', function(data) {
+      console.log(data);
+      console.log(socket.room);
       io.sockets.in(socket.room).emit('isTyping',
         {isTyping: data.isTyping, person: data.user});
     });
@@ -82,24 +86,20 @@ module.exports = function(server) {
       }
     });
 
-    socket.on('joinRoom', function(username) {
+    socket.on('joinRoom', function(roomId, roomName) {
       console.log('________________JOIN ROOM_______________');
-      console.log(username);
-      var room = rooms[username.roomId];
-      socket.room = username.roomName;
+      var room = rooms[roomId];
+      socket.room = roomName;
       socket.join(socket.room);
       io.sockets.emit('updateUserDetail', people);
       io.sockets.emit('sendUserDetail', people[socket.id]);
     });
 
-    socket.on('createRoom', function(data) {
+    socket.on('createRoom', function(roomId, roomName) {
       console.log('NEW ROOM_________ CRETA ROOOM');
       console.log('createRoom');
-      console.log(data);
-      var roomName     = data.roomName;
-      var uniqueRoomID = data.roomId;
 
-      var room = new Room(roomName, uniqueRoomID, socket.id);
+      var room = new Room(roomName, roomID, socket.id);
 
       people[socket.id].roomname = roomName;
       room.addPerson(socket.id);

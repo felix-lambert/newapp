@@ -10,10 +10,12 @@ function Message($q, $http) {
     this._id = '';
     this._messageField = null;
     this._username = '';
+    this._messages = null;
   };
 
   Message.prototype = {
-    setMessageField: setMessageField,
+    setId: setId,
+    setField: setField,
     postMessage: postMessage,
     getMessagesFromRoom: getMessagesFromRoom,
     deleteMessage: deleteMessage,
@@ -25,7 +27,7 @@ function Message($q, $http) {
     this._id = id;
   }
 
-  function setMessageField(content, user, userRec, roomCreator) {
+  function setField(content, user, userRec, roomCreator) {
     this._messageField = {
       content: content,
       user: user,
@@ -36,7 +38,7 @@ function Message($q, $http) {
 
   function postMessage() {
     var self = this;
-    $http.post('/api/messages/', self._messageField)
+    return $http.post('/api/messages/', self._messageField)
     .then(function(response) {
       return response;
     });
@@ -44,13 +46,15 @@ function Message($q, $http) {
 
   function getMessagesFromRoom() {
     var self = this;
-    $http.get('/api/messages/' + self._id).then(function(response) {
+    return $http.get('/api/messages/' + self._id).then(function(response) {
+      self._messages = response.data;
       return response;
     });
   }
 
   function deleteMessage() {
-    $http.delete('/api/messages/' + self._id).then(function(response) {
+    var self = this;
+    return $http.delete('/api/messages/' + self._id).then(function(response) {
       return response;
     });
   }
