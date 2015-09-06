@@ -8,7 +8,8 @@ var expressSession = require('express-session');
 var mongoStore     = require('connect-mongo')(expressSession);
 var compress       = require('compression');
 var bodyParser     = require('body-parser');
-var chalk     = require('chalk');
+var chalk          = require('chalk');
+var errorhandler   = require('errorhandler');
 
 /////////////////////////////////////////////////////////////////
 // CONFIGURATION ////////////////////////////////////////////////
@@ -27,6 +28,10 @@ exports = module.exports = function(app, express, config) {
   app.engine('html', require('ejs').renderFile);
   app.set('view engine', 'html');
 
+  app.use(errorhandler({
+    dumpExceptions: true,
+    showStack: true
+  }));
   app.use(compress());
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({

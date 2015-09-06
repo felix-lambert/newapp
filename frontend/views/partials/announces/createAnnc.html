@@ -97,11 +97,11 @@
         </div>
       </div>
     </div>
-    <div ng-init="createAnnounce.initListCreateAnnounce(currentUser._id)" class="col-md-6">
+    <div class="col-md-6">
       <ul class="event-list" ng-repeat="announce in createAnnounce.announces">
           <li ng-if="currentUser._id === announce.creator._id">
             <div class="info" ng-if="currentUser._id === announce.creator._id">
-              <h2 class="title">{{announce.title}}</h2>
+              <h2 class="title">{{announce.title | limitTo: 20}}{{announce.title.length > 20 ? '...' : ''}}</h2>
               <p class="desc">{{announce.type}}</p>
               <ul>
                 <li style="width:50%;"><span class="fa fa-money"></span> {{announce.price}}</li>

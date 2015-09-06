@@ -1,8 +1,8 @@
 angular.module('InTouch').factory('Image', Image);
 
-Image.$inject = ['$q', '$http', '$rootScope'];
+Image.$inject = ['$http', '$rootScope'];
 
-function Image($q, $http, $rootScope) {
+function Image($http, $rootScope) {
 
   var Image = function() {
     this._id = '';

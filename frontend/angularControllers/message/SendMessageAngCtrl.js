@@ -20,8 +20,6 @@ function SendMessageAngCtrl($routeParams, $injector, $scope, $location, $rootSco
   $localStorage.searchField = null;
 
   Users.getUserById($routeParams.userId).then(function(response) {
-    console.log('response...');
-    console.log(response);
     vm.name = response;
   });
 

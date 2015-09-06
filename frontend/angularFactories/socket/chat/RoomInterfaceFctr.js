@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('RoomInterface', RoomInterface);
 
-RoomInterface.$inject = ['socket', '$http', 'Room', '$rootScope', 'Notification', 'Session', '$localStorage'];
+RoomInterface.$inject = ['socket', '$http', 'Room'];
 
-function RoomInterface(socket, $http, Room, $rootScope, Notification, Session, $localStorage) {
+function RoomInterface(socket, $http, Room) {
   
   var RoomInterface = function() {
     Room.prototype.setField.apply(this, arguments);

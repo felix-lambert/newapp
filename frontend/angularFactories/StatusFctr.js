@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Status', Status);
 
-Status.$inject = ['$q', '$http'];
+Status.$inject = ['$http'];
 
-function Status($q, $http) {
+function Status($http) {
 
   var statusFnct = {
     postStatus: postStatus,

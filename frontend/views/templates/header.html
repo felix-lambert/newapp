@@ -1,7 +1,8 @@
 <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-right'}"></toaster-container>
 <!-- Second navbar for search -->
 <div ng-controller="MainHeaderAngCtrl as header">
-  <nav class="navbar navbar-inverse">
+<div ng-show="loaded">
+  <nav class="navbar navbar-inverse" ng-show="loaded">
     <div class="container">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -22,14 +23,16 @@
           <div class="col-xs-12">
             <div class="input-group">
               <div class="input-group-btn search-panel" data-ng-class="{open: open}">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <span id="search_concept">{{header.name}}</span> <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li data-ng-repeat="option in header.findOptionsList">
+                <div class="btn-group" dropdown is-open="status.isopen">
+                  <button id="single-button" type="button" class="btn btn-default" dropdown-toggle ng-disabled="disabled">
+                    {{header.name}} <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                    <li data-ng-repeat="option in header.findOptionsList">
                     <a ng-show='option.name !== header.name' data-ng-click="header.setSelectedClient(option.name)">
-                    {{option.name}}</a></li>
+                    {{option.name}}</a></li>  
                   </ul>
+                </div>
                 </div>
                 <input type="hidden" name="search_param" value="all" id="search_param">
                 <input type="text" class="form-control" ng-keydown="checkKeyDown($event)" class="" ng-model="header.searchText" ng-change="header.search()" name="x" placeholder="Recherche rapide...">
@@ -50,45 +53,50 @@
             <button type="submit" class="btn btn-default">S'authentifier</button>
           </form>
 
-    <li ng-show="currentUser" class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-pencil"></span> {{currentUser.notificationsCount}} - Notifications<span class="caret"></span></a>
-      <ul class="dropdown-menu dropdown-cart" role="menu">
-        <li ng-repeat="notification in currentUser.notifications">
-          <span class="item">
-            <span class="item-left">
-              <img src="https://lorempixel.com/50/50/" alt="" />
-              <span class="item-info">
-                <span ng-if="notification.type === 'friendRequest'">Requête d'amitié : {{notification.userRec}}</span>
-                <span ng-if="notification.type === 'accept'">Acceptation d'amitié : {{notification.userDes}}</span>
-                <span ng-if="notification.type === 'like'">
-                Cet utilisateur a lické une publication : {{notification.userRec}}</span>
-              </span>
-            </span>
-            <span class="item-right">
-              <button type="button" ng-if="notification.type === 'friendRequest'" class="btn btn-xs btn btn-success" data-ng-click="header.acceptFriendRequest(notification)">Accepter</button>
-              <button data-ng-click="header.refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
-            </span>
-          </span>
-        </li>
-        <li class="divider"></li>
-        <li><a class="text-center" href="">View Cart</a></li>
-      </ul>
-    </li>
-    <li class="dropdown" ng-show='currentUser'><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
-      class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary">{{nbMessages}}</span>
-    </a>
-    <ul class="dropdown-menu" >
-      <li ng-repeat="message in header.messages"><a href="#"><span class="label label-warning">{{message.name}}</span>{{message.message}}</a></li>
-      <li class="divider"></li>
-      <li><a href="#" class="text-center">View All</a></li>
-    </ul>
-  </li>
-  <li ng-show="currentUser"><a href='/' ng-click="header.logout()">Déconnexion</a></li>
+              <li ng-show="currentUser" dropdown on-toggle="toggled(open)">
+                  <a href id="simple-dropdown" dropdown-toggle>
+                    <span class="glyphicon glyphicon-pencil"></span>{{currentUser.notificationsCount}} - Notifications<span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="simple-dropdown">
+                    <li ng-repeat="notification in currentUser.notifications">
+                      <a href>
+                        <span class="item">
+                          <span class="item-left">
+                            <img src="https://lorempixel.com/50/50/" alt="" />
+                            <span class="item-info">
+                              <span ng-if="notification.type === 'friendRequest'" ng-bind="notification.userDes">Requête d'amitié :</span>
+                              <span ng-if="notification.type === 'accept'">Acceptation d'amitié :</span>
+                              <span ng-if="notification.type === 'like'" ng-bind="notification.userRec">
+                              Cet utilisateur a lické une publication : </span>
+                            </span>
+                          </span>
+                          <span class="item-right">
+                            <button type="button" ng-if="notification.type === 'friendRequest'" class="btn btn-xs btn btn-success" data-ng-click="header.acceptFriendRequest(notification)">Accepter</button>
+                            <button data-ng-click="header.refuseFriendRequest(notification)" class="btn btn-xs btn-danger pull-right">x</button>
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  </ul>
+              </li>
+              <li class="dropdown" ng-show='currentUser'><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-comment"></span>Messages <span class="label label-primary" ng-bind="nbMessages"></span>
+              </a>
+              <ul class="dropdown-menu" >
+                <li ng-repeat="message in header.messages">
+                  <a href="#" ng-bind="message.message"><span class="label label-warning" ng-bind="message.name"></span></a>
+                </li>
+                <li class="divider"></li>
+                <li><a href="#" class="text-center">View All</a></li>
+              </ul>
+            </li>
+              <li ng-show="currentUser"><a href='/' ng-click="header.logout()">Déconnexion</a></li>
+          </ul>
   </div><!-- /.navbar-collapse -->
   </div><!-- /.container -->
   </nav><!-- /.navbar -->
 
-  <div ng-init="header.initListFriend()">
+  <div ng-init="header.initListFriend()" ng-show="loaded">
     <div class="home-doctors clearfix">
       <div class="container">
         <div class="row">
@@ -96,7 +104,7 @@
           <div class="col-lg-3 col-md-3 col-sm-6  text-center doc-item" ng-repeat="suggestion in header.suggestions track by $index">
             <div class="common-doctor animated fadeInUp clearfix ae-animation-fadeInUp">
               <ul class="list-inline social-lists animate">
-                <li><button type="button" class="btn btn-danger btn-sm" ng-click="header.messageSend(suggestion.userId)">Message</button></li>
+                <li><button type="button" ng-if='!suggestion.username.yourself' class="btn btn-danger btn-sm" ng-click="header.messageSend(suggestion.userId)">Message</button></li>
                 <li><button type="button" ng-show="suggestion.username.follow" ng-click="header.follow(suggestion.username.follow, suggestion._id)" class="btn btn-success btn-sm">Follow</button>
                   <div ng-show="suggestion.username">
                     <div ng-show="suggestion.username.notFollow.wait">En attente de confirmation</p>
@@ -113,7 +121,7 @@
                 </figure>
                 <div class="text-content">
 
-                  <h5>{{suggestion.noAuth ||suggestion.username.follow || suggestion.username.notFollow.wait || suggestion.username.notFollow.accept}}</h5>
+                  <h5>{{suggestion.noAuth ||suggestion.username.follow || suggestion.username.notFollow.wait || suggestion.username.notFollow.accept || suggestion.username.yourself}}</h5>
                   <!-- <div class="for-border"></div> -->
                   <h5><small>Developer</small></h5>
                 </div>
@@ -138,3 +146,5 @@
         </div>
       </div>
     </div>
+  </div>
+</div>

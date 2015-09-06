@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('NotificationInterface', NotificationInterface);
 
-NotificationInterface.$inject = ['$http', 'Notification', '$rootScope', 'Session', '$localStorage'];
+NotificationInterface.$inject = ['Notification', '$rootScope'];
 
-function NotificationInterface($http, Notification, $rootScope, Session, $localStorage) {
+function NotificationInterface(Notification, $rootScope) {
   
   var NotificationInterface = function() {
     Notification.prototype.setId.apply(this, arguments);
@@ -30,9 +30,6 @@ function NotificationInterface($http, Notification, $rootScope, Session, $localS
 
   function getNotifications() {
     var notification = new Notification();
-    // $localStorage.currentUser = this._profile;
-    // $rootScope.currentUser = $localStorage.currentUser;
-    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
     var self = this;
     notification.getNotifications().then(function() {
 			$rootScope.currentUser.notifications      = notification._notifications;

@@ -52,12 +52,6 @@ module.exports = function(server) {
         {isTyping: data.isTyping, person: data.user});
     });
 
-    socket.on('disconnect', function() {
-      if (typeof people[socket.id] !== 'undefined') { //this handles the refresh of the name screen
-        // purgatory.purge(socket, 'disconnect');
-      }
-    });
-
     socket.on('joinSocketServer', function(data) {
       var exists = false;
       _.find(people, function(k, v) {
@@ -69,8 +63,6 @@ module.exports = function(server) {
 
       if (!exists) {
         people[socket.id]        = {name: data.name};
-        people[socket.id].inroom = null;
-        people[socket.id].owns   = null;
         totalPeopleOnline        = _.size(people);
         totalRooms               = _.size(rooms);
         io.sockets.emit('updateRoomsCount', {count: totalRooms});

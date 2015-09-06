@@ -6,13 +6,13 @@ EditAnnounceAngCtrl.$inject = ['$localStorage', '$injector', '$location', '$rout
 function EditAnnounceAngCtrl($localStorage, $injector, $location, $routeParams, $rootScope, $http) {
 
   console.log('*************AnnounceCtrl************************');
-
+  
   var vm         = this;
-
+  
   // Requirements
   var Announce   = $injector.get('Announce');
   var appLoading = $injector.get('appLoading');
-
+  
   vm.findOne     = findOne;
   vm.update      = update;
 

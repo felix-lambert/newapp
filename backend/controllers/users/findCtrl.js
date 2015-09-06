@@ -4,6 +4,8 @@
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
 var chalk     = require('chalk');
+var util = require('util');
+var Friend   = mongoose.model('Friend');
 
 var elasticsearch = require("elasticsearch");
 
@@ -16,6 +18,16 @@ if (process.env.NODE_ENV === 'production') {
     host: "localhost:9200"
   });
 }
+
+function arrayIndexOf(myArray, searchTerm) {
+  for (var i = 0, len = myArray.length; i < len; i++) {
+    if (myArray[i] === searchTerm) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 
 module.exports = {
 
@@ -47,11 +59,49 @@ module.exports = {
         }
       }
     }).then(function (resp) {
-      console.log(chalk.green(resp.hits.hits));
-      res.status(200).json(resp.hits.hits);
+      var usernames = resp.hits.hits;
+      Friend.find({creator: req.user._id})
+      .sort('-created')
+      .exec(function(err, friends) {
+        var friendsUsernames = [];
+        var usernames = resp.hits.hits;
+        if (err) {
+          return res.status(501).json(err);
+        } else {
+          var i = 0;
+          friends.forEach(function(item) {
+            friendsUsernames[i] = item.usernameAcceptedFriendRequest ? item.usernameAcceptedFriendRequest :
+            item.usernameWaitFriendRequest;
+            i++;
+          });
+          usernames.forEach(function(user) {
+            if (user._source.username === req.user.username) {
+              user.username = {'yourself': user._source.username};
+            } else {
+                user.username = arrayIndexOf(friendsUsernames, user._source.username) < 0 ?
+                {
+                  'follow': user._source.username,
+                  'friendId': user._id,
+                } : {
+                  'notFollow': user._source.username
+                };
+                if (user.username.notFollow) {
+                  friends.forEach(function(friend) {
+                    if (user.username.notFollow === friend.usernameWaitFriendRequest) {
+                      user.username.notFollow = {'wait' : friend.usernameWaitFriendRequest};
+                    } else if (user.username.notFollow === friend.usernameAcceptedFriendRequest) {
+                      user.username.notFollow = {'accept' : friend.usernameAcceptedFriendRequest};
+                    }
+                  });
+                }
+              }
+          });
+          return res.status(200).json(usernames);
+        }
+      });
     });
     } else {
-      res.status(200).end();
+      return res.status(200).end();
     }
   },
 

@@ -11,15 +11,17 @@ function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $local
   var Announce        = $injector.get('Announce');
   var toaster         = $injector.get('toaster');
   var appLoading      = $injector.get('appLoading');
-  var Friend         = $injector.get('Friend');
-  var Comment        = $injector.get('Comment');
+  var Friend          = $injector.get('Friend');
+  var Comment         = $injector.get('Comment');
+  var preShowAnnounce = $injector.get('preShowAnnounce');
+  var preShowComment  = $injector.get('preShowComment');
   
   vm.findOne          = findOne;
   vm.getComments      = getComments;
   vm.postComment      = postComment;
   vm.removeComment    = removeComment;
   vm.initViewAnnounce = initViewAnnounce;
-  // vm.followUser       = followUser;
+  // vm.followUser    = followUser;
   vm.testIfFriend     = testIfFriend;
   vm.countFriends     = countFriends;
 
@@ -32,6 +34,17 @@ function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $local
   var friend = new Friend();
 
   ///////////////////////////////////////////////////////////////////////////
+
+  var announce = preShowAnnounce;
+  vm.announce = announce._announce;
+  console.log(vm.announce);
+  vm.testIfFriend(vm.announce);
+  vm.countFriends(vm.announce);
+  vm.announceRating = announce._announce.rating;
+  vm.selectedImages = announce._announce.images;
+
+  var comment = preShowComment;
+  vm.comments = comment._comments;
 
   function testIfFriend(announce) {
     if ($rootScope.currentUser) {
@@ -50,22 +63,6 @@ function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $local
     });
   }
 
-  vm.user = {
-    dateOfBirth: new Date(1970, 0, 1)
-   }
-
-  function findOne() {
-    announce.setId($routeParams.announceId);
-    announce.getAnnounceById().then(function() {
-      console.log('announce found________');
-      vm.announce = announce._announce;
-      console.log(vm.announce);
-      vm.testIfFriend(vm.announce);
-      vm.countFriends(vm.announce);
-      vm.announceRating = announce._announce.rating;
-      vm.selectedImages = announce._announce.images;
-    });
-  }
 
   // function followUser(userDes, idUser) {
   //   console.log('_____follow_____');
@@ -96,7 +93,7 @@ function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $local
     comment.getAnnounceComments()
     .then(function() {
       console.log(comment._comments);
-      vm.comments = comment._comments;
+      
     });
   }
 
@@ -119,11 +116,5 @@ function ShowAnnounceAngCtrl($scope, $injector, $routeParams, $rootScope, $local
         }
       }
     });
-  }
-
-  function initViewAnnounce() {
-    console.log('__AnnouncesCtrl $scope.initViewAnnounce__');
-    vm.findOne();
-    vm.getComments();
   }
 }

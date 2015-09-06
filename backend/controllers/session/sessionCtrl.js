@@ -29,19 +29,13 @@ module.exports = {
     console.log(chalk.blue('******************logout******************'));
     var incomingToken = req.headers['auth-token'];
     if (incomingToken) {
-      var decoded = User.decode(incomingToken);
-      if (decoded.email) {
-        var decodeUser = decoded.email;
-        User.invalidateUserToken(decodeUser,
-          function(err, user) {
-            res.status(err ? 400 : 200).json(err ?
-              {err: 'Issue finding user.'} :
-              true);
-          });
-      } else {
-        console.log(chalk.red('Issue decoding incoming token.'));
-        res.status(400).json({error: 'Issue decoding incoming token.'});
-      }
+      User.invalidateUserToken(incomingToken, function(err, user) {
+        res.status(err ? 400 : 200).json(err ?
+          {err: 'Issue finding user.'} : true);
+      });
+    } else {
+      console.log(chalk.red('Issue decoding incoming token.'));
+      res.status(400).json({error: 'Issue decoding incoming token.'});
     }
   },
 
@@ -69,6 +63,7 @@ module.exports = {
   authenticate: function(req, res) {
 
     function createToken(createTokenCallback) {
+      console.log('createToken');
       User.createUserToken(req.user.email, function(err, userToken) {
         createTokenCallback(err ? err : null, userToken);
       });
@@ -76,7 +71,8 @@ module.exports = {
     }
 
     function getToken(userToken, getTokenCallback) {
-      User.getUserToken(req.user.email, userToken, function(err, user) {
+      console.log('getToken');
+      User.getUserFromToken(req.user.email, userToken, function(err, user) {
         getTokenCallback(err ? err : null, user);
       });
 
@@ -103,6 +99,7 @@ module.exports = {
     console.log(chalk.blue('**********************Register***********************'));
 
     function registerUserMongo(registerUserMongoCallback) {
+      console.log(req.body);
       if (req.body.password === req.body.repeatPassword) {
         if (req.body.username === undefined || req.body.email === undefined) {
           console.log(chalk.red('There is no username or email'));
@@ -133,22 +130,21 @@ module.exports = {
           username: user.username,
           profileImage: null
         }}, function(err, res) {
-          console.log(err, res);
           registerUserESCallback(err ? err : null);
         });
     }
 
     function createToken(createTokenCallback) {
-
+      console.log(req.body.email);
       User.createUserToken(req.body.email, function(err, usersToken) {
-        createTokenCallback(err ? err : null, usersToken);
+        return createTokenCallback(err ? err : null, usersToken);
       });
 
     }
 
     function getToken(usersToken, getTokenCallback) {
-      User.getUserToken(req.body.email, usersToken, function(err, user) {
-        getTokenCallback(err ? err : null, user);
+      User.getUserFromToken(req.body.email, usersToken, function(err, user) {
+        return getTokenCallback(err ? err : null, user);
       });
     }
 
@@ -159,6 +155,7 @@ module.exports = {
       createToken,
       getToken
     ], function(error, result) {
+      console.log(result);
       res.status(error ? 400 : 200).json(error ? error : {
         _id: result._id,
         email: result.email,

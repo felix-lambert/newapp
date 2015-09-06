@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Announce', Announce);
 
-Announce.$inject = ['$http', '$rootScope'];
+Announce.$inject = ['$http'];
 
-function Announce($http, $rootScope) {
+function Announce($http) {
 
   var Announce = function() {
     this._id = '';
@@ -20,7 +20,7 @@ function Announce($http, $rootScope) {
 
   Announce.prototype = {
     constructor: Announce,
-    setAnnouncePagination: setPage,
+    setPage: setPage,
     setSearchField: setSearchField,
     setSearch: setSearch,
     setField: setField,
@@ -34,7 +34,8 @@ function Announce($http, $rootScope) {
     postAnnounce: postAnnounce,
     putAnnounce: putAnnounce,
     getAnnounceById: getAnnounceById,
-    searchAnnounces: searchAnnounces
+    searchAnnounces: searchAnnounces,
+    getAnnouncesFromUser: getAnnouncesFromUser
   };
 
   return Announce;
@@ -59,6 +60,21 @@ function Announce($http, $rootScope) {
       content: content,
       price: price
     };
+  }
+
+  function getAnnouncesFromUser() {
+    var self = this;
+    return $http.get('/api/userannounces/' + self._page)
+    .then(function(response) {
+      response.data.announces.forEach(function(announce) {
+        if (announce.title.length > 18) {
+          announce.title = announce.title.substring(0, 19) + '...';
+        }
+      });
+      self._announces = response.data.announces;
+      self._total = response.data.total;
+      return response.data;
+    }); 
   }
 
   function setField(title, content, type, category, price, selectedImages, activated, tags) {
@@ -115,6 +131,7 @@ function Announce($http, $rootScope) {
 
   function pressSearchAnnounces() {
     var self = this;
+    
     return $http.post('api/searchannounces/', self._searchField).then(function(response) {
       self._announces = response.data.announce;
       return response;

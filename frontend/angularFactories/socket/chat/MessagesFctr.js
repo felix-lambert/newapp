@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Message', Message);
 
-Message.$inject = ['$q', '$http'];
+Message.$inject = ['$http'];
 
-function Message($q, $http) {
+function Message($http) {
 
   var Message = function() {
     this._id = '';

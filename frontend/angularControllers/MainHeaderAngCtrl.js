@@ -9,35 +9,35 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
 
   console.log('************ Main HEADER CTRL **********');
   var vm                 = this;
-
+  vm.contentLoaded = false;
   // Requirements
   // var Auth               = $injector.get('Auth');
-  var appLoading         = $injector.get('appLoading');
+  var appLoading          = $injector.get('appLoading');
   var Message             = $injector.get('Message');
-  var Friend             = $injector.get('Friend');
-  var toaster            = $injector.get('toaster');
-  var socket             = $injector.get('socket');
-  var Notification       = $injector.get('Notification');
-  var Announce           = $injector.get('Announce');
-  var AuthService        = $injector.get('AuthService');
-  var SearchService      = $injector.get('SearchService');
-  var FriendService      = $injector.get('FriendService');
+  var Friend              = $injector.get('Friend');
+  var toaster             = $injector.get('toaster');
+  var socket              = $injector.get('socket');
+  var Notification        = $injector.get('Notification');
+  var Announce            = $injector.get('Announce');
+  var AuthService         = $injector.get('AuthService');
+  var Search              = $injector.get('Search');
+  var FriendService       = $injector.get('FriendService');
   var NotificationService = $injector.get('NotificationService');
-
-  vm.search              = search;
-  vm.see                 = see;
-  vm.follow              = follow;
-  vm.refuseFriendRequest = refuseFriendRequest;
-  vm.acceptFriendRequest = acceptFriendRequest;
-  vm.open                = open;
-  vm.about               = about;
-  vm.logout              = logout;
-  vm.messageSend         = messageSend;
-  vm.Login               = Login;
-
-  vm.suggestions         = [];
-  vm.usernames           = [];
-  vm.messages            = [];
+  
+  vm.search               = search;
+  vm.see                  = see;
+  vm.follow               = follow;
+  vm.refuseFriendRequest  = refuseFriendRequest;
+  vm.acceptFriendRequest  = acceptFriendRequest;
+  vm.open                 = open;
+  vm.about                = about;
+  vm.logout               = logout;
+  vm.messageSend          = messageSend;
+  vm.Login                = Login;
+  
+  vm.suggestions          = [];
+  vm.usernames            = [];
+  vm.messages             = [];
 
   vm.findOptionsList = [{
     name: 'Annonces'
@@ -48,6 +48,7 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
   vm.name = 'Annonces';
 
   appLoading.ready();
+
 
   //////////////////////////////////////////////////////////////////////////
   var announce = new Announce();
@@ -134,8 +135,7 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     }
     if ($rootScope.currentUser) {
       notification.getNotifications().then(function() {
-        $rootScope.currentUser.notifications = notification._notifications;
-        console.log('________________RESPONSE____________');
+        $rootScope.currentUser.notifications      = notification._notifications;
         $rootScope.currentUser.notificationsCount = notification._notifications.length;
       });
     }
@@ -157,7 +157,6 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     if ($rootScope.currentUser) {
       notification.getNotifications().then(function() {
         $rootScope.currentUser.notifications = notification._notifications;
-        console.log('________________RESPONSE____________');
         $rootScope.currentUser.notificationsCount = notification._notifications.length;
       });
     }
@@ -185,8 +184,6 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
   });
 
   function search() {
-    console.log('rechercher');
-    console.log(vm.searchText);
     appLoading.loading();
     if (!vm.searchText) {
       $rootScope.page = false;
@@ -199,9 +196,9 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     }
     if (vm.name === 'Utilisateurs') {
       console.log('Utilisateurs');
-      var search = SearchService.search(vm.searchText);
-
-      search.getSearch().then(function() {
+      var search = new Search();
+      search.setSearch(vm.searchText);
+      search.getUsers().then(function() {
         console.log(search._searchResult);
         vm.suggestions = search._searchResult;
       });
@@ -303,4 +300,5 @@ function MainHeaderAngCtrl($scope, $injector, $localStorage, $window, $route,
     });
     console.log('logout');
   }
+  $rootScope.loaded = true;
 }

@@ -1,14 +1,10 @@
-angular.module('InTouch')
-  .factory('Auth', Auth);
+angular.module('InTouch').factory('Auth', Auth);
 
-Auth.$inject = ['$rootScope', 'Session', 'User', '$http', 'Notification', '$localStorage'];
+Auth.$inject = ['$rootScope', 'Session', '$http'];
 
-function Auth($rootScope, Session, User, $http, Notification, $localStorage) {
+function Auth($rootScope, Session, $http) {
   
-  var Auth = function(email, password) {
-    // this._username = username;
-    // this._name = '';
-    // this._profile = {};
+  var Auth = function() {
     this._loginField = null;
     this._registerField = null;
     this._profile = null;

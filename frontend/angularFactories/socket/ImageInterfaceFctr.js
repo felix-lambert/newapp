@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('ImageInterface', ImageInterface);
 
-ImageInterface.$inject = ['$http', 'Image', '$rootScope', 'Notification', 'Session', '$localStorage'];
+ImageInterface.$inject = ['$http', 'Image', '$rootScope'];
 
-function ImageInterface($http, Image, $rootScope, Notification, Session, $localStorage) {
+function ImageInterface($http, Image, $rootScope) {
   
   var ImageInterface = function() {
     Image.prototype.setImage.apply(this, arguments);

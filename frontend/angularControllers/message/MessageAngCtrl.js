@@ -1,51 +1,51 @@
 angular.module('InTouch')
   .controller('MessageAngCtrl', MessageAngCtrl);
 
-MessageAngCtrl.$inject = ['$localStorage', 'RoomService', 'MessageService', 'Room', 'Friend', 'Message', '$rootScope', 'socket', 'appLoading', 'preGetRooms'];
+MessageAngCtrl.$inject = ['$injector', '$localStorage', '$rootScope', 'preGetRooms'];
 
-function MessageAngCtrl($localStorage, RoomService, MessageService, Room, Friend, Message, $rootScope, socket, appLoading, preGetRooms) {
+function MessageAngCtrl($injector, $localStorage, $rootScope, preGetRooms) {
 
-  var vm          = this;
-  var Typing      = false;
-  var timeout     = undefined;
+  var RoomService           = $injector.get('RoomService');
+  var MessageService        = $injector.get('MessageService');
+  var Room                  = $injector.get('Room');
+  var Friend                = $injector.get('Friend');
+  var Message               = $injector.get('Message');
+  var socket                = $injector.get('socket');
+  var appLoading            = $injector.get('appLoading');
+
+  var vm                    = this;
+  var room                  = new Room();
+  var friend                = new Friend();
+
+  var Typing                = false;
+  var timeout               = undefined;
+  var get                   = preGetRooms;
+  vm.focus                  = focus;
+  vm.typing                 = typing;
+  vm.startChat              = startChat;
+  vm.leaveRoom              = leaveRoom;
+  vm.deleteRoom             = deleteRoom;
+  vm.send                   = send;
+  vm.peopleCount            = 0;
+  vm.joined                 = false;
+  vm.showChat               = false;
+  vm.rooms                  = [];
+  vm.error                  = {};
+  vm.messages               = [];
+  vm.roomId                 = '';
+  vm.typingPeople           = [];
+  vm.usernames              = [];
+  vm.user                   = '';
   
-  vm.focus        = focus;
-  vm.typing       = typing;
-  vm.startChat    = startChat;
-  // vm.createRoom   = createRoom;
-  vm.leaveRoom    = leaveRoom;
-  vm.deleteRoom   = deleteRoom;
-  vm.send         = send;
-  vm.peopleCount  = 0;
-  vm.joined       = false;
-  vm.showChat     = false;
-  vm.rooms        = [];
-  vm.error        = {};
-  vm.user         = {};
-  vm.messages     = [];
-  vm.room         = '';
-  vm.roomId       = '';
-  vm.typingPeople = [];
+  vm.rooms                  = get[0];
+  $localStorage.searchField = null;
   
-  
-  vm.usernames    = [];
-  
-  vm.user         = '';
-  
-  var get         = preGetRooms
-  
-  vm.rooms        = get[0];
 
   appLoading.ready();
 
-  $localStorage.searchField = null;
+  
 
   /////////////////////////////////////////////////////////////
-
-  var room = new Room();
-  
-  var friend = new Friend();
-
   function Timeout() {
     Typing = false;
     socket.emit('typing', false);
@@ -121,37 +121,6 @@ function MessageAngCtrl($localStorage, RoomService, MessageService, Room, Friend
     category: [],
     rating: null
   };
-
-  // function createRoom() {
-  //   var roomExists = false;
-  //   var room       = this.roomname;
-  //   if (typeof room === 'undefined' ||
-  //     (typeof room === 'string' &&
-  //       room.length === 0)) {
-  //     vm.error.create = 'Please enter a room name';
-  //   } else {
-  //     room.setRoom
-  //     Rooms.postRoom({
-  //       name: this.roomname
-  //     }).then(function(response) {
-  //       vm.room   = response.roomName;
-  //       vm.roomId = response.roomId;
-  //     });
-  //     socket.emit('checkUniqueRoomName', room, function(data) {
-  //       roomExists = data.result;
-  //       if (roomExists) {
-  //         vm.error.create = 'Room ' + room + ' already exists.';
-  //       } else {
-  //         socket.emit('createRoom', room);
-  //         vm.error.create = '';
-  //         if (!vm.user.inroom) {
-  //           vm.messages = [];
-  //           vm.roomname = '';
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
 
   function leaveRoom(room) {
     vm.message = '';

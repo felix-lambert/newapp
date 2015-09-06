@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Notification', Notification);
 
-Notification.$inject = ['$q', '$http'];
+Notification.$inject = ['$http'];
 
-function Notification($q, $http) {
+function Notification($http) {
 
   var Notification = function() {
     this._id = '';

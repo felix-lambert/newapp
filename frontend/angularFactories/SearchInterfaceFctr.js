@@ -1,7 +1,7 @@
 angular.module('InTouch')
   .factory('SearchInterface', SearchInterface);
 
-SearchInterface.$inject = ['appLoading', '$http', 'Search', 'Friend', '$rootScope', 'Notification', 'Session', '$localStorage'];
+SearchInterface.$inject = ['$http', 'Search', 'Friend', '$rootScope'];
 
 
 function arrayIndexOf(myArray, searchTerm) {
@@ -14,7 +14,7 @@ function arrayIndexOf(myArray, searchTerm) {
 }
 
 
-function SearchInterface(appLoading, $http, Search, Friend, $rootScope, Notification, Session, $localStorage) {
+function SearchInterface($http, Search, Friend, $rootScope) {
   
   var SearchInterface = function() {
     Search.prototype.setSearch.apply(this, arguments);
@@ -49,23 +49,16 @@ function SearchInterface(appLoading, $http, Search, Friend, $rootScope, Notifica
 
     var friend = new Friend();
 
-    // $localStorage.currentUser = this._profile;
-    // $rootScope.currentUser = $localStorage.currentUser;
-    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
-    console.log(self);
     if ($rootScope.currentUser) {
       console.log('inside currentuser');
       return friend.getFriendsFromUser()
       .then(function() {
         var usernames = [];
-        console.log(friend._friends); 
+         
         for (var i = 0; i < friend._friends.length; i++) {
           usernames[i] = friend._friends[i].accepted ?
           friend._friends[i].accepted : friend._friends[i].wait;
         }
-        console.log(usernames);
-        
-        console.log('test data follow');
         for (var j = 0; j < self._searchResult.length; j++) {
           self._searchResult[j].username = arrayIndexOf(usernames, self._searchResult[j]._source.username) < 0 ?
           {
@@ -76,12 +69,9 @@ function SearchInterface(appLoading, $http, Search, Friend, $rootScope, Notifica
           };
           if (self._searchResult[j].username.notFollow) {
             for (var k = 0; k < friend._friends.length; k++) {
-              console.log(self._searchResult[j].username.notFollow);
-              console.log(friend._friends[k]);
               if (self._searchResult[j].username.notFollow === friend._friends[k].wait) {
                 self._searchResult[j].username.notFollow = {'wait' : friend._friends[k].wait};
               } else if (self._searchResult[j].username.notFollow === friend._friends[k].accepted) {
-                console.log('accepted result');
                 self._searchResult[j].username.notFollow = {'accept' : friend._friends[k].accepted};
               }
             }

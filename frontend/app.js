@@ -7,6 +7,6 @@ angular.module('InTouch', [
   'toaster',
   'angularFileUpload',
   'tagger',
-  'vTabs',
-  'angularUtils.directives.dirPagination'
+  'vTabs'
 ]);
+

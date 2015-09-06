@@ -5,6 +5,7 @@ var chalk     = require('chalk');
 exports = module.exports = function(mongoose) {
   var Schema = mongoose.Schema;
 
+
   var actualitySchema = new Schema({
     content: String,
     status: Number,

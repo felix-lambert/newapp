@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Room', Room);
 
-Room.$inject = ['$q', '$http', '$rootScope'];
+Room.$inject = ['$http'];
 
-function Room($q, $http, $rootScope) {
+function Room($http) {
 
   var Room = function() {
     this._id = '';

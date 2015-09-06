@@ -38,7 +38,7 @@ exports = module.exports = function(mongoose) {
             }
         }
     }
-    }
+  }
 }, function(err,resp,respcode){
    console.log(chalk.blue('create index...'));
     console.log(err,resp,respcode);
@@ -123,6 +123,7 @@ exports = module.exports = function(mongoose) {
         var token = self.encode({email: email});
         usr.token = new Token({token:token});
         usr.save(function(err, usr) {
+          console.log(usr.token.token);
           cb(err ? err : false, usr.token.token);
         });
       });
@@ -134,9 +135,7 @@ exports = module.exports = function(mongoose) {
         if (err || !user) {
           console.log('err');
         } else {
-          console.log('_______________add image___________');
           user.images.push({name: name});
-          console.log('___________________________________');
           user.save(function(err, result) {
             cb(err ? err : false, user.images);
           });
@@ -159,7 +158,7 @@ exports = module.exports = function(mongoose) {
       });
     },
     
-    getUserToken: function(email, token, cb) {
+    getUserFromToken: function(email, token, cb) {
       var self = this;
       self.findOne({email: email})
       .exec(function(err, usr) {
@@ -186,10 +185,7 @@ exports = module.exports = function(mongoose) {
         var self = this;
         self.findOne({email: decoded.email})
         .exec(function(err, user) {
-          console.log('test response');
-          console.log(user);
           if (err || !user) {
-            console.log('ERROR');
             cb(err, null);
           } else if (user.token && user.token.token) {
             FORMATTED_DATE     = moment(user.DATE_CREATED).format('DD/MM/YYYY');
@@ -214,10 +210,11 @@ exports = module.exports = function(mongoose) {
       });
     },
 
-    invalidateUserToken: function(email, cb) {
+    invalidateUserToken: function(data, cb) {
       var self = this;
       console.log('invalidateUserToken');
-      this.findOne({email: email}, function(err, usr) {
+      var decoded = jwt.decode(data, tokenSecret);
+      this.findOne({email: decoded.email}, function(err, usr) {
         if (err || !usr) {
           console.log('err');
         }

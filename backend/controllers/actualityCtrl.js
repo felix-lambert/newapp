@@ -15,6 +15,8 @@ module.exports = {
     console.log(chalk.blue('_____GET /api/actuality____'));
     Actuality.find()
     .sort('-date')
+    // .skip((10 * req.params.page) - 10)
+    .limit(10)
     .exec(function(err, actualities) {
       return res.status(err ? 501 : 200).json(err ? err : actualities);
     });

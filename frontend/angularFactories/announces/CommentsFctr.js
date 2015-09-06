@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Comment', Comment);
 
-Comment.$inject = ['$q', '$http'];
+Comment.$inject = ['$http'];
 
-function Comment($q, $http) {
+function Comment($http) {
 
   var Comment = function() {
     this._id = '';

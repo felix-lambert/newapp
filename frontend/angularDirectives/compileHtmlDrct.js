@@ -1,5 +1,7 @@
 angular.module('InTouch')
-.directive('dynamic', function($compile) {
+.directive('dynamic', dynamic);
+
+function dynamic($compile) {
   return {
     restrict: 'A',
     replace: true,
@@ -10,4 +12,4 @@ angular.module('InTouch')
       });
     }
   };
-});
+}

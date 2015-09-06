@@ -30,11 +30,11 @@ function AnnounceInterface($http, Announce, $rootScope, Notification, Session, $
     var self = this;
     return $http.get('/api/userannounces/' + self._page)
     .then(function(response) {
-      response.data.announces.forEach(function(announce) {
-        if (announce.title.length > 18) {
-          announce.title = announce.title.substring(0, 19) + '...';
-        }
-      });
+      // response.data.announces.forEach(function(announce) {
+      //   if (announce.title.length > 18) {
+      //     announce.title = announce.title.substring(0, 19) + '...';
+      //   }
+      // });
       self._announces = response.data.announces;
       self._total = response.data.announces;
       return response;

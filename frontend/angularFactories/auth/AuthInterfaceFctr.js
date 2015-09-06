@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('AuthInterface', AuthInterface);
 
-AuthInterface.$inject = ['appLoading', '$http', 'Auth', '$rootScope', 'Notification', 'Session', '$localStorage'];
+AuthInterface.$inject = ['appLoading', '$http', 'Auth', '$rootScope', 'Notification', '$localStorage'];
 
-function AuthInterface(appLoading, $http, Auth, $rootScope, Notification, Session, $localStorage) {
+function AuthInterface(appLoading, $http, Auth, $rootScope, Notification, $localStorage) {
   
   var AuthInterface = function() {
     Auth.prototype.setLoginField.apply(this, arguments);

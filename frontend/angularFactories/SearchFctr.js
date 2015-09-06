@@ -1,8 +1,8 @@
 angular.module('InTouch').factory('Search', Search);
 
-Search.$inject = ['$q', '$http', '$rootScope'];
+Search.$inject = ['appLoading', '$http', '$rootScope'];
 
-function Search($q, $http, $rootScope) {
+function Search(appLoading, $http, $rootScope) {
 
   var Search = function() {
     this._id = '';
@@ -37,6 +37,10 @@ function Search($q, $http, $rootScope) {
   }
 
   function getUsers() {
+    console.log('______receive fiend request__________');
+    if ($rootScope.currentUser) {
+      $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
+    }
     var self = this;
     console.log(self._searchText);
     return $http.get('/search/' + '?term=' + self._searchText).then(function(response) {
@@ -46,6 +50,7 @@ function Search($q, $http, $rootScope) {
         $rootScope.page = false;
       }
       self._searchResult = response.data;
+      appLoading.ready();
       return response;
     });
   }

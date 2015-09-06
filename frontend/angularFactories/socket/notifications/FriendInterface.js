@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('FriendInterface', FriendInterface);
 
-FriendInterface.$inject = ['toaster', 'socket', '$http', 'Friend', '$rootScope', 'Notification', 'Session', '$localStorage'];
+FriendInterface.$inject = ['toaster', 'socket', 'Friend', '$rootScope', 'Notification'];
 
-function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notification, Session, $localStorage) {
+function FriendInterface(toaster, socket, Friend, $rootScope, Notification) {
   
   var FriendInterface = function() {
     Friend.prototype.setField.apply(this, arguments);
@@ -43,9 +43,6 @@ function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notificatio
   return FriendInterface;
 
   function postNotification() {
-    // $localStorage.currentUser = this._profile;
-    // $rootScope.currentUser = $localStorage.currentUser;
-    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
     var self = this;
 
     console.log(self);
@@ -53,8 +50,6 @@ function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notificatio
 
     notification.setField(self._friendField.usernameWaitFriendRequest, self._friendField.idUser, 'friendRequest');
     notification.postNotification().then(function() {
-      console.log('notifications success');
-      console.log('toaster');
       toaster.pop('success', 'Vous avez envoyé une requête d\'amitié');
       socket.emit('sendFriendRequest', {
         user: $rootScope.currentUser.username,
@@ -66,9 +61,6 @@ function FriendInterface(toaster, socket, $http, Friend, $rootScope, Notificatio
   }
 
   function postAcceptNotification() {
-    // $localStorage.currentUser = this._profile;
-    // $rootScope.currentUser = $localStorage.currentUser;
-    // $http.defaults.headers.common['auth-token'] = $rootScope.currentUser.token;
     var self = this;
 
     console.log(self);

@@ -37,13 +37,30 @@ var routeObject = {
   '/announces': {
     templateUrl: 'partials/announces/listAnnc.html',
     controller: 'ListAnnouncesAngCtrl',
-    controllerAs: 'listAnnounces'
+    controllerAs: 'listAnnounces',
+    resolve: {
+      preGetAnnounces: function(Announce) {
+        var announce = new Announce;
+        announce.setAnnouncePagination(1);
+        return announce.getAnnounces();     
+      }
+    }
   },
   '/announces/create': {
     templateUrl: 'partials/announces/createAnnc.html',
     controller: 'CreateAnnounceAngCtrl',
     controllerAs: 'createAnnounce',
-
+    resolve: {
+      preGetUserAnnounces: function(Announce, $rootScope, $http) {
+        if ($rootScope.currentUser) {
+          var userToken                               = $rootScope.currentUser.token;
+          $http.defaults.headers.common['auth-token'] = userToken;
+          var announce = new Announce();
+          announce.setPage(1);
+          return announce.getAnnouncesFromUser();
+        }
+      }
+    }
   },
   '/announces/:announceId/edit': {
     templateUrl: 'partials/announces/editAnnc.html',
@@ -53,7 +70,19 @@ var routeObject = {
   '/announces/:announceId': {
     templateUrl: 'partials/announces/viewAnnc.html',
     controller: 'ShowAnnounceAngCtrl',
-    controllerAs: 'showAnnounce'
+    controllerAs: 'showAnnounce',
+    resolve: {
+      preShowAnnounce: function(Announce, $routeParams) {
+        var announce = new Announce;
+        var comment = new Comment;
+        announce.setId($routeParams.announceId);
+        return announce.getAnnounceById();  
+      },
+      preShowComment: function(Comment, $routeParams) {
+        comment.setId($routeParams.announceId);
+        return comment.getAnnounceComments();
+      }
+    }
   },
   '/message/:userId': {
     templateUrl: 'partials/sendMessage.html',
@@ -73,16 +102,23 @@ var routeObject = {
   '/actuality': {
     templateUrl: 'partials/profile/actualityPrfl.html',
     controller: 'ActualityAngCtrl',
-    controllerAs: 'actuality'
+    controllerAs: 'actuality',
+    resolve: {
+      preGetActualities: function(Actuality) {
+        var actuality = new Actuality();
+        return actuality.getActualities();
+      }
+    }
   },
   '/pictures': {
     templateUrl: 'partials/profile/picturePrfl.html',
     controller: 'PictureAngCtrl',
     controllerAs: 'picture',
     resolve: {
-      preGetImages: function(Images) {
-        console.log('preGetRooms');
-        return Images.getImages();
+      preGetImages: function(Image) {
+        console.log('preGetImages');
+        var image = new Image();
+        return image.getImages();
       }
     }
   },
@@ -96,9 +132,10 @@ var routeObject = {
     controller: 'MessageAngCtrl',
     controllerAs: 'message',
     resolve: {
-      preGetRooms: function(Rooms) {
+      preGetRooms: function(Room) {
         console.log('preGetRooms');
-        return Rooms.getRooms();
+        var room = new Room();
+        return room.getRooms();
       }
     }
   },
@@ -116,10 +153,11 @@ appRun.$inject = ['$localStorage', '$rootScope', '$location', 'appLoading'];
 function appRun($localStorage, $rootScope, $location, appLoading) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {
     console.log('________ROUTE TEST_________________');
+    
     appLoading.loading();
-    var currentUser        = $localStorage.currentUser;
-    $rootScope.currentUser = currentUser;
+    $rootScope.currentUser = $localStorage.currentUser;
     console.log($rootScope.currentUser);
+
     for (var i in routeObject) {
       if (next.originalPath == i) {
         if (routeObject[i].requireLogin && !$rootScope.currentUser) {

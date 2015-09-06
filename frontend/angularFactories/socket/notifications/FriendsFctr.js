@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Friend', Friend);
 
-Friend.$inject = ['$q', '$http'];
+Friend.$inject = ['$http'];
 
-function Friend($q, $http) {
+function Friend($http) {
 
   var Friend = function() {
     this._id = '';

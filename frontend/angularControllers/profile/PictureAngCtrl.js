@@ -1,14 +1,19 @@
 angular.module('InTouch')
     .controller('PictureAngCtrl', PictureAngCtrl);
 
-PictureAngCtrl.$inject = ['$localStorage', 'ImageService', 'Actuality', '$scope', 'Image', '$rootScope',
-'FileUploader', '$http', 'appLoading', 'toaster', 'preGetImages'];
+PictureAngCtrl.$inject = ['$injector', '$localStorage', '$scope', '$rootScope', '$http', 'appLoading', 'toaster', 'preGetImages'];
 
-function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Image, $rootScope,
-  FileUploader, $http, appLoading, toaster, preGetImages) {
+function PictureAngCtrl($injector, $localStorage, $scope, $rootScope, $http, appLoading, toaster, preGetImages) {
 
   console.log('----------------UPLOAD PICTURES------------------------');
 
+  var ImageService                            = $injector.get('ImageService');
+  var Actuality                               = $injector.get('Actuality');
+  var Image                                   = $injector.get('Image');
+  var FileUploader                            = $injector.get('FileUploader');
+  var appLoading                              = $injector.get('appLoading');
+  var toaster                                 = $injector.get('toaster');
+  
   var vm                                      = this;
   var userToken                               = $rootScope.currentUser.token;
   $http.defaults.headers.common['auth-token'] = userToken;
@@ -16,15 +21,16 @@ function PictureAngCtrl($localStorage, ImageService, Actuality, $scope, Image, $
   vm.doDefaultImage                           = doDefaultImage;
   vm.erase                                    = erase;
   vm.noImages                                 = false;
-  vm.preview = false;
-
-  appLoading.ready();
-
-  var actuality = new Actuality();
-  var image = new Image();
-
-  $localStorage.searchField = null;
+  vm.preview                                  = false;
   
+  
+  
+  var actuality                               = new Actuality();
+  var image                                   = new Image();
+  
+  $localStorage.searchField                   = null;
+  
+  appLoading.ready();
   if ($rootScope.currentUser) {
     vm.profileImages = preGetImages;
     console.log(vm.profileImages);

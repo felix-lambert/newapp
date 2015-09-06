@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Like', Like);
 
-Like.$inject = ['$q', '$http'];
+Like.$inject = ['$http'];
 
-function Like($q, $http) {
+function Like($http) {
 
   var likeFnct = {
     postLike: postLike,

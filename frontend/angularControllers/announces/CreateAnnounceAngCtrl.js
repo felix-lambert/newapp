@@ -1,29 +1,27 @@
 angular.module('InTouch')
 .controller('CreateAnnounceAngCtrl', CreateAnnounceAngCtrl);
 
-CreateAnnounceAngCtrl.$inject = ['$injector', '$timeout', '$localStorage', '$scope', '$http', '$rootScope', '$modal'];
+CreateAnnounceAngCtrl.$inject = ['$injector', '$timeout', '$localStorage', '$http', '$rootScope', '$modal', 'preGetUserAnnounces'];
 
-function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
-  $http, $rootScope, $modal) {
+function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $http, $rootScope, $modal, preGetUserAnnounces) {
 
   console.log('****************AnnounceCtrl************************');
 
   var vm                    = this;
-
+  
   // Requirements
   var Actuality             = $injector.get('Actuality');
   var Announce              = $injector.get('Announce');
   var toaster               = $injector.get('toaster');
   var appLoading            = $injector.get('appLoading');
   var AnnounceService       = $injector.get('AnnounceService');
-
+  
   vm.paginateUser           = paginateUser;
-  vm.listUsers              = listUsers;
+  
   vm.create                 = create;
   vm.remove                 = remove;
   vm.desactivate            = desactivate;
   vm.activate               = activate;
-  vm.initListCreateAnnounce = initListCreateAnnounce;
   vm.pageChanged            = pageChanged;
 
   appLoading.ready();
@@ -42,12 +40,17 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
   ////////////////////////////////////////////////////////////////////////
 
   var announce = new Announce();
+  var actuality = new Actuality();
 
   function pageChanged(currentPage) {
     console.log('Page changed to: ' + currentPage);
-    vm.page = currentPage;
-    vm.paginateUser(vm.page);
+    vm.paginateUser(currentPage);
   }
+
+  var userAnnounces = preGetUserAnnounces;
+
+  vm.announces = userAnnounces.announces;
+  vm.total = userAnnounces.total;
 
   vm.options = [
     'Appareils',
@@ -74,8 +77,6 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     'Manucure'
   ];
 
-  vm.tags = [];
-
   function paginateUser(page) {
     console.log('paginate user announces');
     vm.page = page;
@@ -89,67 +90,25 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
     }
   }
 
-  function listUsers() {
-    vm.paginate(vm.page);
-  }
-
   function create() {
     console.log('create');
-    if ($rootScope.currentUser) {
-      var vm = this;
-      var announce = AnnounceService.create(vm.title, vm.content, vm.type, vm.category, vm.price, vm.selectedImages, true, vm.tags);
-      announce.getAnnouncesFromUser().then(function () {
-          vm.title      = '';
-          vm.content    = '';
-          vm.title      = '';
-          vm.category   = '';
-          vm.type       = '';
-          vm.tags       = [];
-          vm.announces  = announce._announces;
-          vm.total      = announce._total;
-        }); 
-      Actuality.postActuality({status: 1, content:vm.content}).then(function(result) {
-        
-      });
-    } else {
-      var modalInstance = $modal.open({
-        templateUrl: 'views/modals/addUsernameModal.html',
-        controller: 'AuthModalAngCtrl'
-      });
-
-      modalInstance.result.then(function(selectedItem) {
-        vm.selected = selectedItem;
-      }, function(user) {
-        $timeout(function() {
-          console.log('________________RESPONSE LOGIN____________');
-          $localStorage.currentUser                   = user;
-          $rootScope.currentUser                      = $localStorage.currentUser;
-          var userToken                               = user.token;
-          $http.defaults.headers.common['auth-token'] = userToken;
-          Announce.postAnnounce({
-            title: vm.announce.title,
-            content: vm.announce.content,
-            type: vm.announce.type,
-            category: vm.announce.category,
-            price: vm.announce.price,
-            images: vm.announce.selectedImages,
-            activated: true
-          }).then(function(response) {
-            console.log(response);
-            vm.paginateUser(vm.page);
-            vm.content  = '';
-            vm.title    = '';
-            vm.category = '';
-            vm.type     = '';
-          });
-        });
-      });
-    }
+    var vm = this;
+    var announce = AnnounceService.create(vm.title, vm.content, vm.type, vm.category, vm.price, vm.selectedImages, true, vm.tags);
+    announce.getAnnouncesFromUser().then(function () {
+      vm.title      = '';
+      vm.content    = '';
+      vm.title      = '';
+      vm.category   = '';
+      vm.type       = '';
+      vm.tags       = [];
+      vm.announces  = announce._announces;
+      vm.total      = announce._total;
+      actuality.setActualityField({status: 1, content: vm.content});
+      actuality.postActuality();
+    });
   }
 
   function remove(ann) {
-    console.log('remove');
-    console.log(ann);
     swal({
       title: 'Etes-vous sur?',
       text: 'Vous allez devoir recréer une nouvelle annonce!',
@@ -195,10 +154,5 @@ function CreateAnnounceAngCtrl($injector, $timeout, $localStorage, $scope,
       toaster.pop('success', 'Ce service est activé');
       vm.paginateUser(vm.page);
     });
-  }
-
-  function initListCreateAnnounce() {
-    console.log('initListCreateAnnounce');
-    vm.paginateUser(vm.page);
   }
 }

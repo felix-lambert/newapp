@@ -1,160 +1,5 @@
-<style>
-  @import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css);
-  .comment-list .panel .panel-heading .panel-body {
-    padding-top: 6px;
-  }
 
-  .comment-list figcaption {
-    /*For wrapping text in thumbnail*/
-    word-wrap: break-word;
-  }
-
-@media (min-width: 768px) {
-  .comment-list .arrow:after, .comment-list .arrow:before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-color: transparent;
-  }
-  .comment-list .panel.arrow.left:after, .comment-list .panel.arrow.left:before {
-    border-left: 0;
-  }
-  /*****Left Arrow*****/
-  /*Outline effect style*/
-  .comment-list .panel.arrow.left:before {
-    left: 0px;
-    top: 30px;
-    /*Use boarder color of panel*/
-    border-right-color: inherit;
-    border-width: 16px;
-  }
-  /*Background color effect*/
-  .comment-list .panel.arrow.left:after {
-    left: 1px;
-    top: 31px;
-    /*Change for different outline color*/
-    border-right-color: #FFFFFF;
-    border-width: 15px;
-  }
-  /*****Right Arrow*****/
-  /*Outline effect style*/
-  .comment-list .panel.arrow.right:before {
-    right: -16px;
-    top: 30px;
-    /*Use boarder color of panel*/
-    border-left-color: inherit;
-    border-width: 16px;
-  }
-  /*Background color effect*/
-  .comment-list .panel.arrow.right:after {
-    right: -14px;
-    top: 31px;
-    /*Change for different outline color*/
-    border-left-color: #FFFFFF;
-    border-width: 15px;
-  }
-}
-.comment-list .comment-post {
-  margin-top: 6px;
-}
-
-.red{
-    color:red;
-    }
-
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
-
-.profile
-{
-    display: inline-block;
-}
-
-figcaption.ratings
-{
-  margin-top:20px;
-}
-
-figcaption.ratings a
-{
-  color:#f1c40f;
-  font-size:11px;
-}
-
-figcaption.ratings a:hover
-{
-  color:#f39c12;
-  text-decoration:none;
-}
-
-.divider
-{
-  border-top:1px solid rgba(0,0,0,0.1);
-}
-
-.emphasis
-{
-  border-top: 4px solid transparent;
-}
-
-.emphasis:hover
-{
-  border-top: 4px solid #1abc9c;
-}
-
-.emphasis h2
-{
-  margin-bottom:0;
-}
-
-span.tags
-{
-  background: #1abc9c;
-  border-radius: 2px;
-  color: #f5f5f5;
-  font-weight: bold;
-  padding: 2px 4px;
-}
-
-.dropdown-menu
-{
-/*  background-color: #34495e;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  width: 250px;
-  margin-left: -125px;
-  left: 50%;*/
-}
-
-.dropdown-menu .divider
-{
-/*  background:none;*/
-}
-
-.dropdown-menu>li>a
-{
-/*    color:#f5f5f5;*/
-    }
-.dropup .dropdown-menu
-{
-    margin-bottom:10px;
-    }
-.dropup .dropdown-menu:before
-{
-    content: "";
-    border-top: 10px solid #34495e;
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    margin-left: -10px;
-    z-index: 10;
-}
-
-</style>
-<div class="row" ng-init="showAnnounce.initViewAnnounce()">
+<div class="row">
   <div class="col-md-9 col-lg-offset-1">
     <div class="well profile">
       <div class="col-sm-12">
@@ -235,12 +80,15 @@ span.tags
     <form class="postComment" ng-submit="showAnnounce.postComment()">
       <div class="form-group col-md-4 ">
         <label id="messageLabel" for="message">Commenter </label>
-        <textarea ng-model="showAnnounce.AnnounceComment" class="form-control input-sm " type="textarea" id="message" placeholder="Message" maxlength="140" rows="1"></textarea>
-        <span class="help-block"><p id="characterLeft" class="help-block ">Vous avez atteint la limite</p></span>
+        <textarea class="form-control input-sm " type="textarea" id="message" placeholder="Message" ng-model="showAnnounce.AnnounceComment" ng-trim="false" maxlength="140" rows="1"></textarea>
+          <span class="help-block"><p class="help-block">{{140 - showAnnounce.AnnounceComment.length}} characters left</span>
+          <span class="help-block">
+            <p ng-if="showAnnounce.AnnounceComment.length === 140" class="help-block ">Vous avez atteint la limite</p>
+          </span>
       </div>
       <br style="clear:both">
       <div class="form-group col-md-2">
-        <button class="form-control input-sm btn btn-success disabled" id="btnSubmit" name="btnSubmit" type="submit" type="button" style="height:35px"> Envoyer</button>
+        <button class="form-control input-sm btn btn-success" id="btnSubmit" name="btnSubmit" type="submit" type="button" style="height:35px"> Envoyer</button>
       </div>
     </form>
   </div>
@@ -278,25 +126,3 @@ span.tags
     </div>
   </div>
 </section>
-
-<script>
-  $(document).ready(function(){ 
-    $('#characterLeft').text('140 characters left');
-    $('#message').keydown(function () {
-        var max = 140;
-        var len = $(this).val().length;
-        if (len >= max) {
-          $('#characterLeft').text('You have reached the limit');
-          $('#characterLeft').addClass('red');
-          $('#btnSubmit').addClass('disabled');
-        } 
-        else {
-          var ch = max - len;
-          $('#characterLeft').text(ch + ' characters left');
-          $('#btnSubmit').removeClass('disabled');
-          $('#characterLeft').removeClass('red');            
-        }
-    });    
-});
-
-</script>

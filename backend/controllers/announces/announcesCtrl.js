@@ -201,6 +201,7 @@ module.exports = {
       var announces = resp.hits.hits;
 
       var initAnnounces = function(announce, doneCallback) {
+        
         announce.title   = announce._source.title.length > 34 ?
         announce._source.title.substring(0, 35) + '...' :
         announce._source.title;
@@ -212,17 +213,15 @@ module.exports = {
           var m                   = moment(announce._source.FORMATTED_DATE, 'DD/MM/YYYY, hA:mm');
           announce.FORMATTED_DATE = m.fromNow();
         }
-        var ObjectID = require('mongodb').ObjectID;
-        Announce.findOne({
-          'creator': announce._source.creator
-        }, function(err, result) {
-          announce.creator = result.creator;
-          var _id = new ObjectID(announce._id);
-          Comment.count({announce: _id}).exec(function(err, result) {
-            announce.nbComment = result;
-            doneCallback(err ? err : null, announce);
-          });
-        }); 
+
+        var ObjectID     = require('mongodb').ObjectID;
+        
+        announce.creator = result.creator;
+        var _id = new ObjectID(announce._id);
+        Comment.count({announce: _id}).exec(function(err, result) {
+          announce.nbComment = result;
+          doneCallback(err ? err : null, announce);
+        });
       };
 
       async.map(announces, initAnnounces, function(err, result) {
@@ -235,24 +234,6 @@ module.exports = {
       console.log(chalk.red(err));
       res.status(400).json(err.message);
     });
-    // Announce.search({
-    //   query:{
-    //     'multi_match': {
-    //       'fields':  ['content', 'title'],
-    //         'query':terms,
-    //         "analyzer": "standard",
-    //         'fuzziness': 'AUTO',
-    //   }
-    // }}, function(err, results) {
-    //   if (err) {
-    //     ee.emit('error', err);
-    //     res.status(400).json(err);
-    //   } else {
-    //     console.log(results);
-    //     var announces = results.hits.hits;
-    //     
-    //   }
-    // });
   },
 
   /////////////////////////////////////////////////////////////////

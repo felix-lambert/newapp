@@ -2,9 +2,9 @@ angular.module('InTouch')
 
 .factory('Actuality', Actuality);
 
-Actuality.$inject = ['$q', '$http'];
+Actuality.$inject = ['$http'];
 
-function Actuality($q, $http) {
+function Actuality($http) {
 
   var Actuality = function() {
     this._id = '';
@@ -46,7 +46,7 @@ function Actuality($q, $http) {
     var self = this;
     return $http.get('/api/actuality/').then(function(response) {
       self._actualities = response.data;
-      return response;
+      return response.data;
     });
   }
 

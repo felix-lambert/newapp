@@ -1,9 +1,9 @@
 angular.module('InTouch')
   .factory('MessageInterface', MessageInterface);
 
-MessageInterface.$inject = ['socket', '$http', 'Message', '$rootScope', 'Notification', 'Session', '$localStorage'];
+MessageInterface.$inject = ['socket', '$http', 'Message'];
 
-function MessageInterface(socket, $http, Message, $rootScope, Notification, Session, $localStorage) {
+function MessageInterface(socket, $http, Message) {
   
   var MessageInterface = function() {
     Message.prototype.setField.apply(this, arguments);
